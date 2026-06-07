@@ -270,7 +270,11 @@ class ScreenRecorderApp:
         self._folder_btn = Btn(right, "folder", command=self._open_dir, tooltip="打开目录")
         self._folder_btn.pack(side=tk.LEFT, padx=(0, BTN_GAP))
 
+        self._history_btn = Btn(right, "history", command=self._open_history, tooltip="历史")
+        self._history_btn.pack(side=tk.LEFT, padx=(0, BTN_GAP))
+
         # Export: icon button + lazy-loaded expandable bar
+        self._history_server = None
         self._export_menu_open = False
         self._export_btn = tk.Button(right, image=Icons.get("export", 32),
                                          command=self._toggle_export_menu, bg=C.BG,
@@ -397,6 +401,15 @@ class ScreenRecorderApp:
             self._log_frame.pack(fill=tk.BOTH, expand=True, padx=12, pady=(0, 8), after=after)
             self._log_visible = True
         self._refit()
+
+    def _open_history(self):
+        """Open web history server."""
+        from recorder.history_server import start_server
+        if not self._history_server or not self._history_server.running:
+            self._history_server = start_server(open_browser=True)
+        else:
+            import webbrowser
+            webbrowser.open(f"http://127.0.0.1:{self._history_server.port}")
 
     def _toggle_export_menu(self):
         """Toggle the export sub-icon bar below the toolbar."""
@@ -836,7 +849,10 @@ class ScreenRecorderApp:
         video = os.path.join(self._output_dir, "inputs", f"{self._project_name}.mp4")
         if os.path.exists(video):
             self._log(f"打开  {os.path.basename(video)}")
-            os.startfile(video)
+            try:
+                os.startfile(video)
+            except OSError:
+                messagebox.showwarning("提示", "找不到可用的视频播放器")
         else:
             messagebox.showinfo("提示", f"视频文件不存在:\n{video}")
     def _export_markdown(self):

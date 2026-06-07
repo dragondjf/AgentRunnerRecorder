@@ -105,7 +105,8 @@ class ScreenCapture:
                 y0=mon.get("top", 0),
             )
 
-            fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+            fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # MPEG-4 (reliable on all systems)
+            # H.264 conversion happens post-recording via ffmpeg
             writer = cv2.VideoWriter(self.output_path, fourcc, self.fps, (logical_w, logical_h))
             interval = 1.0 / self.fps
 
