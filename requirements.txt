@@ -1,0 +1,5 @@
+pillow>=8.0
+opencv-python>=4.5
+numpy>=1.21
+mss>=0.5
+pynput>=1.7
