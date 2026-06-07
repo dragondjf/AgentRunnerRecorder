@@ -43,11 +43,8 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
-      - name: Build with PyInstaller (verbose)
-        run: |
-          pyinstaller --noconfirm recorder.spec
-          echo "Build completed. Contents of dist/:"
-          ls -la dist/ || echo "dist/ directory not found!"
+      - name: Build with PyInstaller
+        run: pyinstaller --noconfirm recorder.spec
 
       - name: Install Linux GUI libraries
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm'
@@ -61,10 +58,7 @@ jobs:
       - name: Package Windows
         if: matrix.os == 'windows-latest'
         shell: bash
-        run: |
-          ls -la dist/
-          cp dist/AgentRunnerRecorder.exe dist/AgentRunnerRecorder-Setup.exe
-          ls -la dist/
+        run: cp dist/AgentRunnerRecorder.exe dist/AgentRunnerRecorder-Setup.exe
 
       - name: Package macOS
         if: matrix.os == 'macos-latest'
