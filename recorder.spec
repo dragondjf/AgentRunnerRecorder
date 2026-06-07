@@ -5,12 +5,13 @@ import os
 import sys
 from pathlib import Path
 
+block_cipher = None
+
 a = Analysis(
     ['recorder_app.py'],
     pathex=[],
     binaries=[],
     datas=[
-        # 图标资源目录（整个文件夹打包进去）
         ('images', 'images'),
     ],
     hiddenimports=[
@@ -20,6 +21,7 @@ a = Analysis(
         'recorder.event_listener',
         'recorder.window_tracker',
         'recorder.manager',
+        'PIL._tkinter_finder',
     ],
     hookspath=[],
     hooksconfig={},
@@ -27,25 +29,34 @@ a = Analysis(
     excludes=[
         'matplotlib', 'scipy', 'pandas', 'IPython',
         'jupyter', 'notebook', 'pytest', 'setuptools',
+        'tkinter',
     ],
     noarchive=False,
     optimize=0,
+    cipher=block_cipher,
 )
 
-# 去除不需要的模块，减小体积
-pyz = PYZ(a.pure)
+pyz = PYZ(a.pure, cipher=block_cipher)
 
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
+    exclude_binaries=True,
     name='AgentRunnerRecorder',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=False,
-    console=False,            # 不弹出黑色命令行窗口
-    icon='images/app_icon.ico',  # 窗口图标
+    console=False,
+    icon='images/app_icon.ico',
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=False,
+    name='AgentRunnerRecorder',
 )

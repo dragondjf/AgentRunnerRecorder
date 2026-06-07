@@ -11,11 +11,12 @@ permissions:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: windows-latest
             platform: win64
-            artifact: AgentRunnerRecorder-Setup.exe
+            artifact: AgentRunnerRecorder.exe
           - os: macos-latest
             platform: mac
             artifact: AgentRunnerRecorder-mac.zip
@@ -39,29 +40,35 @@ jobs:
       - name: Build with PyInstaller
         run: pyinstaller --noconfirm recorder.spec
 
-      - name: Rename Windows artifact
+      - name: Package Windows artifact
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
-          mv dist/AgentRunnerRecorder.exe dist/AgentRunnerRecorder-Setup.exe
+          cd dist
+          ls -la
+          mv AgentRunnerRecorder.exe AgentRunnerRecorder-Setup.exe
 
       - name: Package macOS artifact
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |
           cd dist
+          ls -la
           zip -r -9 ../AgentRunnerRecorder-mac.zip AgentRunnerRecorder.app
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}
-          path: dist/${{ matrix.artifact }}
+          path: |
+            dist/AgentRunnerRecorder-Setup.exe
+            dist/AgentRunnerRecorder-mac.zip
 
-      # ── 发布到 GitHub Releases（仅 tag 触发）──
       - name: Release
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: dist/${{ matrix.artifact }}
+          files: |
+            dist/AgentRunnerRecorder-Setup.exe
+            dist/AgentRunnerRecorder-mac.zip
           draft: true
