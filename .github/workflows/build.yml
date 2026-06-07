@@ -43,6 +43,12 @@ jobs:
           pip install -r requirements.txt
           pip install pyinstaller
 
+      - name: Build with PyInstaller (verbose)
+        run: |
+          pyinstaller --noconfirm recorder.spec
+          echo "Build completed. Contents of dist/:"
+          ls -la dist/ || echo "dist/ directory not found!"
+
       - name: Install Linux GUI libraries
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm'
         run: |
@@ -78,6 +84,7 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
+        continue-on-error: true
         with:
           name: ${{ matrix.platform }}
           path: dist/${{ matrix.artifact }}
@@ -99,14 +106,28 @@ jobs:
       - name: List artifacts
         run: find artifacts -type f -exec ls -lh {} \;
 
+      - name: Collect release assets
+        run: |
+          mkdir -p release-assets
+          for f in \
+            artifacts/win64/AgentRunnerRecorder-Setup.exe \
+            artifacts/mac-arm64/AgentRunnerRecorder-mac-arm64.zip \
+            artifacts/linux-x64/AgentRunnerRecorder-linux-x64.zip \
+            artifacts/linux-arm64/AgentRunnerRecorder-linux-arm64.zip; do
+            if [ -f "$f" ]; then
+              cp "$f" release-assets/
+              echo "Included: $f"
+            else
+              echo "Skipped (not found): $f"
+            fi
+          done
+          echo "Assets to upload:"
+          ls -lh release-assets/
+
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ github.ref_name }}
           draft: true
           generate_release_notes: true
-          files: |
-            artifacts/win64/AgentRunnerRecorder-Setup.exe
-            artifacts/mac-arm64/AgentRunnerRecorder-mac-arm64.zip
-            artifacts/linux-x64/AgentRunnerRecorder-linux-x64.zip
-            artifacts/linux-arm64/AgentRunnerRecorder-linux-arm64.zip
+          files: release-assets/*

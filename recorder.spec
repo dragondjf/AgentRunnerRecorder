@@ -1,6 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 # PyInstaller spec — AgentRunner Recorder
-# onefile 模式：跨平台统一，生成单个可执行文件
+# onefile mode, cross-platform compatible
 
 import os
 import sys
@@ -37,6 +37,14 @@ a = Analysis(
 
 pyz = PYZ(a.pure, cipher=block_cipher)
 
+# 跨平台图标选择：Windows 用 .ico，macOS/Linux 用 .png
+if sys.platform == 'win32':
+    _icon = 'images/app_icon.ico'
+elif sys.platform == 'darwin':
+    _icon = 'images/app_icon.png'
+else:
+    _icon = 'images/app_icon.png'
+
 exe = EXE(
     pyz,
     a.scripts,
@@ -49,5 +57,5 @@ exe = EXE(
     strip=False,
     upx=False,
     console=False,
-    icon='images/app_icon.ico',
+    icon=_icon,
 )
