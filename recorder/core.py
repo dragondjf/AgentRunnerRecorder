@@ -109,6 +109,7 @@ class RecordingSession:
             on_stop=self.stop,
         )
         self._listener.start()
+
         self._running = True
         self._stopped.clear()
         return info
@@ -267,24 +268,29 @@ class RecordingSession:
         self._log_fh.flush()
 
     def _write_event(self, event: dict) -> None:
-        """Write event to log AND capture a screenshot with matching number."""
-        with self._lock:
-            if not self._running or not self._log_fh:
-                return
+        """Callback from event listener — capture screenshot + write log synchronously."""
+        try:
+            with self._lock:
+                if not self._running or not self._log_fh:
+                    return
 
-            self._event_count += 1
-            self._screenshot_count += 1
-            seq = self._screenshot_count
+                self._event_count += 1
+                self._screenshot_count += 1
+                seq = self._screenshot_count
 
-            # Capture screenshot
-            rel_path, abs_path = self._capture_screenshot(seq)
+                # Capture screenshot
+                rel_path, abs_path = self._capture_screenshot(seq)
 
-            # Attach screenshot paths to event
-            event["screenshot"] = rel_path
-            event["screenshot_abs"] = abs_path
+                # Attach screenshot paths
+                event["screenshot"] = rel_path
+                event["screenshot_abs"] = abs_path
 
-            self._log_fh.write(json.dumps(event, ensure_ascii=False) + "\n")
-            self._log_fh.flush()
+                self._log_fh.write(json.dumps(event, ensure_ascii=False) + "\n")
+                self._log_fh.flush()
+        except Exception as e:
+            import traceback
+            print(f"[core._write_event] error: {e}")
+            traceback.print_exc()
 
     def _capture_screenshot(self, seq: int) -> tuple[str, str]:
         """Capture current screen and save as numbered PNG.

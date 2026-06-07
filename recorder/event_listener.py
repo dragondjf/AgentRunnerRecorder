@@ -1,7 +1,18 @@
-"""Keyboard + mouse event listener (pynput) emitting workflow-compatible JSONL."""
+"""Keyboard + mouse event listener (pynput) emitting workflow-compatible JSONL.
+
+Low-level hooks (SetWindowsHookEx) have a strict timeout (~100 ms on Windows).
+If the callback blocks too long, Windows silently drops the event.  This is
+especially noticeable with **double-clicks**, which must arrive in rapid
+succession.
+
+Solution: the pynput callbacks do **nothing** but push a lightweight tuple
+onto a `queue.Queue`.  A dedicated worker thread pops events and performs
+all the heavy work (lock, JSON, GetForegroundWindow, etc.).
+"""
 
 from __future__ import annotations
 
+import queue
 import threading
 import time
 from typing import Callable
@@ -41,43 +52,57 @@ class EventListener:
         self._drag_px = drag_threshold
         self._dbl_sec = dblclick_threshold
 
-        # ── mouse state ──
+        # ── event queue: hook → worker ──
+        self._q: queue.Queue[tuple | None] = queue.Queue()
+
+        # ── mouse state (accessed only by worker thread) ──
         self._pressed: dict[str, tuple[int, int, float]] = {}
         self._dragging = False
         self._drag_btn: str | None = None
         self._drag_move_ts = 0.0
         self._last_release: dict[str, tuple[int, int, float]] = {}
 
-        # ── keyboard state ──
+        # ── keyboard state (accessed only by worker thread) ──
         self._mods: set[str] = set()
 
         # ── threading ──
-        self._lock = threading.Lock()
         self._ml: mouse.Listener | None = None
         self._kl: keyboard.Listener | None = None
+        self._worker: threading.Thread | None = None
+        self._running = False
 
     # -- lifecycle ------------------------------------------------------------
 
     def start(self) -> None:
+        # Start the async worker first
+        self._running = True
+        self._worker = threading.Thread(target=self._worker_loop, daemon=True)
+        self._worker.start()
+
+        # Hook callbacks — these must return as fast as possible
         self._ml = mouse.Listener(
-            on_click=self._on_click,
-            on_scroll=self._on_scroll,
-            on_move=self._on_move,
+            on_click=self._hook_on_click,
+            on_scroll=self._hook_on_scroll,
+            on_move=self._hook_on_move,
         )
         self._kl = keyboard.Listener(
-            on_press=self._on_press,
-            on_release=self._on_release,
+            on_press=self._hook_on_press,
+            on_release=self._hook_on_release,
         )
         self._ml.start()
         self._kl.start()
 
     def stop(self) -> None:
+        self._running = False
+        self._q.put(None)  # signal worker to exit
         if self._ml:
             self._ml.stop()
         if self._kl:
             self._kl.stop()
+        if self._worker:
+            self._worker.join(timeout=2)
 
-    # -- helpers --------------------------------------------------------------
+    # -- helpers (used by worker thread only) ──────────────────────────────
 
     def _ts(self) -> str:
         e = time.monotonic() - self._t0
@@ -88,7 +113,15 @@ class EventListener:
         return f"{h:02d}:{m:02d}:{s:02d}.{ms:03d}"
 
     def _emit(self, message: str) -> None:
-        self._cb({"timestamp": self._ts(), "message": message, "window": get_active_window()})
+        try:
+            win = get_active_window()
+        except Exception:
+            win = ""
+        try:
+            self._cb({"timestamp": self._ts(), "message": message, "window": win})
+        except Exception:
+            import traceback
+            traceback.print_exc()
 
     @staticmethod
     def _btn(button) -> str:
@@ -99,71 +132,93 @@ class EventListener:
         return "M"
 
     # ========================================================================
-    # Mouse
+    # Worker loop — all heavy processing happens here (no hook timeout risk)
     # ========================================================================
 
-    def _on_click(self, x: int, y: int, button, pressed: bool) -> None:
-        b = self._btn(button)
-        x, y = int(x), int(y)
-
-        with self._lock:
-            if pressed:
-                self._pressed[b] = (x, y, time.monotonic())
-                self._dragging = False
-
-                # double-click?
-                prev = self._last_release.get(b)
-                if prev:
-                    px, py, pt = prev
-                    if (time.monotonic() - pt < self._dbl_sec
-                            and abs(x - px) <= 5 and abs(y - py) <= 5):
-                        self._emit(f"{b}DblClick at ({x}, {y})")
-                        self._last_release.pop(b, None)
-                        return
-
-                self._emit(f"{b}Click at ({x}, {y})")
-            else:
-                # release
-                if self._dragging and self._drag_btn == b:
-                    self._emit(f"{b}DragEnd at ({x}, {y})")
-                    self._dragging = False
-                    self._drag_btn = None
-                else:
-                    self._emit(f"{b}Release at ({x}, {y})")
-                    self._last_release[b] = (x, y, time.monotonic())
-                self._pressed.pop(b, None)
-
-    def _on_move(self, x: int, y: int) -> None:
-        with self._lock:
-            if not self._pressed:
-                return
-
-            x, y = int(x), int(y)
-            # Check the first pressed button only (most common: one button at a time)
-            for b, (dx, dy, _) in self._pressed.items():
-                if not self._dragging:
-                    if max(abs(x - dx), abs(y - dy)) > self._drag_px:
-                        self._dragging = True
-                        self._drag_btn = b
-                        self._emit(f"DragStart at ({dx}, {dy})")
-
-                if self._dragging and b == self._drag_btn:
-                    now = time.monotonic()
-                    if now - self._drag_move_ts > 0.05:  # ~20 Hz throttle
-                        self._emit(f"DragMove at ({x}, {y})")
-                        self._drag_move_ts = now
+    def _worker_loop(self) -> None:
+        while self._running:
+            try:
+                item = self._q.get(timeout=0.5)
+            except queue.Empty:
+                continue
+            if item is None:
                 break
+            tag, *args = item
 
-    def _on_scroll(self, x: int, y: int, _dx: int, dy: int) -> None:
+            try:
+                if tag == "click":
+                    self._proc_click(*args)
+                elif tag == "scroll":
+                    self._proc_scroll(*args)
+                elif tag == "move":
+                    self._proc_move(*args)
+                elif tag == "press":
+                    self._proc_press(*args)
+                elif tag == "release":
+                    self._proc_release(*args)
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                print(f"[EventListener] worker error: {e}")
+
+    # -- click ----------------------------------------------------------------
+
+    def _proc_click(self, x: int, y: int, btn_name: str, pressed: bool, now: float) -> None:
+        b = btn_name
+
+        if pressed:
+            # double-click? (check BEFORE adding to _pressed)
+            prev = self._last_release.get(b)
+            if prev:
+                px, py, pt = prev
+                if (now - pt < self._dbl_sec
+                        and abs(x - px) <= 5 and abs(y - py) <= 5):
+                    self._emit(f"{b}DblClick at ({x}, {y})")
+                    self._last_release.pop(b, None)
+                    return
+
+            self._pressed[b] = (x, y, now)
+            self._dragging = False
+            self._emit(f"{b}Click at ({x}, {y})")
+        else:
+            self._pressed.pop(b, None)
+            if self._dragging and self._drag_btn == b:
+                self._emit(f"{b}DragEnd at ({x}, {y})")
+                self._dragging = False
+                self._drag_btn = None
+            else:
+                self._emit(f"{b}Release at ({x}, {y})")
+                self._last_release[b] = (x, y, now)
+
+    # -- move -----------------------------------------------------------------
+
+    def _proc_move(self, x: int, y: int) -> None:
+        if not self._pressed:
+            return
+        for b, (dx, dy, _) in self._pressed.items():
+            if not self._dragging:
+                if max(abs(x - dx), abs(y - dy)) > self._drag_px:
+                    self._dragging = True
+                    self._drag_btn = b
+                    self._emit(f"DragStart at ({dx}, {dy})")
+            if self._dragging and b == self._drag_btn:
+                now = time.monotonic()
+                if now - self._drag_move_ts > 0.05:
+                    self._emit(f"DragMove at ({x}, {y})")
+                    self._drag_move_ts = now
+            break
+
+    # -- scroll ---------------------------------------------------------------
+
+    def _proc_scroll(self, x: int, y: int, dy: int) -> None:
         if dy == 0:
             return
-        x, y = int(x), int(y)
         direction = "ScrollUp" if dy > 0 else "ScrollDown"
         for _ in range(max(1, abs(dy))):
             self._emit(f"{direction} at ({x}, {y})")
 
     # ========================================================================
-    # Keyboard
+    # Keyboard (worker)
     # ========================================================================
 
     _MOD_MAP: dict = {
@@ -218,28 +273,22 @@ class EventListener:
             return self._SPECIAL[key]
         if hasattr(key, "char") and key.char:
             c = key.char
-            # Ctrl+letter arrives as control char (\x01..\x1a)
             if len(c) == 1 and ord(c) < 32 and "CTRL" in self._mods:
                 return chr(ord(c) + 64)
             return c
         return None
 
-    def _on_press(self, key) -> None:
-        # Track modifier
+    def _proc_press(self, key, now: float) -> None:
         if key in self._MOD_MAP:
             self._mods.add(self._MOD_MAP[key])
             return
-
-        # Stop hotkey — filter from log
         if self._is_stop_hotkey(key):
             if self._on_stop:
                 self._on_stop()
             return
-
         name = self._key_name(key)
         if name is None:
             return
-
         if "CTRL" in self._mods:
             self._emit(f"Hotkey: CTRL+{name.upper()}")
         elif "SHIFT" in self._mods and len(name) == 1:
@@ -247,17 +296,33 @@ class EventListener:
         else:
             self._emit(f"Key Press: {name}")
 
-    def _on_release(self, key) -> None:
+    def _proc_release(self, key, now: float) -> None:
         if key in self._MOD_MAP:
             self._mods.discard(self._MOD_MAP[key])
             return
-
-        # Don't log the stop key release
         if key == _STOP_KEY:
             return
-
         name = self._key_name(key)
         if name is None:
             return
-
         self._emit(f"Key Release: {name}")
+
+    # ========================================================================
+    # Hook callbacks — ONLY put into queue, return immediately
+    # ========================================================================
+
+    def _hook_on_click(self, x, y, button, pressed) -> bool:
+        self._q.put(("click", int(x), int(y), self._btn(button), pressed, time.monotonic()))
+        return True
+
+    def _hook_on_move(self, x, y) -> None:
+        self._q.put(("move", int(x), int(y)))
+
+    def _hook_on_scroll(self, x, y, dx, dy) -> None:
+        self._q.put(("scroll", int(x), int(y), dy))
+
+    def _hook_on_press(self, key) -> None:
+        self._q.put(("press", key, time.monotonic()))
+
+    def _hook_on_release(self, key) -> None:
+        self._q.put(("release", key, time.monotonic()))
