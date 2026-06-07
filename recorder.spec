@@ -1,5 +1,6 @@
 # -*- mode: python ; coding: utf-8 -*-
 # PyInstaller spec — AgentRunner Recorder
+# onefile 模式：跨平台统一，生成单个可执行文件
 
 import os
 import sys
@@ -21,7 +22,6 @@ a = Analysis(
         'recorder.event_listener',
         'recorder.window_tracker',
         'recorder.manager',
-        'PIL._tkinter_finder',
     ],
     hookspath=[],
     hooksconfig={},
@@ -29,7 +29,6 @@ a = Analysis(
     excludes=[
         'matplotlib', 'scipy', 'pandas', 'IPython',
         'jupyter', 'notebook', 'pytest', 'setuptools',
-        'tkinter',
     ],
     noarchive=False,
     optimize=0,
@@ -41,8 +40,9 @@ pyz = PYZ(a.pure, cipher=block_cipher)
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,
+    a.datas,
     [],
-    exclude_binaries=True,
     name='AgentRunnerRecorder',
     debug=False,
     bootloader_ignore_signals=False,
@@ -50,13 +50,4 @@ exe = EXE(
     upx=False,
     console=False,
     icon='images/app_icon.ico',
-)
-
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.datas,
-    strip=False,
-    upx=False,
-    name='AgentRunnerRecorder',
 )
