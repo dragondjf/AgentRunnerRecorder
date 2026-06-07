@@ -56,32 +56,25 @@ jobs:
         if: matrix.os == 'windows-latest'
         shell: bash
         run: |
-          ls -la dist/
           mv dist/AgentRunnerRecorder.exe dist/AgentRunnerRecorder-Setup.exe
 
       - name: Package macOS
         if: matrix.os == 'macos-latest'
         shell: bash
         run: |
-          ls -la dist/
-          cd dist
-          zip -r -9 ../AgentRunnerRecorder-mac-arm64.zip AgentRunnerRecorder
+          cd dist && zip -r -9 ../AgentRunnerRecorder-mac-arm64.zip AgentRunnerRecorder
 
       - name: Package Linux x64
         if: matrix.os == 'ubuntu-latest'
         shell: bash
         run: |
-          ls -la dist/
-          cd dist
-          zip -r -9 ../AgentRunnerRecorder-linux-x64.zip AgentRunnerRecorder
+          cd dist && zip -r -9 ../AgentRunnerRecorder-linux-x64.zip AgentRunnerRecorder
 
       - name: Package Linux arm64
         if: matrix.os == 'ubuntu-24.04-arm'
         shell: bash
         run: |
-          ls -la dist/
-          cd dist
-          zip -r -9 ../AgentRunnerRecorder-linux-arm64.zip AgentRunnerRecorder
+          cd dist && zip -r -9 ../AgentRunnerRecorder-linux-arm64.zip AgentRunnerRecorder
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -89,9 +82,31 @@ jobs:
           name: ${{ matrix.platform }}
           path: dist/${{ matrix.artifact }}
 
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Checkout for release notes
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
         with:
-          files: dist/${{ matrix.artifact }}
+          path: artifacts
+
+      - name: List artifacts
+        run: find artifacts -type f -exec ls -lh {} \;
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
           draft: true
+          generate_release_notes: true
+          files: |
+            artifacts/win64/AgentRunnerRecorder-Setup.exe
+            artifacts/mac-arm64/AgentRunnerRecorder-mac-arm64.zip
+            artifacts/linux-x64/AgentRunnerRecorder-linux-x64.zip
+            artifacts/linux-arm64/AgentRunnerRecorder-linux-arm64.zip
