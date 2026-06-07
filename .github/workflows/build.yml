@@ -84,10 +84,9 @@ jobs:
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
-        continue-on-error: true
         with:
           name: ${{ matrix.platform }}
-          path: dist/${{ matrix.artifact }}
+          path: ${{ matrix.artifact }}
 
   release:
     needs: build
