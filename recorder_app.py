@@ -64,15 +64,21 @@ BTN_GAP    = 8    # 按钮间距
 # ══════════════════════════════════════════════════════════════════════
 
 class Icons:
-    """加载并缓存 PNG 图标为 PhotoImage。"""
+    """加载并缓存 PNG 图标为 PhotoImage。优先从 color 子目录加载，不存在时回退到父目录。"""
     _cache = {}
     _dir: Path = Path(__file__).parent / "images" / "icons_64"
+    _color_dir: Path = _dir / "color"
 
     @classmethod
     def get(cls, name: str, size: int = BTN_SIZE) -> ImageTk.PhotoImage:
         key = f"{name}@{size}"
         if key not in cls._cache:
-            img = Image.open(cls._dir / f"{name}.png")
+            # 优先从 color 子目录加载
+            color_path = cls._color_dir / f"{name}.png"
+            if color_path.exists():
+                img = Image.open(color_path)
+            else:
+                img = Image.open(cls._dir / f"{name}.png")
             img = img.resize((size, size), _RESAMPLE)
             cls._cache[key] = ImageTk.PhotoImage(img)
         return cls._cache[key]
