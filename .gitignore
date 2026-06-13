@@ -30,3 +30,5 @@ recordings/
 # Logs
 *.log
 urecorder/filestorage
+# UIRecorderCore filestorage
+urecorder/filestorage/
