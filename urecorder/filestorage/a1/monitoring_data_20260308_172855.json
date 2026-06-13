@@ -1,0 +1,121 @@
+{
+  "metadata": {
+    "created_at": "2026-03-08T17:28:55.245773",
+    "version": "1.0",
+    "description": "系统行为监控数据"
+  },
+  "events": [
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T17:28:59.459480",
+      "position": {
+        "x": 467,
+        "y": 1060
+      },
+      "button": "Button.left",
+      "click_count": 1,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\a1\\my_screenshots\\active_window_20260308_172859_854.png",
+        "filename": "active_window_20260308_172859_854.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T17:29:06.522649",
+      "position": {
+        "x": 354,
+        "y": 1057
+      },
+      "button": "Button.left",
+      "click_count": 2,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\a1\\my_screenshots\\active_window_20260308_172906_838.png",
+        "filename": "active_window_20260308_172906_838.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T17:29:07.842747",
+      "position": {
+        "x": 354,
+        "y": 1057
+      },
+      "button": "Button.left",
+      "click_count": 3,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\a1\\my_screenshots\\active_window_20260308_172908_161.png",
+        "filename": "active_window_20260308_172908_161.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T17:29:09.722238",
+      "position": {
+        "x": 354,
+        "y": 1057
+      },
+      "button": "Button.left",
+      "click_count": 4,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\a1\\my_screenshots\\active_window_20260308_172910_028.png",
+        "filename": "active_window_20260308_172910_028.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T17:29:12.522927",
+      "position": {
+        "x": 465,
+        "y": 1056
+      },
+      "button": "Button.left",
+      "click_count": 5,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\a1\\my_screenshots\\active_window_20260308_172912_837.png",
+        "filename": "active_window_20260308_172912_837.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T17:29:15.434526",
+      "position": {
+        "x": 351,
+        "y": 1049
+      },
+      "button": "Button.left",
+      "click_count": 6,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\a1\\my_screenshots\\active_window_20260308_172915_741.png",
+        "filename": "active_window_20260308_172915_741.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T17:29:16.585449",
+      "position": {
+        "x": 436,
+        "y": 1052
+      },
+      "button": "Button.left",
+      "click_count": 7,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\a1\\my_screenshots\\active_window_20260308_172916_906.png",
+        "filename": "active_window_20260308_172916_906.png"
+      },
+      "window_info": {}
+    }
+  ]
+}

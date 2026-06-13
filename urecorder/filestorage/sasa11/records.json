@@ -1,0 +1,142 @@
+{
+  "slides": [
+    {
+      "ai_result": "{\"title\":\"AI驱动的目录分析报告生成\",\"description\":\"该界面展示了一个由AI生成的目录分析报告，专注于DeepRunner6.0压测结果。系统通过解析stats.json和tasks.json等文件，提取性能指标、错误配置及设备信息，并优化扫描逻辑以避免向上递归父级目录，确保报告精准聚焦于指定路径下的数据。\"}\n",
+      "context": "操作类型: mouse; \n时间戳: 2026-06-11T14:44:52.751711; \n位置: (50, 118); \n按钮: Button.left; \n时间戳: 2026-06-11T14:44:51.946322",
+      "id": 1,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144452_368.png)",
+      "operation_details": {
+        "位置": "(50, 118)",
+        "按钮": "Button.left",
+        "时间戳": "2026-06-11T14:44:51.946322"
+      },
+      "remark": "该界面展示了一个由AI生成的目录分析报告，专注于DeepRunner6.0压测结果。系统通过解析stats.json和tasks.json等文件，提取性能指标、错误配置及设备信息，并优化扫描逻辑以避免向上递归父级目录，确保报告精准聚焦于指定路径下的数据。",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144452_368.png",
+      "title": "AI驱动的目录分析报告生成",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144452_368.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-06-11T14:44:53.411948; \n位置: (88, 168); \n按钮: Button.left; \n时间戳: 2026-06-11T14:44:52.858469",
+      "id": 2,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144453_174.png)",
+      "operation_details": {
+        "位置": "(88, 168)",
+        "按钮": "Button.left",
+        "时间戳": "2026-06-11T14:44:52.858469"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144453_174.png",
+      "title": "第二步：mouse",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144453_174.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-06-11T14:44:54.014033; \n位置: (100, 198); \n按钮: Button.left; \n时间戳: 2026-06-11T14:44:53.314415",
+      "id": 3,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144453_745.png)",
+      "operation_details": {
+        "位置": "(100, 198)",
+        "按钮": "Button.left",
+        "时间戳": "2026-06-11T14:44:53.314415"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144453_745.png",
+      "title": "第三步：mouse",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144453_745.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-06-11T14:44:55.363466; \n位置: (109, 231); \n按钮: Button.left; \n时间戳: 2026-06-11T14:44:54.603100",
+      "id": 4,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144454_966.png)",
+      "operation_details": {
+        "位置": "(109, 231)",
+        "按钮": "Button.left",
+        "时间戳": "2026-06-11T14:44:54.603100"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144454_966.png",
+      "title": "第四步：mouse",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144454_966.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-06-11T14:44:56.156426; \n位置: (107, 379); \n按钮: Button.left; \n时间戳: 2026-06-11T14:44:55.531207",
+      "id": 5,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144455_853.png)",
+      "operation_details": {
+        "位置": "(107, 379)",
+        "按钮": "Button.left",
+        "时间戳": "2026-06-11T14:44:55.531207"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144455_853.png",
+      "title": "第五步：mouse",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144455_853.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-06-11T14:44:56.786073; \n位置: (99, 405); \n按钮: Button.left; \n时间戳: 2026-06-11T14:44:56.219419",
+      "id": 6,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144456_539.png)",
+      "operation_details": {
+        "位置": "(99, 405)",
+        "按钮": "Button.left",
+        "时间戳": "2026-06-11T14:44:56.219419"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144456_539.png",
+      "title": "第六步：mouse",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144456_539.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-06-11T14:44:57.379332; \n位置: (124, 493); \n按钮: Button.left; \n时间戳: 2026-06-11T14:44:56.815068",
+      "id": 7,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144457_151.png)",
+      "operation_details": {
+        "位置": "(124, 493)",
+        "按钮": "Button.left",
+        "时间戳": "2026-06-11T14:44:56.815068"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144457_151.png",
+      "title": "第七步：mouse",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144457_151.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-06-11T14:44:59.469046; \n位置: (1800, 17); \n按钮: Button.left; \n时间戳: 2026-06-11T14:44:58.243952",
+      "id": 8,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144458_600.png)",
+      "operation_details": {
+        "位置": "(1800, 17)",
+        "按钮": "Button.left",
+        "时间戳": "2026-06-11T14:44:58.243952"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144458_600.png",
+      "title": "第八步：mouse",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=sasa11/my_screenshots/active_window_20260611_144458_600.png"
+    }
+  ],
+  "lastUpdated": "2026-06-11T14:45:36.666771",
+  "version": "1.0"
+}

@@ -1,0 +1,294 @@
+{
+  "slides": [
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:26.860053; \n位置: (674, 766); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:26.411188",
+      "id": 1,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150726_723.png)",
+      "operation_details": {
+        "位置": "(674, 766)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:26.411188"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 1</text>\n</svg>",
+      "title": "第一步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150726_723.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:32.864140; \n位置: (696, 235); \n按钮: Button.right; \n时间戳: 2026-03-08T15:07:32.370892",
+      "id": 2,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150732_684.png)",
+      "operation_details": {
+        "位置": "(696, 235)",
+        "按钮": "Button.right",
+        "时间戳": "2026-03-08T15:07:32.370892"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 2</text>\n</svg>",
+      "title": "第二步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150732_684.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:33.735447; \n位置: (796, 649); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:33.274649",
+      "id": 3,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150733_591.png)",
+      "operation_details": {
+        "位置": "(796, 649)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:33.274649"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 3</text>\n</svg>",
+      "title": "第三步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150733_591.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:35.024491; \n位置: (29, 528); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:34.586862",
+      "id": 4,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150734_900.png)",
+      "operation_details": {
+        "位置": "(29, 528)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:34.586862"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 4</text>\n</svg>",
+      "title": "第四步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150734_900.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:36.417520; \n位置: (1234, 96); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:35.915432",
+      "id": 5,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150736_230.png)",
+      "operation_details": {
+        "位置": "(1234, 96)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:35.915432"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 5</text>\n</svg>",
+      "title": "第五步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150736_230.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:37.952249; \n位置: (504, 765); \n按钮: Button.right; \n时间戳: 2026-03-08T15:07:37.426921",
+      "id": 6,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150737_745.png)",
+      "operation_details": {
+        "位置": "(504, 765)",
+        "按钮": "Button.right",
+        "时间戳": "2026-03-08T15:07:37.426921"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 6</text>\n</svg>",
+      "title": "第六步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150737_745.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:40.846620; \n位置: (736, 366); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:40.387101",
+      "id": 7,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150740_697.png)",
+      "operation_details": {
+        "位置": "(736, 366)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:40.387101"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 7</text>\n</svg>",
+      "title": "第七步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150740_697.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:41.800365; \n位置: (336, 1054); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:41.379598",
+      "id": 8,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150741_685.png)",
+      "operation_details": {
+        "位置": "(336, 1054)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:41.379598"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 8</text>\n</svg>",
+      "title": "第八步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150741_685.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:42.390329; \n位置: (1452, 782); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:41.971279",
+      "id": 9,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150742_286.png)",
+      "operation_details": {
+        "位置": "(1452, 782)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:41.971279"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 9</text>\n</svg>",
+      "title": "第九步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150742_286.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: keyboard; \n时间戳: 2026-03-08T15:07:49.564829; \n输入内容: \u0016 zhuangt meiy gengx ; \n长度: 21; \n首字符: \u0016; \n末字符:  ; \n结束原因: timeout; \n时间戳: 2026-03-08T15:07:49.371737; \n截图类型: 首字符",
+      "id": 10,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/keyboard_first_0_1772953669371.png)",
+      "operation_details": {
+        "输入内容": "\u0016 zhuangt meiy gengx ",
+        "长度": 21,
+        "首字符": "\u0016",
+        "末字符": " ",
+        "结束原因": "timeout",
+        "时间戳": "2026-03-08T15:07:49.371737",
+        "截图类型": "首字符"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>keyboard操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 10</text>\n</svg>",
+      "title": "第十步：keyboard",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/keyboard_first_0_1772953669371.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: keyboard; \n时间戳: 2026-03-08T15:07:49.566829; \n输入内容: \u0016 zhuangt meiy gengx ; \n长度: 21; \n首字符: \u0016; \n末字符:  ; \n结束原因: timeout; \n时间戳: 2026-03-08T15:07:49.371737; \n截图类型: 末字符",
+      "id": 11,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/keyboard_last_0_1772953669498.png)",
+      "operation_details": {
+        "输入内容": "\u0016 zhuangt meiy gengx ",
+        "长度": 21,
+        "首字符": "\u0016",
+        "末字符": " ",
+        "结束原因": "timeout",
+        "时间戳": "2026-03-08T15:07:49.371737",
+        "截图类型": "末字符"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>keyboard操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 11</text>\n</svg>",
+      "title": "第十一步：keyboard",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/keyboard_last_0_1772953669498.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:52.094071; \n位置: (1328, 324); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:51.666978",
+      "id": 12,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150751_984.png)",
+      "operation_details": {
+        "位置": "(1328, 324)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:51.666978"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 12</text>\n</svg>",
+      "title": "第十二步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150751_984.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:07:55.075051; \n位置: (1201, 655); \n按钮: Button.left; \n时间戳: 2026-03-08T15:07:54.650781",
+      "id": 13,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150754_969.png)",
+      "operation_details": {
+        "位置": "(1201, 655)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:07:54.650781"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 13</text>\n</svg>",
+      "title": "第十三步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150754_969.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: keyboard; \n时间戳: 2026-03-08T15:07:58.801288; \n输入内容: \u0003\u0016 ; \n长度: 3; \n首字符: \u0003; \n末字符:  ; \n结束原因: timeout; \n时间戳: 2026-03-08T15:07:58.544180; \n截图类型: 首字符",
+      "id": 14,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/keyboard_first_1_1772953678545.png)",
+      "operation_details": {
+        "输入内容": "\u0003\u0016 ",
+        "长度": 3,
+        "首字符": "\u0003",
+        "末字符": " ",
+        "结束原因": "timeout",
+        "时间戳": "2026-03-08T15:07:58.544180",
+        "截图类型": "首字符"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>keyboard操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 14</text>\n</svg>",
+      "title": "第十四步：keyboard",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/keyboard_first_1_1772953678545.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: keyboard; \n时间戳: 2026-03-08T15:07:58.803287; \n输入内容: \u0003\u0016 ; \n长度: 3; \n首字符: \u0003; \n末字符:  ; \n结束原因: timeout; \n时间戳: 2026-03-08T15:07:58.544180; \n截图类型: 末字符",
+      "id": 15,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/keyboard_last_1_1772953678681.png)",
+      "operation_details": {
+        "输入内容": "\u0003\u0016 ",
+        "长度": 3,
+        "首字符": "\u0003",
+        "末字符": " ",
+        "结束原因": "timeout",
+        "时间戳": "2026-03-08T15:07:58.544180",
+        "截图类型": "末字符"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>keyboard操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 15</text>\n</svg>",
+      "title": "第十五步：keyboard",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/keyboard_last_1_1772953678681.png",
+      "ai_result": ""
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T15:08:01.611778; \n位置: (552, 930); \n按钮: Button.left; \n时间戳: 2026-03-08T15:08:01.186872",
+      "id": 16,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150801_499.png)",
+      "operation_details": {
+        "位置": "(552, 930)",
+        "按钮": "Button.left",
+        "时间戳": "2026-03-08T15:08:01.186872"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 16</text>\n</svg>",
+      "title": "第十六步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=mydata11226/my_screenshots/active_window_20260308_150801_499.png",
+      "ai_result": ""
+    }
+  ],
+  "lastUpdated": "2026-03-08T15:08:01.612764",
+  "version": "1.0"
+}

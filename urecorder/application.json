@@ -1,0 +1,64 @@
+{
+  "application": {
+    "name": "UI Recorder System",
+    "version": "1.0.0",
+    "description": "系统行为监控和页面配置管理平台"
+  },
+  "server": {
+    "flask": {
+      "host": "127.0.0.1",
+      "port": 12000,
+      "debug": false,
+      "description": "Flask API服务器配置"
+    },
+    "static_file_server": {
+      "host": "127.0.0.1", 
+      "port": 52001,
+      "description": "静态文件服务器配置"
+    },
+    "ai": {
+      "host": "127.0.0.1",
+      "port": 52002,
+      "description": "AI用例服务配置"
+    }
+  },
+  "static_file_config": {
+    "STATIC_FILE_HOST": "127.0.0.1",
+    "STATIC_FILE_PORT": 52001,
+    "description": "静态文件服务器配置变量"
+  },
+  "paths": {
+    "data_dir": "./data",
+    "static_dir": "./static",
+    "exports_dir": "./data/exports"
+  },
+  "features": {
+    "enable_cors": true,
+    "enable_logging": true,
+    "enable_monitoring": true,
+    "enable_export": true
+  },
+  "monitoring": {
+    "interval": 1.0,
+    "max_screenshots": 100,
+    "auto_cleanup": true
+  },
+  "export": {
+    "supported_formats": [
+      "zip",
+      "word", 
+      "pdf",
+      "markdown",
+      "test-docs",
+      "help-docs",
+      "gui-runner"
+    ],
+    "default_format": "zip"
+  },
+  "ui": {
+    "theme": "dark",
+    "language": "zh-CN",
+    "auto_refresh": true,
+    "refresh_interval": 5
+  }
+}

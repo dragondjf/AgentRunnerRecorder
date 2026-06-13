@@ -1,0 +1,23 @@
+{
+  "slides": [
+    {
+      "ai_result": "{\"title\":\"WebRunnerSSO登录界面\",\"description\":\"该界面为WebRunnerSSO的登录页面，采用简洁的双色分区设计。左侧为登录表单区域，包含账号和密码输入框以及登录按钮；右侧为品牌展示区，显示WebRunnerSSO标识和注册入口。整体布局清晰，功能明确，旨在提供高效安全的单点登录体验。\"}\n",
+      "context": "操作类型: normal; 时间戳: 2026-03-30T06:02:05.519Z",
+      "id": 1,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_1_20260330T060205519Z.png)",
+      "operation_details": {
+        "位置": "(569, 438)",
+        "操作类型": "normal",
+        "时间戳": "2026-03-30T06:02:05.519Z"
+      },
+      "remark": "该界面为WebRunnerSSO的登录页面，采用简洁的双色分区设计。左侧为登录表单区域，包含账号和密码输入框以及登录按钮；右侧为品牌展示区，显示WebRunnerSSO标识和注册入口。整体布局清晰，功能明确，旨在提供高效安全的单点登录体验。",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:52001/my_screenshots/step_1_20260330T060205519Z.png",
+      "title": "WebRunnerSSO登录界面",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_1_20260330T060205519Z.png"
+    }
+  ],
+  "lastUpdated": "2026-03-30T14:29:22.764994",
+  "version": "1.0"
+}

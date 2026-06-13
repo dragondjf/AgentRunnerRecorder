@@ -1,0 +1,184 @@
+{
+  "slides": [
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-05-07T11:51:40.067771; \n位置: (207, 1050); \n按钮: Button.left; \n时间戳: 2026-05-07T11:51:38.104519",
+      "id": 1,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115139_020.png)",
+      "operation_details": {
+        "位置": "(207, 1050)",
+        "按钮": "Button.left",
+        "时间戳": "2026-05-07T11:51:38.104519"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115139_020.png",
+      "title": "第一步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115139_020.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-05-07T11:51:43.990861; \n位置: (176, 239); \n按钮: Button.left; \n时间戳: 2026-05-07T11:51:42.133271",
+      "id": 2,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115142_449.png)",
+      "operation_details": {
+        "位置": "(176, 239)",
+        "按钮": "Button.left",
+        "时间戳": "2026-05-07T11:51:42.133271"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115142_449.png",
+      "title": "第二步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115142_449.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-05-07T11:51:50.199225; \n位置: (939, 548); \n按钮: Button.left; \n时间戳: 2026-05-07T11:51:49.118787",
+      "id": 3,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115149_434.png)",
+      "operation_details": {
+        "位置": "(939, 548)",
+        "按钮": "Button.left",
+        "时间戳": "2026-05-07T11:51:49.118787"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115149_434.png",
+      "title": "第三步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115149_434.png"
+    },
+    {
+      "ai_result": "{\"title\":\"管理员登录界面\",\"description\":\"该界面为PocketBase的管理员登录页面，用户需输入邮箱和密码进行身份验证。页面简洁明了，包含邮箱输入框、密码输入框、忘记密码链接以及登录按钮。邮箱已预填，等待用户输入密码完成登录操作。\"}\n",
+      "context": "操作类型: keyboard; \n时间戳: 2026-05-07T11:51:58.664490; \n输入内容: ding465398889@163.com; \n长度: 21; \n首字符: d; \n末字符: m; \n结束原因: tab_key; \n时间戳: 2026-05-07T11:51:57.699068; \n截图类型: 末字符",
+      "id": 4,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/keyboard_last_0_1778125918205.png)",
+      "operation_details": {
+        "截图类型": "末字符",
+        "时间戳": "2026-05-07T11:51:57.699068",
+        "末字符": "m",
+        "结束原因": "tab_key",
+        "输入内容": "ding465398889@163.com",
+        "长度": 21,
+        "首字符": "d"
+      },
+      "remark": "该界面为PocketBase的管理员登录页面，用户需输入邮箱和密码进行身份验证。页面简洁明了，包含邮箱输入框、密码输入框、忘记密码链接以及登录按钮。邮箱已预填，等待用户输入密码完成登录操作。",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/keyboard_last_0_1778125918205.png",
+      "title": "管理员登录界面",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/keyboard_last_0_1778125918205.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-05-07T11:52:01.467224; \n位置: (908, 661); \n按钮: Button.left; \n时间戳: 2026-05-07T11:52:00.750031",
+      "id": 5,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115201_074.png)",
+      "operation_details": {
+        "位置": "(908, 661)",
+        "按钮": "Button.left",
+        "时间戳": "2026-05-07T11:52:00.750031"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115201_074.png",
+      "title": "第五步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115201_074.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: keyboard; \n时间戳: 2026-05-07T11:52:04.264731; \n输入内容: 1234567890; \n长度: 10; \n首字符: 1; \n末字符: 0; \n结束原因: timeout; \n时间戳: 2026-05-07T11:52:03.242586; \n截图类型: 首字符",
+      "id": 6,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/keyboard_first_1_1778125923246.png)",
+      "operation_details": {
+        "截图类型": "首字符",
+        "时间戳": "2026-05-07T11:52:03.242586",
+        "末字符": "0",
+        "结束原因": "timeout",
+        "输入内容": "1234567890",
+        "长度": 10,
+        "首字符": "1"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/keyboard_first_1_1778125923246.png",
+      "title": "第六步：keyboard",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/keyboard_first_1_1778125923246.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-05-07T11:52:04.540582; \n位置: (502, 826); \n按钮: Button.left; \n时间戳: 2026-05-07T11:52:03.525437",
+      "id": 7,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115203_903.png)",
+      "operation_details": {
+        "位置": "(502, 826)",
+        "按钮": "Button.left",
+        "时间戳": "2026-05-07T11:52:03.525437"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115203_903.png",
+      "title": "第七步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115203_903.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-05-07T11:52:05.647625; \n位置: (548, 781); \n按钮: Button.left; \n时间戳: 2026-05-07T11:52:04.373047",
+      "id": 8,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115205_058.png)",
+      "operation_details": {
+        "位置": "(548, 781)",
+        "按钮": "Button.left",
+        "时间戳": "2026-05-07T11:52:04.373047"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115205_058.png",
+      "title": "第八步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115205_058.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-05-07T11:52:07.658743; \n位置: (1445, 173); \n按钮: Button.left; \n时间戳: 2026-05-07T11:52:06.661940",
+      "id": 9,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115206_989.png)",
+      "operation_details": {
+        "位置": "(1445, 173)",
+        "按钮": "Button.left",
+        "时间戳": "2026-05-07T11:52:06.661940"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115206_989.png",
+      "title": "第九步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115206_989.png"
+    },
+    {
+      "ai_result": "",
+      "context": "操作类型: mouse; \n时间戳: 2026-05-07T11:52:09.856922; \n位置: (1444, 161); \n按钮: Button.left; \n时间戳: 2026-05-07T11:52:08.333187",
+      "id": 10,
+      "link": "",
+      "markdown": "![操作截图](http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115208_689.png)",
+      "operation_details": {
+        "位置": "(1444, 161)",
+        "按钮": "Button.left",
+        "时间戳": "2026-05-07T11:52:08.333187"
+      },
+      "remark": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115208_689.png",
+      "title": "第十步：mouse",
+      "url": "http://127.0.0.1:8000/api/v1/file?path=pocketbase/my_screenshots/active_window_20260507_115208_689.png"
+    }
+  ],
+  "lastUpdated": "2026-05-07T11:52:50.178806",
+  "version": "1.0"
+}

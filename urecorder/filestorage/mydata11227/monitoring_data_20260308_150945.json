@@ -1,0 +1,55 @@
+{
+  "metadata": {
+    "created_at": "2026-03-08T15:09:45.618738",
+    "version": "1.0",
+    "description": "系统行为监控数据"
+  },
+  "events": [
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:09:47.643553",
+      "position": {
+        "x": 508,
+        "y": 62
+      },
+      "button": "Button.left",
+      "click_count": 1,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150948_021.png",
+        "filename": "active_window_20260308_150948_021.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "keyboard_input",
+      "session_id": 0,
+      "timestamp": "2026-03-08T15:09:49.334615",
+      "start_time": "2026-03-08T15:09:48.865615",
+      "end_time": "2026-03-08T15:09:49.334615",
+      "duration_seconds": 0.469,
+      "end_reason": "stopped",
+      "input_string": "8\n",
+      "input_length": 2,
+      "first_char": "8",
+      "last_char": "\n",
+      "cursor_position": {
+        "x": 0,
+        "y": 0
+      },
+      "screenshots": {
+        "first_char": {
+          "success": false,
+          "filepath": "",
+          "filename": ""
+        },
+        "last_char": {
+          "success": false,
+          "filepath": "",
+          "filename": ""
+        }
+      },
+      "window_info": {}
+    }
+  ]
+}

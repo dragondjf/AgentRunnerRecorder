@@ -1,0 +1,56 @@
+{
+  "slides": [
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T14:09:05.682528; \n位置: (395, 1055); \n按钮: Button.left; \n时间戳: 2026-03-08T14:09:05.145855",
+      "id": 1,
+      "link": "",
+      "markdown": "![操作截图](/api/v1/file?path=mydata12/my_screenshots/active_window_20260308_140905_525.png)",
+      "remark": "",
+      "testCase": "",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 1</text>\n</svg>",
+      "title": "第一步：mouse"
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T14:09:06.694549; \n位置: (391, 1050); \n按钮: Button.left; \n时间戳: 2026-03-08T14:09:06.172128",
+      "id": 2,
+      "link": "",
+      "markdown": "![操作截图](/api/v1/file?path=mydata12/my_screenshots/active_window_20260308_140906_495.png)",
+      "remark": "",
+      "testCase": "",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 2</text>\n</svg>",
+      "title": "第二步：mouse"
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T14:09:08.120846; \n位置: (389, 1025); \n按钮: Button.left; \n时间戳: 2026-03-08T14:09:07.637729",
+      "id": 3,
+      "link": "",
+      "markdown": "![操作截图](/api/v1/file?path=mydata12/my_screenshots/active_window_20260308_140907_957.png)",
+      "remark": "",
+      "testCase": "",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 3</text>\n</svg>",
+      "title": "第三步：mouse"
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T14:09:08.779332; \n位置: (394, 1027); \n按钮: Button.left; \n时间戳: 2026-03-08T14:09:08.299955",
+      "id": 4,
+      "link": "",
+      "markdown": "![操作截图](/api/v1/file?path=mydata12/my_screenshots/active_window_20260308_140908_613.png)",
+      "remark": "",
+      "testCase": "",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 4</text>\n</svg>",
+      "title": "第四步：mouse"
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T14:09:09.967403; \n位置: (432, 1054); \n按钮: Button.left; \n时间戳: 2026-03-08T14:09:09.508532",
+      "id": 5,
+      "link": "",
+      "markdown": "![操作截图](/api/v1/file?path=mydata12/my_screenshots/active_window_20260308_140909_822.png)",
+      "remark": "",
+      "testCase": "",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\n    <rect width='168' height='100' fill='#ffffff'/>\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>mouse操作</text>\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 5</text>\n</svg>",
+      "title": "第五步：mouse"
+    }
+  ],
+  "lastUpdated": "2026-03-08T14:09:11.902993",
+  "version": "1.0"
+}

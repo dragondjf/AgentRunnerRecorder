@@ -1,0 +1,984 @@
+{
+  "metadata": {
+    "created_at": "2026-05-07T18:12:28.154739",
+    "version": "1.0",
+    "description": "系统行为监控数据"
+  },
+  "events": [
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:30.526983",
+      "position": {
+        "x": 753,
+        "y": 1049
+      },
+      "button": "Button.left",
+      "click_count": 1,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181230_946.png",
+        "filename": "active_window_20260507_181230_946.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:32.430448",
+      "position": {
+        "x": 401,
+        "y": 318
+      },
+      "button": "Button.left",
+      "click_count": 2,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181232_755.png",
+        "filename": "active_window_20260507_181232_755.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:33.166641",
+      "position": {
+        "x": 397,
+        "y": 384
+      },
+      "button": "Button.left",
+      "click_count": 3,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181233_485.png",
+        "filename": "active_window_20260507_181233_485.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:33.807272",
+      "position": {
+        "x": 390,
+        "y": 446
+      },
+      "button": "Button.left",
+      "click_count": 4,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181234_124.png",
+        "filename": "active_window_20260507_181234_124.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:36.390537",
+      "position": {
+        "x": 305,
+        "y": 794
+      },
+      "button": "Button.right",
+      "click_count": 5,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181236_713.png",
+        "filename": "active_window_20260507_181236_713.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:37.197754",
+      "position": {
+        "x": 327,
+        "y": 782
+      },
+      "button": "Button.left",
+      "click_count": 6,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181237_508.png",
+        "filename": "active_window_20260507_181237_508.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:38.550560",
+      "position": {
+        "x": 423,
+        "y": 546
+      },
+      "button": "Button.left",
+      "click_count": 7,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181238_859.png",
+        "filename": "active_window_20260507_181238_859.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:43.774876",
+      "position": {
+        "x": 518,
+        "y": 1051
+      },
+      "button": "Button.left",
+      "click_count": 8,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181244_079.png",
+        "filename": "active_window_20260507_181244_079.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:46.022009",
+      "position": {
+        "x": 668,
+        "y": 412
+      },
+      "button": "Button.left",
+      "click_count": 9,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181246_327.png",
+        "filename": "active_window_20260507_181246_327.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "keyboard_input",
+      "session_id": 0,
+      "timestamp": "2026-05-07T18:12:50.163500",
+      "start_time": "2026-05-07T18:12:47.151253",
+      "end_time": "2026-05-07T18:12:50.163500",
+      "duration_seconds": 3.012247,
+      "end_reason": "timeout",
+      "input_string": "\u0013",
+      "input_length": 1,
+      "first_char": "\u0013",
+      "last_char": "\u0013",
+      "cursor_position": {
+        "x": 16246,
+        "y": 5073
+      },
+      "screenshots": {
+        "first_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_first_0_1778148770164.png",
+          "filename": "keyboard_first_0_1778148770164.png"
+        },
+        "last_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_last_0_1778148770256.png",
+          "filename": "keyboard_last_0_1778148770256.png"
+        }
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:53.919642",
+      "position": {
+        "x": 339,
+        "y": 1051
+      },
+      "button": "Button.left",
+      "click_count": 10,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181254_238.png",
+        "filename": "active_window_20260507_181254_238.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:55.766613",
+      "position": {
+        "x": 390,
+        "y": 689
+      },
+      "button": "Button.left",
+      "click_count": 11,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181256_079.png",
+        "filename": "active_window_20260507_181256_079.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:56.598240",
+      "position": {
+        "x": 391,
+        "y": 689
+      },
+      "button": "Button.left",
+      "click_count": 12,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181256_915.png",
+        "filename": "active_window_20260507_181256_915.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:58.008641",
+      "position": {
+        "x": 260,
+        "y": 834
+      },
+      "button": "Button.left",
+      "click_count": 13,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181258_326.png",
+        "filename": "active_window_20260507_181258_326.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:12:59.009096",
+      "position": {
+        "x": 651,
+        "y": 745
+      },
+      "button": "Button.left",
+      "click_count": 14,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181259_325.png",
+        "filename": "active_window_20260507_181259_325.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:13:01.557585",
+      "position": {
+        "x": 1113,
+        "y": 818
+      },
+      "button": "Button.left",
+      "click_count": 15,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181301_562.png",
+        "filename": "active_window_20260507_181301_562.png"
+      },
+      "window_info": {},
+      "click_interval": 0.159037
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:03.518564",
+      "position": {
+        "x": 436,
+        "y": 1051
+      },
+      "button": "Button.left",
+      "click_count": 16,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181303_832.png",
+        "filename": "active_window_20260507_181303_832.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:04.645658",
+      "position": {
+        "x": 189,
+        "y": 221
+      },
+      "button": "Button.middle",
+      "click_count": 17,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181304_960.png",
+        "filename": "active_window_20260507_181304_960.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "keyboard_input",
+      "session_id": 1,
+      "timestamp": "2026-05-07T18:13:05.511149",
+      "start_time": "2026-05-07T18:13:02.495836",
+      "end_time": "2026-05-07T18:13:05.511149",
+      "duration_seconds": 3.015313,
+      "end_reason": "timeout",
+      "input_string": "\u0003",
+      "input_length": 1,
+      "first_char": "\u0003",
+      "last_char": "\u0003",
+      "cursor_position": {
+        "x": 16246,
+        "y": 5096
+      },
+      "screenshots": {
+        "first_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_first_1_1778148785512.png",
+          "filename": "keyboard_first_1_1778148785512.png"
+        },
+        "last_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_last_1_1778148785665.png",
+          "filename": "keyboard_last_1_1778148785665.png"
+        }
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:05.581395",
+      "position": {
+        "x": 530,
+        "y": 1059
+      },
+      "button": "Button.left",
+      "click_count": 18,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181305_884.png",
+        "filename": "active_window_20260507_181305_884.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:06.814322",
+      "position": {
+        "x": 128,
+        "y": 120
+      },
+      "button": "Button.right",
+      "click_count": 19,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181307_133.png",
+        "filename": "active_window_20260507_181307_133.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:07.934707",
+      "position": {
+        "x": 215,
+        "y": 289
+      },
+      "button": "Button.left",
+      "click_count": 20,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181308_245.png",
+        "filename": "active_window_20260507_181308_245.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:09.727292",
+      "position": {
+        "x": 154,
+        "y": 308
+      },
+      "button": "Button.left",
+      "click_count": 21,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181310_038.png",
+        "filename": "active_window_20260507_181310_038.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "keyboard_input",
+      "session_id": 2,
+      "timestamp": "2026-05-07T18:13:11.289663",
+      "start_time": "2026-05-07T18:13:08.286627",
+      "end_time": "2026-05-07T18:13:11.289663",
+      "duration_seconds": 3.003036,
+      "end_reason": "timeout",
+      "input_string": "\u0016",
+      "input_length": 1,
+      "first_char": "\u0016",
+      "last_char": "\u0016",
+      "cursor_position": {
+        "x": 16246,
+        "y": 5165
+      },
+      "screenshots": {
+        "first_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_first_2_1778148791289.png",
+          "filename": "keyboard_first_2_1778148791289.png"
+        },
+        "last_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_last_2_1778148791390.png",
+          "filename": "keyboard_last_2_1778148791390.png"
+        }
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:11.358311",
+      "position": {
+        "x": 159,
+        "y": 330
+      },
+      "button": "Button.left",
+      "click_count": 22,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181311_665.png",
+        "filename": "active_window_20260507_181311_665.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:12.518808",
+      "position": {
+        "x": 156,
+        "y": 376
+      },
+      "button": "Button.left",
+      "click_count": 23,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181312_836.png",
+        "filename": "active_window_20260507_181312_836.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:15.871525",
+      "position": {
+        "x": 76,
+        "y": 437
+      },
+      "button": "Button.left",
+      "click_count": 24,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181316_182.png",
+        "filename": "active_window_20260507_181316_182.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:17.110196",
+      "position": {
+        "x": 116,
+        "y": 498
+      },
+      "button": "Button.left",
+      "click_count": 25,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181317_427.png",
+        "filename": "active_window_20260507_181317_427.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:13:23.111346",
+      "position": {
+        "x": 549,
+        "y": 512
+      },
+      "button": "Button.left",
+      "click_count": 26,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181323_117.png",
+        "filename": "active_window_20260507_181323_117.png"
+      },
+      "window_info": {},
+      "click_interval": 0.16147
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:28.822458",
+      "position": {
+        "x": 343,
+        "y": 1048
+      },
+      "button": "Button.left",
+      "click_count": 27,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181329_133.png",
+        "filename": "active_window_20260507_181329_133.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:31.349676",
+      "position": {
+        "x": 345,
+        "y": 1065
+      },
+      "button": "Button.left",
+      "click_count": 28,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181331_654.png",
+        "filename": "active_window_20260507_181331_654.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:13:37.887713",
+      "position": {
+        "x": 563,
+        "y": 452
+      },
+      "button": "Button.left",
+      "click_count": 29,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181337_894.png",
+        "filename": "active_window_20260507_181337_894.png"
+      },
+      "window_info": {},
+      "click_interval": 0.185444
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:13:47.881202",
+      "position": {
+        "x": 219,
+        "y": 510
+      },
+      "button": "Button.left",
+      "click_count": 30,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181348_193.png",
+        "filename": "active_window_20260507_181348_193.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:13:54.235404",
+      "position": {
+        "x": 745,
+        "y": 342
+      },
+      "button": "Button.left",
+      "click_count": 31,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181354_240.png",
+        "filename": "active_window_20260507_181354_240.png"
+      },
+      "window_info": {},
+      "click_interval": 0.213317
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:15:39.109034",
+      "position": {
+        "x": 683,
+        "y": 370
+      },
+      "button": "Button.left",
+      "click_count": 32,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181539_112.png",
+        "filename": "active_window_20260507_181539_112.png"
+      },
+      "window_info": {},
+      "click_interval": 0.158246
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:15:40.774878",
+      "position": {
+        "x": 440,
+        "y": 375
+      },
+      "button": "Button.left",
+      "click_count": 33,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181540_780.png",
+        "filename": "active_window_20260507_181540_780.png"
+      },
+      "window_info": {},
+      "click_interval": 0.153637
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:15:42.205418",
+      "position": {
+        "x": 622,
+        "y": 614
+      },
+      "button": "Button.left",
+      "click_count": 34,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181542_523.png",
+        "filename": "active_window_20260507_181542_523.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:15:47.653452",
+      "position": {
+        "x": 558,
+        "y": 435
+      },
+      "button": "Button.left",
+      "click_count": 35,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181547_962.png",
+        "filename": "active_window_20260507_181547_962.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "keyboard_input",
+      "session_id": 3,
+      "timestamp": "2026-05-07T18:15:48.687240",
+      "start_time": "2026-05-07T18:15:45.677264",
+      "end_time": "2026-05-07T18:15:48.687240",
+      "duration_seconds": 3.009976,
+      "end_reason": "timeout",
+      "input_string": "\u0003",
+      "input_length": 1,
+      "first_char": "\u0003",
+      "last_char": "\u0003",
+      "cursor_position": {
+        "x": 16246,
+        "y": 5388
+      },
+      "screenshots": {
+        "first_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_first_3_1778148948687.png",
+          "filename": "keyboard_first_3_1778148948687.png"
+        },
+        "last_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_last_3_1778148948777.png",
+          "filename": "keyboard_last_3_1778148948777.png"
+        }
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:16:04.613417",
+      "position": {
+        "x": 151,
+        "y": 423
+      },
+      "button": "Button.left",
+      "click_count": 36,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181604_918.png",
+        "filename": "active_window_20260507_181604_918.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:16:06.053531",
+      "position": {
+        "x": 622,
+        "y": 368
+      },
+      "button": "Button.left",
+      "click_count": 37,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181606_058.png",
+        "filename": "active_window_20260507_181606_058.png"
+      },
+      "window_info": {},
+      "click_interval": 0.176758
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:16:08.495318",
+      "position": {
+        "x": 623,
+        "y": 371
+      },
+      "button": "Button.left",
+      "click_count": 38,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181608_814.png",
+        "filename": "active_window_20260507_181608_814.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:16:16.095374",
+      "position": {
+        "x": 347,
+        "y": 1061
+      },
+      "button": "Button.left",
+      "click_count": 39,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181616_409.png",
+        "filename": "active_window_20260507_181616_409.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:16:49.948861",
+      "position": {
+        "x": 1006,
+        "y": 823
+      },
+      "button": "Button.left",
+      "click_count": 40,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181649_958.png",
+        "filename": "active_window_20260507_181649_958.png"
+      },
+      "window_info": {},
+      "click_interval": 0.183605
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:16:53.750755",
+      "position": {
+        "x": 433,
+        "y": 548
+      },
+      "button": "Button.left",
+      "click_count": 41,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181654_067.png",
+        "filename": "active_window_20260507_181654_067.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:16:55.062678",
+      "position": {
+        "x": 636,
+        "y": 730
+      },
+      "button": "Button.right",
+      "click_count": 42,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181655_373.png",
+        "filename": "active_window_20260507_181655_373.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:16:56.197891",
+      "position": {
+        "x": 682,
+        "y": 876
+      },
+      "button": "Button.left",
+      "click_count": 43,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181656_519.png",
+        "filename": "active_window_20260507_181656_519.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:16:57.006360",
+      "position": {
+        "x": 521,
+        "y": 1046
+      },
+      "button": "Button.left",
+      "click_count": 44,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181657_314.png",
+        "filename": "active_window_20260507_181657_314.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:16:57.677292",
+      "position": {
+        "x": 1442,
+        "y": 870
+      },
+      "button": "Button.left",
+      "click_count": 45,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181657_984.png",
+        "filename": "active_window_20260507_181657_984.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "keyboard_input",
+      "session_id": 4,
+      "timestamp": "2026-05-07T18:17:02.058241",
+      "start_time": "2026-05-07T18:16:58.101714",
+      "end_time": "2026-05-07T18:17:02.058241",
+      "duration_seconds": 3.956527,
+      "end_reason": "timeout",
+      "input_string": "\u0016\n",
+      "input_length": 2,
+      "first_char": "\u0016",
+      "last_char": "\n",
+      "cursor_position": {
+        "x": 16246,
+        "y": 5045
+      },
+      "screenshots": {
+        "first_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_first_4_1778149022059.png",
+          "filename": "keyboard_first_4_1778149022059.png"
+        },
+        "last_char": {
+          "success": true,
+          "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\keyboard_last_4_1778149022180.png",
+          "filename": "keyboard_last_4_1778149022180.png"
+        }
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:18:08.245328",
+      "position": {
+        "x": 1323,
+        "y": 365
+      },
+      "button": "Button.left",
+      "click_count": 46,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181808_558.png",
+        "filename": "active_window_20260507_181808_558.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:18:19.861049",
+      "position": {
+        "x": 1439,
+        "y": 973
+      },
+      "button": "Button.left",
+      "click_count": 47,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181820_174.png",
+        "filename": "active_window_20260507_181820_174.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:18:20.221223",
+      "position": {
+        "x": 1437,
+        "y": 966
+      },
+      "button": "Button.left",
+      "click_count": 48,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181820_565.png",
+        "filename": "active_window_20260507_181820_565.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:18:33.700110",
+      "position": {
+        "x": 1346,
+        "y": 727
+      },
+      "button": "Button.left",
+      "click_count": 49,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181834_019.png",
+        "filename": "active_window_20260507_181834_019.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_double_click",
+      "timestamp": "2026-05-07T18:19:01.814153",
+      "position": {
+        "x": 1486,
+        "y": 258
+      },
+      "button": "Button.left",
+      "click_count": 50,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181901_820.png",
+        "filename": "active_window_20260507_181901_820.png"
+      },
+      "window_info": {},
+      "click_interval": 0.177589
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-05-07T18:19:04.533899",
+      "position": {
+        "x": 349,
+        "y": 1048
+      },
+      "button": "Button.left",
+      "click_count": 51,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\pocketbase3\\my_screenshots\\active_window_20260507_181904_845.png",
+        "filename": "active_window_20260507_181904_845.png"
+      },
+      "window_info": {}
+    }
+  ]
+}

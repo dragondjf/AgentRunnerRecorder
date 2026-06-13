@@ -1,0 +1,291 @@
+{
+  "slides": [
+    {
+      "id": 1,
+      "title": "第1步：左键单击",
+      "context": "操作类型: mouse; 时间戳: 00:00:02.187; 位置: (479, 1045); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0001.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0001.png",
+      "operation_details": {
+        "操作": "左键单击",
+        "原始消息": "LClick at (479, 1045)",
+        "位置": "(479, 1045)",
+        "时间戳": "00:00:02.187",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0001.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 2,
+      "title": "第2步：左键释放",
+      "context": "操作类型: mouse; 时间戳: 00:00:02.312; 位置: (479, 1045); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0002.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0002.png",
+      "operation_details": {
+        "操作": "左键释放",
+        "原始消息": "LRelease at (479, 1045)",
+        "位置": "(479, 1045)",
+        "时间戳": "00:00:02.312",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0002.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 3,
+      "title": "第3步：左键单击",
+      "context": "操作类型: mouse; 时间戳: 00:00:03.547; 位置: (483, 1049); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0003.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0003.png",
+      "operation_details": {
+        "操作": "左键单击",
+        "原始消息": "LClick at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:03.547",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0003.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 4,
+      "title": "第4步：左键释放",
+      "context": "操作类型: mouse; 时间戳: 00:00:03.640; 位置: (483, 1049); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0004.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0004.png",
+      "operation_details": {
+        "操作": "左键释放",
+        "原始消息": "LRelease at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:03.640",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0004.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 5,
+      "title": "第5步：左键双击",
+      "context": "操作类型: mouse; 时间戳: 00:00:03.844; 位置: (483, 1049); 窗口: index.html - AgentRunnerRecorder - CodeBuddy CN",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0005.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0005.png",
+      "operation_details": {
+        "操作": "左键双击",
+        "原始消息": "LDblClick at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:03.844",
+        "窗口": "index.html - AgentRunnerRecorder - CodeBuddy CN"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0005.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 6,
+      "title": "第6步：左键释放",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.015; 位置: (483, 1049); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0006.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0006.png",
+      "operation_details": {
+        "操作": "左键释放",
+        "原始消息": "LRelease at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.015",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0006.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 7,
+      "title": "第7步：左键双击",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.109; 位置: (483, 1049); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0007.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0007.png",
+      "operation_details": {
+        "操作": "左键双击",
+        "原始消息": "LDblClick at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.109",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0007.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 8,
+      "title": "第8步：左键释放",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.219; 位置: (483, 1049); 窗口: index.html - AgentRunnerRecorder - CodeBuddy CN",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0008.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0008.png",
+      "operation_details": {
+        "操作": "左键释放",
+        "原始消息": "LRelease at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.219",
+        "窗口": "index.html - AgentRunnerRecorder - CodeBuddy CN"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0008.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 9,
+      "title": "第9步：左键双击",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.344; 位置: (483, 1049); 窗口: ",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0009.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0009.png",
+      "operation_details": {
+        "操作": "左键双击",
+        "原始消息": "LDblClick at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.344",
+        "窗口": ""
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0009.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 10,
+      "title": "第10步：左键释放",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.453; 位置: (483, 1049); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0010.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0010.png",
+      "operation_details": {
+        "操作": "左键释放",
+        "原始消息": "LRelease at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.453",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0010.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 11,
+      "title": "第11步：左键双击",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.547; 位置: (483, 1049); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0011.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0011.png",
+      "operation_details": {
+        "操作": "左键双击",
+        "原始消息": "LDblClick at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.547",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0011.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 12,
+      "title": "第12步：左键释放",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.672; 位置: (483, 1049); 窗口: index.html - AgentRunnerRecorder - CodeBuddy CN",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0012.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0012.png",
+      "operation_details": {
+        "操作": "左键释放",
+        "原始消息": "LRelease at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.672",
+        "窗口": "index.html - AgentRunnerRecorder - CodeBuddy CN"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0012.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 13,
+      "title": "第13步：左键双击",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.812; 位置: (483, 1049); 窗口: index.html - AgentRunnerRecorder - CodeBuddy CN",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0013.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0013.png",
+      "operation_details": {
+        "操作": "左键双击",
+        "原始消息": "LDblClick at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.812",
+        "窗口": "index.html - AgentRunnerRecorder - CodeBuddy CN"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0013.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 14,
+      "title": "第14步：左键释放",
+      "context": "操作类型: mouse; 时间戳: 00:00:04.953; 位置: (483, 1049); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0014.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0014.png",
+      "operation_details": {
+        "操作": "左键释放",
+        "原始消息": "LRelease at (483, 1049)",
+        "位置": "(483, 1049)",
+        "时间戳": "00:00:04.953",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0014.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    },
+    {
+      "id": 15,
+      "title": "第15步：左键单击",
+      "context": "操作类型: mouse; 时间戳: 00:00:07.359; 位置: (1433, 76); 窗口: AgentRunner Recorder",
+      "markdown": "![操作截图](http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0015.png)",
+      "url": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0015.png",
+      "operation_details": {
+        "操作": "左键单击",
+        "原始消息": "LClick at (1433, 76)",
+        "位置": "(1433, 76)",
+        "时间戳": "00:00:07.359",
+        "窗口": "AgentRunner Recorder"
+      },
+      "thumbnail": "http://127.0.0.1:12000/api/v1/file?path=recording_20260613_052059/my_screenshots/0015.png",
+      "ai_result": "",
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "remark": "",
+      "link": ""
+    }
+  ],
+  "lastUpdated": "2026-06-13T10:32:04.475252",
+  "version": "1.0"
+}

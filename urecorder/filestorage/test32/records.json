@@ -1,0 +1,157 @@
+{
+  "slides": [
+    {
+      "id": 1,
+      "title": "第1步: 智能体效能",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:31.915Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_1_20260413T073431915Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_1_20260413T073431915Z.png",
+      "operation_details": {
+        "位置": "(112, 139)",
+        "时间戳": "2026-04-13T07:34:31.915Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 1</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    },
+    {
+      "id": 2,
+      "title": "第2步: Token 分析",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:32.827Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_2_20260413T073432827Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_2_20260413T073432827Z.png",
+      "operation_details": {
+        "位置": "(119, 183)",
+        "时间戳": "2026-04-13T07:34:32.827Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 2</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    },
+    {
+      "id": 3,
+      "title": "第3步: 智能体",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:34.205Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_3_20260413T073434205Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_3_20260413T073434205Z.png",
+      "operation_details": {
+        "位置": "(106, 330)",
+        "时间戳": "2026-04-13T07:34:34.205Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 3</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    },
+    {
+      "id": 4,
+      "title": "第4步: ",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:34.914Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_4_20260413T073434914Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_4_20260413T073434914Z.png",
+      "operation_details": {
+        "位置": "(109, 364)",
+        "时间戳": "2026-04-13T07:34:34.914Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 4</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    },
+    {
+      "id": 5,
+      "title": "第5步: 文件浏览器",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:35.999Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_5_20260413T073435999Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_5_20260413T073435999Z.png",
+      "operation_details": {
+        "位置": "(109, 392)",
+        "时间戳": "2026-04-13T07:34:35.999Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 5</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    },
+    {
+      "id": 6,
+      "title": "第6步: 项目管理",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:37.471Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_6_20260413T073437471Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_6_20260413T073437471Z.png",
+      "operation_details": {
+        "位置": "(88, 489)",
+        "时间戳": "2026-04-13T07:34:37.471Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 6</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    },
+    {
+      "id": 7,
+      "title": "第7步: 帮助说明",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:38.109Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_7_20260413T073438109Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_7_20260413T073438109Z.png",
+      "operation_details": {
+        "位置": "(106, 533)",
+        "时间戳": "2026-04-13T07:34:38.109Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 7</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    },
+    {
+      "id": 8,
+      "title": "第8步: 系统录制",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:38.955Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_8_20260413T073438955Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_8_20260413T073438955Z.png",
+      "operation_details": {
+        "位置": "(100, 613)",
+        "时间戳": "2026-04-13T07:34:38.955Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 8</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    },
+    {
+      "id": 9,
+      "title": "第9步: 系统录制帮助",
+      "context": "操作类型: normal; 时间戳: 2026-04-13T07:34:39.598Z",
+      "markdown": "![操作截图](http://127.0.0.1:52001/my_screenshots/step_9_20260413T073439598Z.png)",
+      "url": "http://127.0.0.1:52001/my_screenshots/step_9_20260413T073439598Z.png",
+      "operation_details": {
+        "位置": "(113, 664)",
+        "时间戳": "2026-04-13T07:34:39.598Z",
+        "操作类型": "normal"
+      },
+      "testCase": "需要生成包含正向测试、异常测试、边界测试的完整测试用例，重点关注安全性和用户体验。",
+      "thumbnail": "<svg xmlns='http://www.w3.org/2000/svg' width='168' height='100' viewBox='0 0 168 100'>\\n    <rect width='168' height='100' fill='#ffffff'/>\\n    <rect x='10' y='10' width='148' height='80' rx='4' fill='#eef2f7' stroke='#cbd5e0'/>\\n    <text x='50%' y='40%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='12' fill='#0066cc'>normal</text>\\n    <text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='Segoe UI, SF Pro Display, -apple-system, BlinkMacSystemFont, Roboto, Helvetica Neue, sans-serif' font-size='10' fill='#4a5568'>操作 9</text>\\n</svg>",
+      "ai_result": "",
+      "link": "",
+      "remark": ""
+    }
+  ]
+}

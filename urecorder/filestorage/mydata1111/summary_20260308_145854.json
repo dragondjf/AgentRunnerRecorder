@@ -1,0 +1,18 @@
+{
+  "generated_at": "2026-03-08T14:58:54.989447",
+  "statistics": {
+    "total_events": 5,
+    "mouse_clicks": 0,
+    "keyboard_inputs": 0,
+    "start_time": "2026-03-08T14:58:28.293869",
+    "last_event_time": "2026-03-08T14:58:40.437435"
+  },
+  "files": [
+    {
+      "filename": "monitoring_data_20260308_145827.json",
+      "size_mb": 0.0,
+      "created_at": "2026-03-08T14:58:27.557602",
+      "modified_at": "2026-03-08T14:58:40.907411"
+    }
+  ]
+}

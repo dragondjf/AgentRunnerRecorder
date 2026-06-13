@@ -1,0 +1,137 @@
+{
+  "metadata": {
+    "created_at": "2026-03-08T15:08:42.601085",
+    "version": "1.0",
+    "description": "系统行为监控数据"
+  },
+  "events": [
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:08:45.811071",
+      "position": {
+        "x": 425,
+        "y": 527
+      },
+      "button": "Button.left",
+      "click_count": 1,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150846_182.png",
+        "filename": "active_window_20260308_150846_182.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:08:47.770536",
+      "position": {
+        "x": 27,
+        "y": 531
+      },
+      "button": "Button.left",
+      "click_count": 2,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150848_086.png",
+        "filename": "active_window_20260308_150848_086.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:08:49.171010",
+      "position": {
+        "x": 1240,
+        "y": 98
+      },
+      "button": "Button.left",
+      "click_count": 3,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150849_492.png",
+        "filename": "active_window_20260308_150849_492.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:08:50.522838",
+      "position": {
+        "x": 416,
+        "y": 754
+      },
+      "button": "Button.right",
+      "click_count": 4,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150850_831.png",
+        "filename": "active_window_20260308_150850_831.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:08:52.402427",
+      "position": {
+        "x": 635,
+        "y": 362
+      },
+      "button": "Button.left",
+      "click_count": 5,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150852_715.png",
+        "filename": "active_window_20260308_150852_715.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:08:53.386581",
+      "position": {
+        "x": 342,
+        "y": 1056
+      },
+      "button": "Button.left",
+      "click_count": 6,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150853_691.png",
+        "filename": "active_window_20260308_150853_691.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:08:54.098890",
+      "position": {
+        "x": 1333,
+        "y": 768
+      },
+      "button": "Button.left",
+      "click_count": 7,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150854_404.png",
+        "filename": "active_window_20260308_150854_404.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:08:55.330412",
+      "position": {
+        "x": 844,
+        "y": 884
+      },
+      "button": "Button.left",
+      "click_count": 8,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11227\\my_screenshots\\active_window_20260308_150855_636.png",
+        "filename": "active_window_20260308_150855_636.png"
+      },
+      "window_info": {}
+    }
+  ]
+}

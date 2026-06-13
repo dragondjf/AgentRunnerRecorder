@@ -1,0 +1,29 @@
+{
+  "slides": [
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T14:16:40.274883; \n位置: (349, 1053); \n按钮: Button.left; \n时间戳: 2026-03-08T14:16:39.818139",
+      "id": 1,
+      "link": "",
+      "markdown": "![操作截图](/api/v1/file?path=mydata123/my_screenshots/active_window_20260308_141640_171.png)",
+      "remark": "该界面展示了开发环境中代码调试与用户界面录制功能的集成应用。左侧为项目文件结构和代码编辑器，显示了JSON格式的测试用例配置，包含操作截图路径、时间戳和鼠标位置等信息。中间部分是运行日志输出，记录了程序启动、文件读取和API请求等关键步骤。右侧为调试辅助工具，提供了修复建议、修改文件列表以及任务执行状态。整体实现了对用户操作行为的精准捕捉与分析，支持自动化测试流程的构建与验证。",
+      "testCase": "",
+      "thumbnail": "/api/v1/file?path=mydata123/my_screenshots/active_window_20260308_141640_171.png",
+      "title": "代码调试与界面录制功能集成",
+      "ai_result": "{\"title\":\"代码调试与界面录制功能集成\",\"description\":\"该界面展示了开发环境中代码调试与用户界面录制功能的集成应用。左侧为项目文件结构和代码编辑器，显示了JSON格式的测试用例配置，包含操作截图路径、时间戳和鼠标位置等信息。中间部分是运行日志输出，记录了程序启动、文件读取和API请求等关键步骤。右侧为调试辅助工具，提供了修复建议、修改文件列表以及任务执行状态。整体实现了对用户操作行为的精准捕捉与分析，支持自动化测试流程的构建与验证。\"}\n"
+    },
+    {
+      "context": "操作类型: mouse; \n时间戳: 2026-03-08T14:16:41.090963; \n位置: (349, 1053); \n按钮: Button.left; \n时间戳: 2026-03-08T14:16:40.593571",
+      "id": 2,
+      "link": "",
+      "markdown": "![操作截图](/api/v1/file?path=mydata123/my_screenshots/active_window_20260308_141640_904.png)",
+      "remark": "",
+      "testCase": "",
+      "thumbnail": "/api/v1/file?path=mydata123/my_screenshots/active_window_20260308_141640_904.png",
+      "title": "第二步：mouse"
+    }
+  ],
+  "lastUpdated": "2026-03-08T14:25:21.738640",
+  "version": "2.0",
+  "generatedBy": "AgentRunner Markdown Exporter",
+  "exportTime": "2026-03-08 14:25:21"
+}

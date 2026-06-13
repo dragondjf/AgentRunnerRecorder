@@ -19,6 +19,15 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import unquote, urlparse, parse_qs
 
+# ── UIRecorderCore 桥接（惰性导入，避免启动时加载 Flask 依赖） ──
+_urc_converter = None
+def _get_converter():
+    global _urc_converter
+    if _urc_converter is None:
+        from recorder.urc_bridge import RecordingConverter, URC_BASE
+        _urc_converter = (RecordingConverter, URC_BASE)
+    return _urc_converter
+
 
 # ═══════════════════════════════════════════════════════════════
 # Constants
@@ -298,24 +307,42 @@ def _html_list_page(recordings: list) -> str:
 
         # Video size
         vid_sz = _fmt_size(r["video_size"]) if r["video_size"] > 0 else "-"
-
         cards_html += f"""
-        <div class="card" data-id="{r['id']}" onclick="location.href='/recording/{r['id']}'">
-          <div class="card-thumb">{thumb_html}</div>
-          <div class="card-body">
-            <div class="card-header">
-              <span class="card-seq">#{r['seq']:03d}</span>
-              <span class="card-time">{r['created']}</span>
+        <div class="card" data-id="{r['id']}">
+          <div class="card-main">
+            <div class="card-thumb">{thumb_html}</div>
+            <div class="card-body">
+              <div class="card-header">
+                <span class="card-seq">#{r['seq']:03d}</span>
+                <span class="card-time">{r['created']}</span>
+              </div>
+              <div class="card-stats">
+                <span class="stat">{dur_text}</span>
+                <span class="stat">{r['screenshots']} 截图</span>
+                <span class="stat">{r['events']} 事件</span>
+                <span class="stat">{vid_sz}</span>
+              </div>
+              <div class="card-badges">{badges if badges else '<span class="no-data">无报告</span>'}</div>
             </div>
-            <div class="card-stats">
-              <span class="stat">{dur_text}</span>
-              <span class="stat">{r['screenshots']} 截图</span>
-              <span class="stat">{r['events']} 事件</span>
-              <span class="stat">{vid_sz}</span>
+          </div>
+          <div class="card-actions-col">
+            <button class="act-btn act-detail" onclick="event.stopPropagation(); location.href='/recording/{r['id']}'">详情</button>
+            <button class="act-btn act-edit" onclick="event.stopPropagation(); editRecording('{r['id']}')">编辑</button>
+            <button class="act-btn act-folder" onclick="event.stopPropagation(); openFolder('{r['id']}')">打开文件夹</button>
+            <div class="export-wrap">
+              <button class="act-btn act-export" onclick="event.stopPropagation(); toggleExportMenu(this)">导出</button>
+              <div class="export-menu">
+                <a onclick="event.stopPropagation(); exportFormat('{r['id']}','video')">Video</a>
+                <a onclick="event.stopPropagation(); exportFormat('{r['id']}','md')">Markdown</a>
+                <a onclick="event.stopPropagation(); exportFormat('{r['id']}','json')">JSON</a>
+                <a onclick="event.stopPropagation(); exportFormat('{r['id']}','html')">HTML</a>
+                <a onclick="event.stopPropagation(); exportFormat('{r['id']}','docx')">Word</a>
+                <a onclick="event.stopPropagation(); exportFormat('{r['id']}','zip')">ZIP</a>
+              </div>
             </div>
-            <div class="card-badges">{badges if badges else '<span class="no-data">无报告</span>'}</div>
           </div>
         </div>"""
+
 
     total = len(recordings)
     total_valid = len([r for r in recordings if r["valid"]])
@@ -404,7 +431,6 @@ def _html_list_page(recordings: list) -> str:
   margin-bottom: 12px;
   cursor: pointer;
   transition: border-color 0.2s, transform 0.1s;
-  overflow: hidden;
 }}
 .card:hover {{
   border-color: var(--accent);
@@ -484,6 +510,96 @@ def _html_list_page(recordings: list) -> str:
 .no-data {{
   font-size: 11px; color: var(--text2); opacity: 0.5;
 }}
+
+
+.card-main {{
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+}}
+
+.card-actions-col {{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-left: 1px solid var(--border);
+  flex-shrink: 0;
+}}
+.act-btn {{
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  text-align: center;
+  line-height: 1.4;
+  white-space: nowrap;
+}}
+.act-btn:hover {{
+  opacity: 0.85;
+}}
+.act-edit {{
+  background: #6b3fa0;
+  color: #fff;
+}}
+.act-folder {{
+  background: #a05a2c;
+  color: #fff;
+}}
+.act-detail {{
+  background: #2d7d46;
+  color: #fff;
+}}
+.act-export {{
+  background: #1a6bb5;
+  color: #fff;
+}}
+.export-wrap {{
+  position: relative;
+  display: inline-block;
+}}
+.export-menu {{
+  display: none;
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 4px;
+  background: #1e2430;
+  border: 1px solid #3a4050;
+  border-radius: 8px;
+  min-width: 140px;
+  z-index: 9999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  padding: 6px 0;
+}}
+.export-menu.show {{
+  display: block;
+}}
+.export-menu a {{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 12px;
+  color: var(--text);
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+  border-left: 3px solid transparent;
+}}
+.export-menu a:hover {{
+  background: #2a3340;
+  color: #fff;
+  border-left-color: var(--accent);
+}}
+
 </style>
 </head>
 <body>
@@ -515,6 +631,23 @@ function filterCards() {{
     c.style.display = text.indexOf(q) >= 0 ? "" : "none";
   }});
 }}
+
+function editRecording(id) {{
+  window.open("/edit-recording/" + encodeURIComponent(id), "_blank");
+}}
+function openFolder(id) {{
+  window.location.href = "/open-folder?id=" + encodeURIComponent(id);
+}}
+function toggleExportMenu(btn) {{
+  var menu = btn.nextElementSibling;
+  menu.classList.toggle('show');
+}}
+function exportFormat(id, fmt) {{
+  window.open("/export-recording/" + encodeURIComponent(id) + "?format=" + fmt, "_blank");
+}}
+document.addEventListener('click', function(e) {{
+  document.querySelectorAll('.export-menu.show').forEach(function(m) {{ m.classList.remove('show'); }});
+}});
 
 var currentFilter = "all";
 function setFilter(el) {{
@@ -633,6 +766,22 @@ def _html_detail_page(rec: dict) -> str:
             vid_abs = rec["video_file"].replace(os.sep, "/")
         actions_html += f'''<button class="action-item" onclick="openLocal('{vid_abs}')">播放视频</button>\n'''
     actions_html += f"""<button class="action-item" onclick="openFolder('{rec['id']}')">打开文件夹</button>\n"""
+    actions_html += f"""<button class="action-item" onclick="editRecording('{rec['id']}')">在 UIRecorderCore 中编辑</button>
+"""
+    actions_html += f"""<button class="action-item" onclick="exportRecording('{rec['id']}')">导出所有格式</button>
+"""
+    actions_html += f"""<button class="action-item" onclick="exportFormat('{rec['id']}','video')">导出 Video</button>
+"""
+    actions_html += f"""<button class="action-item" onclick="exportFormat('{rec['id']}','md')">导出 Markdown</button>
+"""
+    actions_html += f"""<button class="action-item" onclick="exportFormat('{rec['id']}','json')">导出 JSON</button>
+"""
+    actions_html += f"""<button class="action-item" onclick="exportFormat('{rec['id']}','html')">导出 HTML</button>
+"""
+    actions_html += f"""<button class="action-item" onclick="exportFormat('{rec['id']}','docx')">导出 Word</button>
+"""
+    actions_html += f"""<button class="action-item" onclick="exportFormat('{rec['id']}','zip')">导出 ZIP</button>
+"""
     actions_html += f"""<button class="action-item danger" onclick="confirmDelete('{rec['id']}')">删除本次录制</button>"""
 
     # CSS (same as before - kept inline for single-file deployment)
@@ -772,6 +921,9 @@ document.addEventListener("keydown", function(e) {{ if (e.key === "Escape") clos
 function openFile(url) {{ window.open(url, "_blank"); }}
 function openLocal(path) {{ window.location.href = "/open-local?path=" + encodeURIComponent(path); }}
 function openFolder(path) {{ window.location.href = "/open-folder?id=" + encodeURIComponent(path); }}
+function editRecording(id) {{ window.open("/edit-recording/" + encodeURIComponent(id), "_blank"); }}
+function exportRecording(id) {{ window.open("/export-recording/" + encodeURIComponent(id), "_blank"); }}
+function exportFormat(id, fmt) {{ window.open("/export-recording/" + encodeURIComponent(id) + "?format=" + fmt, "_blank"); }}
 function confirmDelete(id) {{
   if (confirm("确定要删除录制 " + id + " 吗？\\n此操作不可恢复。")) {{
     window.location.href = "/delete?id=" + encodeURIComponent(id);
@@ -933,6 +1085,12 @@ class HistoryHandler(BaseHTTPRequestHandler):
         # ── File System API ──
         if path.startswith("/api/fs/"):
             self._handle_fs_api()
+            return
+
+        # ── Edit recording (convert + redirect to UIRecorderCore) ──
+        if path.startswith("/edit-recording/"):
+            rec_id = path[len("/edit-recording/"):]
+            self._handle_edit_recording(rec_id)
             return
 
         # ── API ──
@@ -1102,6 +1260,182 @@ class HistoryHandler(BaseHTTPRequestHandler):
                         self.wfile.write(block)
             except (ConnectionAbortedError, ConnectionResetError, BrokenPipeError):
                 pass
+
+    def _handle_edit_recording(self, rec_id):
+        # Security: prevent path traversal
+        rec_id = os.path.basename(rec_id)
+        rec_dir = os.path.join(RECORDINGS_ROOT, rec_id)
+        if not os.path.isdir(rec_dir):
+            self._send(404, "text/plain", b"Recording not found")
+            return
+
+        try:
+            RecordingConverter, URC_BASE = _get_converter()
+            project = RecordingConverter.convert(rec_dir)
+            if not project:
+                self._send(500, "text/html", b"<h3>Conversion failed</h3><p>No recording data found</p>")
+                return
+
+            redirect_url = "{}/api/v1/loadproject?project={}&mode=view".format(URC_BASE, project)
+            html = (
+                '<!DOCTYPE html><html><head><meta charset="utf-8">'
+                '<title>Redirecting to UIRecorderCore...</title>'
+                '<script>'
+                'fetch("' + redirect_url + '")'
+                '.then(function(){window.location.href="' + URC_BASE + '";})'
+                '.catch(function(){window.location.href="' + URC_BASE + '";});'
+                '</script></head><body>'
+                '<p>Converting and redirecting to UIRecorderCore...</p>'
+                '</body></html>'
+            )
+            self._send(200, "text/html; charset=utf-8", html.encode("utf-8"))
+        except Exception as e:
+            err_msg = "<h3>Conversion failed</h3><pre>{}</pre>".format(str(e))
+            self._send(500, "text/html", err_msg.encode("utf-8"))
+
+    def _handle_export_recording(self, rec_id):
+        rec_id = os.path.basename(rec_id)
+        rec_dir = os.path.join(RECORDINGS_ROOT, rec_id)
+        if not os.path.isdir(rec_dir):
+            self._send(404, "text/plain", b"Recording not found")
+            return
+
+        parsed = urlparse(self.path)
+        params = parse_qs(parsed.query)
+        fmt = params.get("format", [""])[0]
+
+        inputs_dir = os.path.join(rec_dir, "inputs")
+        if not os.path.isdir(inputs_dir):
+            self._send(500, "text/html", b"<h3>Export failed</h3><p>No inputs directory</p>")
+            return
+
+        log_file = None
+        for f in os.listdir(inputs_dir):
+            if f.startswith("input_log"):
+                log_file = os.path.join(inputs_dir, f)
+                break
+
+        if not log_file or not os.path.isfile(log_file):
+            self._send(500, "text/html", b"<h3>Export failed</h3><p>No input log found</p>")
+            return
+
+        ss_dir = os.path.join(inputs_dir, "screenshots")
+        video_path = ""
+        for f in os.listdir(inputs_dir):
+            if f.lower().endswith(".mp4"):
+                video_path = os.path.join(inputs_dir, f)
+                break
+
+        # Video export
+        if fmt == "video":
+            if video_path and os.path.isfile(video_path):
+                self.send_response(302)
+                self.send_header("Location", "/file/" + _to_web_path(video_path))
+                self.end_headers()
+                return
+            else:
+                self._send(500, "text/html", b"<h3>Video not found</h3>")
+                return
+
+        # ZIP export
+        if fmt == "zip":
+            import zipfile
+            import io
+            buf = io.BytesIO()
+            with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+                for root_dir, dirs, files in os.walk(rec_dir):
+                    for f in files:
+                        fp = os.path.join(root_dir, f)
+                        zf.write(fp, os.path.relpath(fp, os.path.dirname(rec_dir)))
+            buf.seek(0)
+            zip_data = buf.getvalue()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/zip")
+            self.send_header("Content-Length", str(len(zip_data)))
+            self.send_header("Content-Disposition", 'attachment; filename="' + rec_id + '.zip"')
+            self.end_headers()
+            self.wfile.write(zip_data)
+            return
+
+        # Report format exports
+        ext_map = {"md": "md", "html": "html", "json": "json", "docx": "docx"}
+        ext = ext_map.get(fmt, "")
+        if not ext:
+            self._show_export_page(rec_id, rec_dir, inputs_dir, log_file, ss_dir, video_path)
+            return
+
+        report_path = os.path.join(inputs_dir, "report_" + rec_id + "." + ext)
+        if not os.path.isfile(report_path):
+            try:
+                from recorder.report_generator import parse_log, generate_markdown, generate_html, generate_word, generate_json
+                events = parse_log(log_file)
+                if fmt == "md":
+                    generate_markdown(events, ss_dir, report_path, rec_id, video_path)
+                elif fmt == "html":
+                    generate_html(events, ss_dir, report_path, rec_id, video_path)
+                elif fmt == "json":
+                    generate_json(events, ss_dir, report_path, rec_id, video_path)
+                elif fmt == "docx":
+                    generate_word(events, ss_dir, report_path, rec_id, video_path)
+            except Exception as e:
+                import traceback
+                err_msg = "<h3>Generate failed</h3><pre>{}</pre>".format(traceback.format_exc())
+                self._send(500, "text/html", err_msg.encode("utf-8"))
+                return
+
+        if os.path.isfile(report_path):
+            self.send_response(302)
+            self.send_header("Location", "/file/" + _to_web_path(report_path))
+            self.end_headers()
+            return
+        else:
+            self._send(500, "text/html", b"<h3>Report not found</h3>")
+            return
+
+    def _show_export_page(self, rec_id, rec_dir, inputs_dir, log_file, ss_dir, video_path):
+        try:
+            from recorder.report_generator import generate_reports
+            result = generate_reports(log_file, ss_dir, rec_dir, project_name=rec_id, video_path=video_path)
+        except Exception:
+            result = {}
+
+        reports = []
+        fmt_map = [("html", "HTML"), ("markdown", "Markdown"), ("word", "Word"), ("json", "JSON")]
+        for fmt_key, label in fmt_map:
+            fpath = result.get(fmt_key, "")
+            if fpath and os.path.isfile(fpath):
+                reports.append((label, _to_web_path(fpath)))
+
+        links_html = "".join(
+            '<li><a href="/file/{0}" target="_blank">{1}</a></li>\n'.format(web, label)
+            for label, web in reports
+        )
+
+        if video_path and os.path.isfile(video_path):
+            links_html += '<li><a href="/file/{}" target="_blank">Video</a></li>\n'.format(_to_web_path(video_path))
+
+        page = (
+            '<!DOCTYPE html>\n'
+            '<html lang="zh-CN">\n'
+            '<head><meta charset="UTF-8">\n'
+            '<title>Export Report - ' + rec_id + '</title>\n'
+            '<style>\n'
+            'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;\n'
+            '       background: #0d1117; color: #e6edf3; padding: 40px; }\n'
+            'h1 { font-size: 20px; margin-bottom: 20px; }\n'
+            'ul { list-style: none; padding: 0; }\n'
+            'li { margin: 8px 0; }\n'
+            'a { color: #58a6ff; text-decoration: none; font-size: 15px; }\n'
+            'a:hover { text-decoration: underline; }\n'
+            '.msg { color: #8b949e; margin-top: 16px; }\n'
+            '</style></head>\n'
+            '<body>\n'
+            '<h1>Export Report - ' + rec_id + '</h1>\n'
+            '<ul>\n' + links_html + '</ul>\n'
+            '<div class="msg">Total ' + str(len(reports)) + ' reports</div>\n'
+            '</body></html>'
+        )
+        self._send(200, "text/html; charset=utf-8", page.encode("utf-8"))
 
     def _handle_api(self):
         """Return recordings as JSON."""

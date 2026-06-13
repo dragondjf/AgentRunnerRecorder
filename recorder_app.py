@@ -36,6 +36,7 @@ _RESAMPLE = getattr(Image, "LANCZOS", getattr(Image, "ANTIALIAS", None))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from recorder.core import RecordingSession
 from recorder.report_generator import generate_reports
+from recorder.urc_bridge import UIRecorderCoreServer, RecordingConverter
 
 # ══════════════════════════════════════════════════════════════════════
 # 配色
@@ -190,6 +191,7 @@ class HotkeyListener:
 class ScreenRecorderApp:
     def __init__(self):
         self.root = tk.Tk()
+        self.root.withdraw()  # 隐藏窗口，避免构建 UI 时闪烁
         self.root.title("AgentRunner Recorder")
         self.root.configure(bg=C.BG)
         self.root.resizable(False, False)
@@ -226,10 +228,19 @@ class ScreenRecorderApp:
         self._video_sz_var = tk.StringVar(value="0 MB")
         self._log_sz_var = tk.StringVar(value="0 KB")
 
+        # UIRecorderCore 后台服务
+        self._urc_server = UIRecorderCoreServer()
+        threading.Thread(
+            target=self._urc_server.start,
+            daemon=True,
+            name="urc-server",
+        ).start()
+
         self._build_ui()
         self._refit()
         self._show_top_right()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
+        self.root.deiconify()  # 窗口已就绪，显示
 
     # ── UI 构建 ──────────────────────────────────────────────────
 
@@ -290,6 +301,10 @@ class ScreenRecorderApp:
         self._export_btn.bind("<Enter>", lambda e: self._export_btn.configure(bg=C.SURFACE2))
         self._export_btn.bind("<Leave>", lambda e: self._export_btn.configure(bg=C.BG))
         self._export_panel = None
+
+        # ── 编辑按钮（一键跳转 UIRecorderCore） ──
+        self._edit_btn = Btn(right, "edit", command=self._edit_in_urc, tooltip="在 UIRecorderCore 中编辑")
+        self._edit_btn.pack(side=tk.LEFT, padx=(BTN_GAP, 0))
 
         # ═══ 状态栏（录制中显示）═══
         self._status_bar = tk.Frame(self._main, bg=C.SURFACE)
@@ -457,7 +472,7 @@ class ScreenRecorderApp:
         self.root.update_idletasks()
         self._main.update_idletasks()
         req_h = self._main.winfo_reqheight()
-        self.root.geometry(f"420x{req_h}")
+        self.root.geometry(f"500x{req_h}")
 
     def _center_window(self):
         self.root.update_idletasks()
@@ -901,6 +916,50 @@ class ScreenRecorderApp:
             messagebox.showerror("导出失败", str(e))
         finally:
             self.root.config(cursor="")
+
+    def _edit_in_urc(self):
+        """一键编辑：转换录制 → 加载项目 → 打开浏览器。"""
+        # 1. 检查是否有录制
+        if not self._output_dir or not os.path.isdir(self._output_dir):
+            messagebox.showinfo("提示", "没有可编辑的录制项目，请先完成一次录制")
+            return
+
+        # 2. 等待 UIRecorderCore 就绪
+        if not self._urc_server.is_ready:
+            self._log("等待 UIRecorderCore 服务就绪...")
+            self.root.update()
+            if not self._urc_server.start(wait_ready=True, timeout=15):
+                messagebox.showerror("错误", "UIRecorderCore 服务启动失败")
+                return
+
+        # 3. 转换录制
+        self._log("正在转换录制项目到 UIRecorderCore...")
+        self.root.config(cursor="watch")
+        self.root.update()
+        try:
+            project = RecordingConverter.convert(self._output_dir)
+        except Exception as e:
+            self._log(f"转换失败: {e}")
+            messagebox.showerror("转换失败", str(e))
+            return
+        finally:
+            self.root.config(cursor="")
+
+        if not project:
+            messagebox.showerror("错误", "转换失败，未找到录制数据")
+            return
+
+        # 4. 调用 URC API 加载项目
+        from recorder.urc_bridge import _call_urc_api
+        self._log(f"正在加载项目: {project}")
+        ok = _call_urc_api("/api/v1/loadproject", {"project": project, "mode": "view"})
+        if not ok:
+            self._log("加载项目 API 调用失败，仍将打开编辑器")
+
+        # 5. 打开浏览器
+        import webbrowser
+        webbrowser.open(self._urc_server.base_url)
+        self._log(f"已打开 UIRecorderCore 编辑器 - 项目: {project}")
 
     def _on_close(self):
         if self._recording:

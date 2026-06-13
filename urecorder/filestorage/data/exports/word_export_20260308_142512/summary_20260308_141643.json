@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-03-08T14:16:43.440995",
+  "statistics": {
+    "total_events": 2,
+    "mouse_clicks": 0,
+    "keyboard_inputs": 0,
+    "start_time": "2026-03-08T14:16:39.818139",
+    "last_event_time": "2026-03-08T14:16:40.593571"
+  },
+  "files": [
+    {
+      "filename": "monitoring_data_20260308_133430.json",
+      "size_mb": 0.0,
+      "created_at": "2026-03-08T13:45:59.439208",
+      "modified_at": "2026-03-08T13:34:30.833433"
+    },
+    {
+      "filename": "monitoring_data_20260308_141639.json",
+      "size_mb": 0.0,
+      "created_at": "2026-03-08T14:16:39.306712",
+      "modified_at": "2026-03-08T14:16:41.089962"
+    }
+  ]
+}

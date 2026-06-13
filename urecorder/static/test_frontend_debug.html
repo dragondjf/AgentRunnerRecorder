@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>前端调试测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; }
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.5); 
+            justify-content: center; 
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 300px;
+        }
+        button { padding: 10px 20px; margin: 5px; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>前端功能调试测试</h1>
+    
+    <div class="test-section">
+        <h2>1. URL参数解析测试</h2>
+        <p>测试URL: <span id="currentUrl"></span></p>
+        <p>project参数: <span id="projectParam" class="success"></span></p>
+        <button onclick="testUrlParsing()">测试URL参数解析</button>
+    </div>
+
+    <div class="test-section">
+        <h2>2. 弹窗显示测试</h2>
+        <button onclick="testShowModal()">测试显示弹窗</button>
+        <button onclick="testShowModalWithProject()">测试显示弹窗（带项目参数）</button>
+    </div>
+
+    <div class="test-section">
+        <h2>3. 控制台输出</h3>
+        <div id="consoleOutput" style="background: #f5f5f5; padding: 10px; font-family: monospace; max-height: 200px; overflow-y: auto;"></div>
+        <button onclick="clearConsole()">清空控制台</button>
+    </div>
+
+    <!-- 测试模态框 -->
+    <div class="modal" id="testModal">
+        <div class="modal-content">
+            <h3>测试弹窗</h3>
+            <p>项目名称: <input type="text" id="testProjectInput" style="width: 200px; padding: 5px;"></p>
+            <button onclick="closeTestModal()">关闭</button>
+        </div>
+    </div>
+
+    <script>
+        // 重写console.log以在页面上显示
+        const originalLog = console.log;
+        const originalError = console.error;
+        const originalWarn = console.warn;
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            addToConsole('LOG', args.join(' '));
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            addToConsole('ERROR', args.join(' '));
+        };
+        
+        console.warn = function(...args) {
+            originalWarn.apply(console, args);
+            addToConsole('WARN', args.join(' '));
+        };
+
+        function addToConsole(type, message) {
+            const output = document.getElementById('consoleOutput');
+            const timestamp = new Date().toLocaleTimeString();
+            output.innerHTML += `<div>[${timestamp}] ${type}: ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearConsole() {
+            document.getElementById('consoleOutput').innerHTML = '';
+        }
+
+        // URL参数解析函数（从index.html复制）
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            const results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // 显示当前URL和project参数
+        function updateUrlDisplay() {
+            document.getElementById('currentUrl').textContent = window.location.href;
+            const project = getUrlParameter('project');
+            document.getElementById('projectParam').textContent = project || '无project参数';
+        }
+
+        // 测试URL参数解析
+        function testUrlParsing() {
+            console.log('开始测试URL参数解析...');
+            const project = getUrlParameter('project');
+            console.log('解析到的project参数:', project);
+            
+            if (project) {
+                console.log('✅ URL参数解析成功');
+            } else {
+                console.log('❌ 未找到project参数');
+            }
+        }
+
+        // 测试显示弹窗
+        function testShowModal() {
+            console.log('测试显示弹窗...');
+            const modal = document.getElementById('testModal');
+            modal.style.display = 'flex';
+            console.log('✅ 弹窗已显示');
+        }
+
+        // 测试显示弹窗（带项目参数）
+        function testShowModalWithProject() {
+            console.log('测试显示弹窗（带项目参数）...');
+            const modal = document.getElementById('testModal');
+            const projectInput = document.getElementById('testProjectInput');
+            
+            // 获取URL中的project参数
+            const project = getUrlParameter('project');
+            projectInput.value = project || '';
+            
+            modal.style.display = 'flex';
+            console.log('✅ 弹窗已显示，项目参数:', project || '无');
+        }
+
+        // 关闭测试弹窗
+        function closeTestModal() {
+            const modal = document.getElementById('testModal');
+            modal.style.display = 'none';
+            console.log('弹窗已关闭');
+        }
+
+        // 页面加载时初始化
+        window.onload = function() {
+            console.log('页面加载完成');
+            updateUrlDisplay();
+            
+            // 如果URL中有project参数，自动显示弹窗
+            const project = getUrlParameter('project');
+            if (project) {
+                console.log('检测到project参数，自动显示弹窗');
+                setTimeout(() => {
+                    testShowModalWithProject();
+                }, 1000);
+            }
+        };
+    </script>
+</body>
+</html>

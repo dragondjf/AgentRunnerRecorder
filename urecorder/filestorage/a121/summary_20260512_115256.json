@@ -1,0 +1,36 @@
+{
+  "generated_at": "2026-05-12T11:52:56.201337",
+  "statistics": {
+    "total_events": 5,
+    "mouse_clicks": 0,
+    "keyboard_inputs": 0,
+    "start_time": "2026-05-12T11:52:43.503983",
+    "last_event_time": "2026-05-12T11:52:53.176857"
+  },
+  "files": [
+    {
+      "filename": "monitoring_data_20260512_114303.json",
+      "size_mb": 0.0,
+      "created_at": "2026-05-12T11:43:03.939739",
+      "modified_at": "2026-05-12T11:43:07.558418"
+    },
+    {
+      "filename": "monitoring_data_20260512_115041.json",
+      "size_mb": 0.0,
+      "created_at": "2026-05-12T11:50:41.406350",
+      "modified_at": "2026-05-12T11:50:59.934728"
+    },
+    {
+      "filename": "monitoring_data_20260512_115130.json",
+      "size_mb": 0.02,
+      "created_at": "2026-05-12T11:51:30.206388",
+      "modified_at": "2026-05-12T11:52:39.608267"
+    },
+    {
+      "filename": "monitoring_data_20260512_115240.json",
+      "size_mb": 0.0,
+      "created_at": "2026-05-12T11:52:40.862804",
+      "modified_at": "2026-05-12T11:52:53.630406"
+    }
+  ]
+}

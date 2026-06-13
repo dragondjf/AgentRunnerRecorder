@@ -1,0 +1,87 @@
+{
+  "metadata": {
+    "created_at": "2026-03-08T15:04:24.934676",
+    "version": "1.0",
+    "description": "系统行为监控数据"
+  },
+  "events": [
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:04:26.156624",
+      "position": {
+        "x": 1296,
+        "y": 114
+      },
+      "button": "Button.left",
+      "click_count": 1,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11223\\my_screenshots\\active_window_20260308_150426_535.png",
+        "filename": "active_window_20260308_150426_535.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:04:27.339692",
+      "position": {
+        "x": 858,
+        "y": 673
+      },
+      "button": "Button.left",
+      "click_count": 2,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11223\\my_screenshots\\active_window_20260308_150427_648.png",
+        "filename": "active_window_20260308_150427_648.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "mouse_single_click",
+      "timestamp": "2026-03-08T15:04:28.596049",
+      "position": {
+        "x": 1089,
+        "y": 792
+      },
+      "button": "Button.left",
+      "click_count": 3,
+      "screenshot": {
+        "success": true,
+        "filepath": "F:\\workspace\\yfjzworkspace\\webspace\\ai-template\\agentrunner\\uirecordercore\\filestorage\\mydata11223\\my_screenshots\\active_window_20260308_150428_914.png",
+        "filename": "active_window_20260308_150428_914.png"
+      },
+      "window_info": {}
+    },
+    {
+      "event_type": "keyboard_input",
+      "session_id": 0,
+      "timestamp": "2026-03-08T15:04:30.829355",
+      "start_time": "2026-03-08T15:04:28.174163",
+      "end_time": "2026-03-08T15:04:30.829355",
+      "duration_seconds": 2.655192,
+      "end_reason": "stopped",
+      "input_string": "2",
+      "input_length": 1,
+      "first_char": "2",
+      "last_char": "2",
+      "cursor_position": {
+        "x": 0,
+        "y": 0
+      },
+      "screenshots": {
+        "first_char": {
+          "success": false,
+          "filepath": "",
+          "filename": ""
+        },
+        "last_char": {
+          "success": false,
+          "filepath": "",
+          "filename": ""
+        }
+      },
+      "window_info": {}
+    }
+  ]
+}
