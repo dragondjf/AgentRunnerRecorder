@@ -1878,15 +1878,33 @@ class HistoryHandler(BaseHTTPRequestHandler):
             self._send(404, "text/html", b"<h3>Recording not found</h3>")
             return
         try:
-            from recorder.urc_bridge import RecordingConverter
-            converter = RecordingConverter()
-            result = converter.convert(rec_dir)
-            if result.get("url"):
-                self.send_response(302)
-                self.send_header("Location", result["url"])
-                self.end_headers()
-            else:
-                self._send(500, "text/html", b"<h3>Conversion failed: no URL returned</h3>")
+            from recorder.urc_bridge import (
+                RecordingConverter,
+                UIRecorderCoreServer,
+                URC_BASE,
+                _call_urc_api,
+            )
+
+            # 1. 转换录制 → 返回项目名字符串
+            project = RecordingConverter.convert(rec_dir)
+            if not project:
+                self._send(500, "text/html", b"<h3>Conversion failed: no recording data</h3>")
+                return
+
+            # 2. 确保 URC 服务已启动
+            urc = UIRecorderCoreServer()
+            if not urc.is_ready:
+                if not urc.start(wait_ready=True, timeout=15):
+                    self._send(500, "text/html", b"<h3>UIRecorderCore service failed to start</h3>")
+                    return
+
+            # 3. 调用 API 加载项目
+            _call_urc_api("/api/v1/loadproject", {"project": project, "mode": "view"})
+
+            # 4. 重定向到 URC 编辑器
+            self.send_response(302)
+            self.send_header("Location", URC_BASE)
+            self.end_headers()
         except Exception as e:
             err_msg = "<h3>Conversion failed</h3><pre>{}</pre>".format(str(e))
             self._send(500, "text/html", err_msg.encode("utf-8"))
