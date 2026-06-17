@@ -1901,9 +1901,10 @@ class HistoryHandler(BaseHTTPRequestHandler):
             # 3. 调用 API 加载项目
             _call_urc_api("/api/v1/loadproject", {"project": project, "mode": "view"})
 
-            # 4. 重定向到 URC 编辑器
+            # 4. 重定向到 URC 编辑器（带 project 参数）
+            import urllib.parse
             self.send_response(302)
-            self.send_header("Location", URC_BASE)
+            self.send_header("Location", f"{URC_BASE}/?project={urllib.parse.quote(project)}")
             self.end_headers()
         except Exception as e:
             err_msg = "<h3>Conversion failed</h3><pre>{}</pre>".format(str(e))

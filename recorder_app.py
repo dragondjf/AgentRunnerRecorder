@@ -956,9 +956,10 @@ class ScreenRecorderApp:
         if not ok:
             self._log("加载项目 API 调用失败，仍将打开编辑器")
 
-        # 5. 打开浏览器
+        # 5. 打开浏览器（带 project 参数）
         import webbrowser
-        webbrowser.open(self._urc_server.base_url)
+        import urllib.parse
+        webbrowser.open(f"{self._urc_server.base_url}/?project={urllib.parse.quote(project)}")
         self._log(f"已打开 UIRecorderCore 编辑器 - 项目: {project}")
 
     def _on_close(self):

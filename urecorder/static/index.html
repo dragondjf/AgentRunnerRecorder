@@ -7310,7 +7310,7 @@
                     showNotification('🤖 启动批量AI分析...', 'info');
                     
                     // 使用SSE连接到后端
-                    const projectName = getUrlParameter('project') || 'mydata3'; // 从URL参数获取项目名，默认为mydata3
+                    const projectName = getUrlParameter('project') || 'mydata'; // 从URL参数获取项目名，默认为mydata
                     const url = `/api/v1/vl/generateAll?project=${projectName}`;
                     
                     const response = await fetch(url, {

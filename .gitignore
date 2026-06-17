@@ -26,7 +26,7 @@ Desktop.ini
 
 # Recording output (user data)
 recordings/
-
+urecorder/postcase/results
 # Logs
 *.log
 urecorder/filestorage
