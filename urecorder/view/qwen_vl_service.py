@@ -14,10 +14,15 @@ from autogen_core import Image as AGImage
 from PIL import Image as PILImage
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 import asyncio
+import httpx
 from loguru import logger
 from dotenv import load_dotenv
 from pathlib import Path
 import os
+
+# Windows SSL 兼容：httpx 跳过证书验证（解决代理/系统 CA bundle 问题）
+_http_client = httpx.AsyncClient(verify=False)
+
 
 # 从脚本所在目录的上级（uirecordercore/）加载 .env
 _env_path = Path(__file__).parent.parent / ".env"
@@ -43,6 +48,7 @@ async def generate_with_autogen(file_path: str, context: str, requirements: str)
         model=MODEL_NAME,
         api_key=API_KEY,
         base_url=BASE_URL,
+        http_client=_http_client,
         model_info={
             "vision": True,
             "function_calling": False,
@@ -105,7 +111,7 @@ async def ai_analysis(image_source: str, context: str = "", requirements: str = 
     try:
         if image_source.startswith(('http://', 'https://')):
             # 从URL下载图片
-            response = requests.get(image_source, timeout=30)
+            response = requests.get(image_source, timeout=30, verify=False)
             response.raise_for_status()
             
             # 获取文件扩展名
@@ -151,6 +157,7 @@ async def generate_with_autogen_non_streaming(file_path: str, context: str, requ
         model=MODEL_NAME,
         api_key=API_KEY,
         base_url=BASE_URL,
+        http_client=_http_client,
         model_info={
             "vision": True,
             "function_calling": False,
@@ -361,7 +368,7 @@ def generate_all():
                                 })
                                 yield f"data: {message}\n\n"
                                 
-                                response = requests.get(image_url, timeout=30)
+                                response = requests.get(image_url, timeout=30, verify=False)
                                 response.raise_for_status()
                                 
                                 with open(local_file_path, 'wb') as f:
