@@ -37,6 +37,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from recorder.core import RecordingSession
 from recorder.report_generator import generate_reports
 from recorder.urc_bridge import UIRecorderCoreServer, RecordingConverter
+from recorder.platform_utils import open_file, open_folder, get_app_icon, get_editor_candidates
 
 # ══════════════════════════════════════════════════════════════════════
 # 配色
@@ -196,14 +197,17 @@ class ScreenRecorderApp:
         self.root.configure(bg=C.BG)
         self.root.resizable(False, False)
 
-        # 应用图标
-        _icon_path = Path(__file__).parent / "images" / "app_icon.ico"
-        if _icon_path.exists():
+        # 应用图标（跨平台：Windows=.ico, macOS=.icns, Linux=.png）
+        _icon_path = get_app_icon(Path(__file__).parent / "images")
+        if _icon_path.exists() and _icon_path.suffix in (".ico", ".icns"):
             self.root.iconbitmap(str(_icon_path))
         else:
-            self.root.iconphoto(True, ImageTk.PhotoImage(
-                Image.open(Path(__file__).parent / "images" / "app_icon.png").resize((32, 32), _RESAMPLE)
-            ))
+            # 回退到 PNG
+            png_icon = Path(__file__).parent / "images" / "app_icon.png"
+            if png_icon.exists():
+                self.root.iconphoto(True, ImageTk.PhotoImage(
+                    Image.open(png_icon).resize((32, 32), _RESAMPLE)
+                ))
 
         # 状态
         self._session = None
@@ -227,6 +231,12 @@ class ScreenRecorderApp:
         self._shot_var = tk.StringVar(value="0")
         self._video_sz_var = tk.StringVar(value="0 MB")
         self._log_sz_var = tk.StringVar(value="0 KB")
+
+        # UI 控件采集相关
+        self._ui_win_list: list = []       # WindowInfo 对象列表
+        self._ui_win_var = tk.StringVar(value="不采集（默认）")
+        self._ui_win_combo = None           # Combobox widget
+        self._selected_ui_win = None        # 选中的 WindowInfo 或 None
 
         # UIRecorderCore 后台服务
         self._urc_server = UIRecorderCoreServer()
@@ -370,6 +380,112 @@ class ScreenRecorderApp:
             activebackground=C.BORDER, activeforeground=C.TEXT,
         ).pack(side=tk.LEFT, padx=(6, 0))
 
+        # ═══ UI控件采集 ═══
+        # 分隔线
+        tk.Frame(inner_set, height=1, bg=C.BORDER).pack(fill=tk.X, pady=(14, 10))
+
+        r2 = tk.Frame(inner_set, bg=C.SURFACE)
+        r2.pack(fill=tk.X)
+        tk.Label(r2, text="UI控件采集", font=("", 9, "bold"), fg=C.ACCENT2, bg=C.SURFACE).pack(anchor=tk.W)
+
+        r2b = tk.Frame(inner_set, bg=C.SURFACE)
+        r2b.pack(fill=tk.X, pady=(6, 0))
+        tk.Label(r2b, text="目标进程", font=("", 9), fg=C.TEXT2, bg=C.SURFACE).pack(side=tk.LEFT)
+
+        self._ui_win_combo = ttk.Combobox(
+            r2b, textvariable=self._ui_win_var,
+            values=["不采集（默认）"],
+            width=36, state="readonly",
+        )
+        self._ui_win_combo.pack(side=tk.LEFT, padx=(8, 6))
+        self._ui_win_combo.bind("<<ComboboxSelected>>", self._on_ui_win_selected)
+
+        # 刷新按钮
+        refresh_btn = tk.Button(
+            r2b, text="刷新", font=("", 8),
+            command=self._refresh_ui_windows,
+            bg=C.SURFACE2, fg=C.TEXT, relief=tk.FLAT, bd=0,
+            padx=10, pady=2, cursor="hand2",
+            activebackground=C.BORDER, activeforeground=C.TEXT,
+        )
+        refresh_btn.pack(side=tk.LEFT)
+
+        r2c = tk.Frame(inner_set, bg=C.SURFACE)
+        r2c.pack(fill=tk.X, pady=(4, 0))
+        tk.Label(
+            r2c,
+            text="选择目标窗口后，每次鼠标点击将自动采集该窗口的 UI 控件",
+            font=("", 8), fg=C.TEXT2, bg=C.SURFACE,
+        ).pack(anchor=tk.W)
+
+        # ═══ 进程选择面板（点击录制时展开）═══
+        self._picker_frame = tk.Frame(self._main, bg=C.SURFACE)
+        self._picker_visible = False
+
+        # ─ 搜索框 ─
+        picker_top = tk.Frame(self._picker_frame, bg=C.SURFACE)
+        picker_top.pack(fill=tk.X, padx=14, pady=(10, 4))
+        tk.Label(picker_top, text="🎯 选择目标进程（可选）", font=("", 10, "bold"),
+                 fg=C.ACCENT2, bg=C.SURFACE).pack(side=tk.LEFT)
+        self._picker_search_var = tk.StringVar()
+        self._picker_search_entry = tk.Entry(
+            picker_top, textvariable=self._picker_search_var, font=("", 9),
+            bg=C.SURFACE2, fg=C.TEXT, insertbackground=C.TEXT,
+            relief=tk.FLAT, bd=0, highlightthickness=1,
+            highlightbackground=C.BORDER, highlightcolor=C.ACCENT2, width=20,
+        )
+        self._picker_search_entry.pack(side=tk.RIGHT, padx=(8, 0), ipady=3)
+
+        # ─ 列表 ─
+        picker_body = tk.Frame(self._picker_frame, bg=C.SURFACE)
+        picker_body.pack(fill=tk.BOTH, expand=True, padx=14, pady=2)
+        columns = ("程序", "PID", "窗口标题")
+        # 用 Frame 包裹 Treeview + 原生 Scrollbar 确保滚动条可见
+        picker_list_frame = tk.Frame(picker_body, bg=C.SURFACE)
+        picker_list_frame.pack(fill=tk.BOTH, expand=True)
+        self._picker_tree = ttk.Treeview(picker_list_frame, columns=columns, show="headings",
+                                         selectmode="browse", height=6)
+        self._picker_tree.heading("程序", text="程序", anchor=tk.W)
+        self._picker_tree.heading("PID", text="PID", anchor=tk.W)
+        self._picker_tree.heading("窗口标题", text="窗口标题", anchor=tk.W)
+        self._picker_tree.column("程序", width=100, minwidth=80)
+        self._picker_tree.column("PID", width=60, minwidth=50)
+        self._picker_tree.column("窗口标题", width=320, minwidth=150)
+        self._picker_tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        # 原生 tk Scrollbar — 始终可见
+        vsb = tk.Scrollbar(picker_list_frame, orient=tk.VERTICAL,
+                           command=self._picker_tree.yview,
+                           bg=C.SURFACE2, troughcolor=C.BG,
+                           activebackground=C.BORDER,
+                           bd=0, highlightthickness=0)
+        self._picker_tree.configure(yscrollcommand=vsb.set)
+        vsb.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # 双击即选择
+        self._picker_tree.bind("<Double-1>", self._on_picker_dbl_click)
+
+        # ─ 按钮栏 ─
+        picker_btn = tk.Frame(self._picker_frame, bg=C.SURFACE)
+        picker_btn.pack(fill=tk.X, padx=14, pady=(6, 10))
+        tk.Button(picker_btn, text="跳过（不采集控件）", font=("", 9),
+                  command=self._on_picker_skip,
+                  bg=C.SURFACE2, fg=C.TEXT2, relief=tk.FLAT, bd=0,
+                  padx=12, pady=4, cursor="hand2",
+                  activebackground=C.BORDER, activeforeground=C.TEXT,
+                  ).pack(side=tk.LEFT)
+        tk.Button(picker_btn, text="取消录制", font=("", 9),
+                  command=self._on_picker_cancel,
+                  bg=C.SURFACE2, fg=C.TEXT2, relief=tk.FLAT, bd=0,
+                  padx=12, pady=4, cursor="hand2",
+                  activebackground=C.BORDER, activeforeground=C.TEXT,
+                  ).pack(side=tk.RIGHT, padx=(6, 0))
+        tk.Button(picker_btn, text="✓ 选定并开始录制", font=("", 9, "bold"),
+                  command=self._on_picker_confirm,
+                  bg=C.ACCENT2, fg=C.WHITE, relief=tk.FLAT, bd=0,
+                  padx=16, pady=4, cursor="hand2",
+                  activebackground=C.ACCENT_DIM, activeforeground=C.WHITE,
+                  ).pack(side=tk.RIGHT)
+
         # ═══ 日志面板 ═══
         self._log_frame = tk.Frame(self._main, bg=C.SURFACE)
         inner_log = tk.Frame(self._log_frame, bg=C.SURFACE)
@@ -399,6 +515,39 @@ class ScreenRecorderApp:
                   fieldbackground=[("readonly", C.SURFACE2)],
                   foreground=[("readonly", C.TEXT)])
 
+        # Treeview 暗色样式
+        style.configure("Treeview",
+                        background=C.SURFACE2,
+                        foreground=C.TEXT,
+                        fieldbackground=C.SURFACE2,
+                        bordercolor=C.BORDER,
+                        rowheight=24)
+        style.map("Treeview",
+                  background=[("selected", C.ACCENT2)],
+                  foreground=[("selected", C.WHITE)])
+        style.configure("Treeview.Heading",
+                        background=C.BG,
+                        foreground=C.TEXT2,
+                        bordercolor=C.BORDER,
+                        relief=tk.FLAT,
+                        font=("", 9, "bold"))
+        style.map("Treeview.Heading",
+                  background=[("active", C.SURFACE2)],
+                  foreground=[("active", C.TEXT)])
+
+        # 垂直滚动条暗色样式
+        style.configure("Vertical.TScrollbar",
+                        background="#3a3a4a",
+                        troughcolor=C.BG,
+                        bordercolor=C.BORDER,
+                        arrowcolor=C.TEXT2,
+                        arrowsize=14,
+                        gripcount=0,
+                        relief=tk.FLAT)
+        style.map("Vertical.TScrollbar",
+                  background=[("active", C.BORDER)],
+                  arrowcolor=[("active", C.TEXT)])
+
     # ── 面板折叠 ─────────────────────────────────────────────────
 
     def _toggle_settings(self):
@@ -409,6 +558,8 @@ class ScreenRecorderApp:
             after = self._status_bar if self._status_bar.winfo_ismapped() else self._main.winfo_children()[0]
             self._settings_frame.pack(fill=tk.X, padx=12, pady=(0, 6), after=after)
             self._settings_visible = True
+            # 展开设置面板时自动刷新窗口列表
+            self._refresh_ui_windows()
         self._refit()
 
     def _toggle_log(self):
@@ -513,6 +664,132 @@ class ScreenRecorderApp:
 
     # ── 录制操作 ─────────────────────────────────────────────────
 
+    def _refresh_ui_windows(self):
+        """刷新可用窗口列表"""
+        try:
+            from recorder.ui_collector import enumerate_windows
+            windows = enumerate_windows()
+            # 过滤无意义窗口
+            filtered = []
+            for w in windows:
+                name = w.name.strip()
+                if not name:
+                    continue
+                if name in ("桌面", "任务栏", "Program Manager", "Shell_TrayWnd"):
+                    continue
+                filtered.append(w)
+
+            self._ui_win_list = filtered
+            values = ["不采集（默认）"] + [
+                f"{w.name[:35]}... (PID:{w.pid})" if len(w.name) > 35 else f"{w.name} (PID:{w.pid})"
+                for w in filtered
+            ]
+            self._ui_win_combo["values"] = values
+            self._ui_win_var.set("不采集（默认）")
+            self._selected_ui_win = None
+            self._log(f"已刷新进程列表: {len(filtered)} 个可用窗口")
+        except Exception as e:
+            self._log(f"刷新进程列表失败: {e}")
+            import traceback
+            traceback.print_exc()
+
+    def _on_ui_win_selected(self, event=None):
+        """下拉框选择事件"""
+        idx = self._ui_win_combo.current()
+        if idx <= 0 or idx > len(self._ui_win_list):
+            self._selected_ui_win = None
+            self._ui_win_var.set("不采集（默认）")
+        else:
+            self._selected_ui_win = self._ui_win_list[idx - 1]
+            win = self._selected_ui_win
+            self._log(f"已选择目标进程: {win.name} (PID:{win.pid})")
+
+    def _show_picker_panel(self):
+        """展开内联进程选择面板，刷新窗口列表。"""
+        self._picker_filtered = []
+        try:
+            from recorder.ui_collector import enumerate_windows
+            windows = enumerate_windows()
+            for w in windows:
+                name = w.name.strip()
+                if not name or name in ("桌面", "任务栏", "Program Manager", "Shell_TrayWnd"):
+                    continue
+                self._picker_filtered.append(w)
+        except Exception:
+            pass
+
+        # 填充列表
+        tree = self._picker_tree
+        tree.delete(*tree.get_children())
+
+        def _populate(ft=""):
+            tree.delete(*tree.get_children())
+            ft = ft.lower()
+            for i, w in enumerate(self._picker_filtered):
+                prog = w.name.split(" - ")[0] if " - " in w.name else w.name
+                if ft:
+                    # 多维度搜索：程序名、PID、窗口标题
+                    combined = f"{prog} {w.pid} {w.name}".lower()
+                    if ft not in combined:
+                        continue
+                tree.insert("", tk.END, iid=str(i),
+                            values=(prog[:30],
+                                    w.pid, w.name))
+
+        _populate()
+        # 搜索联动
+        self._picker_search_var.set("")
+        try:
+            self._picker_search_var.trace_remove("write", self._picker_search_trace_id)
+        except Exception:
+            pass
+        self._picker_search_trace_id = self._picker_search_var.trace_add(
+            "write", lambda *a: _populate(self._picker_search_var.get()))
+
+        # 显示面板
+        after = self._settings_frame if self._settings_visible else self._toolbar
+        self._picker_frame.pack(fill=tk.X, padx=12, pady=(4, 0), after=after)
+        self._picker_visible = True
+        self._picker_search_entry.focus_set()
+        self._refit()
+
+    def _hide_picker_panel(self):
+        """隐藏进程选择面板。"""
+        if self._picker_visible:
+            self._picker_frame.pack_forget()
+            self._picker_visible = False
+            self._refit()
+
+    # ── 选择面板按钮回调 ──
+
+    def _on_picker_skip(self):
+        self._selected_ui_win = None
+        self._log("UI控件采集已跳过")
+        self._begin_recording_after_pick()
+
+    def _on_picker_confirm(self):
+        sel = self._picker_tree.selection()
+        if sel:
+            idx = int(sel[0])
+            self._selected_ui_win = self._picker_filtered[idx]
+            self._log(f"已选择目标进程: {self._selected_ui_win.name} "
+                      f"(PID:{self._selected_ui_win.pid})")
+        else:
+            self._selected_ui_win = None
+        self._begin_recording_after_pick()
+
+    def _on_picker_cancel(self):
+        self._hide_picker_panel()
+
+    def _on_picker_dbl_click(self, e):
+        sel = self._picker_tree.selection()
+        if sel:
+            idx = int(sel[0])
+            self._selected_ui_win = self._picker_filtered[idx]
+            self._log(f"已选择目标进程: {self._selected_ui_win.name} "
+                      f"(PID:{self._selected_ui_win.pid})")
+            self._begin_recording_after_pick()
+
     def _browse_dir(self):
         d = filedialog.askdirectory(title="选择输出目录", initialdir=self._dir_var.get())
         if d:
@@ -530,6 +807,15 @@ class ScreenRecorderApp:
             messagebox.showwarning("提示", "请先设置输出目录")
             return
 
+        # 暂存 base_dir，展开进程选择面板
+        self._pending_base_dir = base_dir
+        self._show_picker_panel()
+
+    def _begin_recording_after_pick(self):
+        """进程选择完成后，开始录制流程。"""
+        self._hide_picker_panel()
+
+        base_dir = self._pending_base_dir
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         self._project_name = f"recording_{ts}"
         self._output_dir = os.path.join(base_dir, self._project_name)
@@ -539,7 +825,12 @@ class ScreenRecorderApp:
             output_dir=self._output_dir,
             fps=self._fps.get(),
             monitor_idx=self._monitor.get(),
+            ui_win=self._selected_ui_win,
         )
+
+        if self._selected_ui_win:
+            self._log(f"UI控件采集已启用: {self._selected_ui_win.name} "
+                      f"(PID:{self._selected_ui_win.pid})")
 
         # Pre-create session (don't start capture yet)
         self._recording = True
@@ -650,6 +941,14 @@ class ScreenRecorderApp:
             self._video_sz_var.set(self._fmt_size(stats.video_size))
             self._log_sz_var.set(self._fmt_size(stats.log_size))
 
+            # UI 控件采集统计
+            if self._session._ui_stats:
+                ui = self._session._ui_stats
+                self._log(
+                    f"UI控件采集  共 {ui['total_controls']} 个控件 |  "
+                    f"{ui['captures']} 次采集 |  跳过 {ui['skipped']} 次"
+                )
+
             # Auto-generate operation reports (MD / HTML / Word)
             self._generate_reports()
 
@@ -717,7 +1016,7 @@ class ScreenRecorderApp:
         self._generating = True
 
         def _gen():
-            from recorder.report_generator import parse_log, generate_markdown, generate_html, generate_word, generate_json
+            from recorder.report_generator import parse_log, generate_markdown, generate_html, generate_word, generate_json, generate_click_icons
             try:
                 events = parse_log(log_file)
                 if not events:
@@ -726,27 +1025,38 @@ class ScreenRecorderApp:
 
                 # 1. Markdown
                 md_path = os.path.join(inputs_dir, f"report_{self._project_name}.md")
-                self.root.after(0, lambda: self._log("  [1/4] 正在生成 Markdown..."))
+                self.root.after(0, lambda: self._log("  [1/5] 正在生成 Markdown..."))
                 generate_markdown(events, ss_dir, md_path, self._project_name, video)
-                self.root.after(0, lambda: self._log(f"  [1/4] Markdown 已生成"))
+                self.root.after(0, lambda: self._log(f"  [1/5] Markdown 已生成"))
 
                 # 2. HTML
                 html_path = os.path.join(inputs_dir, f"report_{self._project_name}.html")
-                self.root.after(0, lambda: self._log("  [2/4] 正在生成 HTML..."))
+                self.root.after(0, lambda: self._log("  [2/5] 正在生成 HTML..."))
                 generate_html(events, ss_dir, html_path, self._project_name, video)
-                self.root.after(0, lambda: self._log(f"  [2/4] HTML 已生成"))
+                self.root.after(0, lambda: self._log(f"  [2/5] HTML 已生成"))
 
                 # 3. Word
                 docx_path = os.path.join(inputs_dir, f"report_{self._project_name}.docx")
-                self.root.after(0, lambda: self._log("  [3/4] 正在生成 Word..."))
+                self.root.after(0, lambda: self._log("  [3/5] 正在生成 Word..."))
                 generate_word(events, ss_dir, docx_path, self._project_name, video)
-                self.root.after(0, lambda: self._log(f"  [3/4] Word 已生成"))
+                self.root.after(0, lambda: self._log(f"  [3/5] Word 已生成"))
 
                 # 4. JSON
                 json_path = os.path.join(inputs_dir, f"report_{self._project_name}.json")
-                self.root.after(0, lambda: self._log("  [4/4] 正在生成 JSON..."))
+                self.root.after(0, lambda: self._log("  [4/5] 正在生成 JSON..."))
                 generate_json(events, ss_dir, json_path, self._project_name, video)
-                self.root.after(0, lambda: self._log(f"  [4/4] JSON 已生成"))
+                self.root.after(0, lambda: self._log(f"  [4/5] JSON 已生成"))
+
+                # 5. Clicked Icons（点击坐标图标自动提取）
+                self.root.after(0, lambda: self._log("  [5/5] 正在提取点击图标..."))
+                icons_result = generate_click_icons(inputs_dir, self._project_name)
+                if icons_result and icons_result.get("ok"):
+                    self.root.after(0, lambda: self._log(
+                        f"  [5/5] 点击图标已生成 ({icons_result['hits']} 命中 / {icons_result['misses']} 未命中)"
+                    ))
+                else:
+                    msg = icons_result.get("error", "无可用数据") if icons_result else "模块加载失败"
+                    self.root.after(0, lambda: self._log(f"  [5/5] 点击图标: {msg}"))
 
                 self.root.after(0, lambda: self._log("所有报告生成完成"))
             except Exception as e:
@@ -833,7 +1143,7 @@ class ScreenRecorderApp:
             shutil.copy2(src, save_path)
             sz = os.path.getsize(save_path)
             self._log(f"导出完成  {os.path.basename(save_path)}  ({self._fmt_size(sz)})")
-            os.startfile(save_path)
+            open_file(save_path)
         except Exception as e:
             messagebox.showerror("导出失败", str(e))
 
@@ -848,15 +1158,14 @@ class ScreenRecorderApp:
             return
         self._log(f"打开  {os.path.basename(path)}")
         if editor:
-            # Try code editor first (VS Code, then Notepad)
-            for editor_cmd in ["code", "notepad"]:
+            # Try code editor first (跨平台回退列表)
+            for editor_cmd in get_editor_candidates():
                 try:
-                    import subprocess
                     subprocess.Popen([editor_cmd, path])
                     return
                 except FileNotFoundError:
                     continue
-        os.startfile(path)
+        open_file(path)
 
     def _export_json(self):
         """Export JSON report and open it."""
@@ -871,7 +1180,7 @@ class ScreenRecorderApp:
         if os.path.exists(video):
             self._log(f"打开  {os.path.basename(video)}")
             try:
-                os.startfile(video)
+                open_file(video)
             except OSError:
                 messagebox.showwarning("提示", "找不到可用的视频播放器")
         else:
@@ -989,13 +1298,7 @@ class ScreenRecorderApp:
 
     @staticmethod
     def _open_folder(path: str):
-        s = platform.system()
-        if s == "Darwin":
-            subprocess.Popen(["open", path])
-        elif s == "Windows":
-            os.startfile(path)
-        else:
-            subprocess.Popen(["xdg-open", path])
+        open_folder(path)
 
     def run(self):
         self.root.mainloop()

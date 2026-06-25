@@ -14,10 +14,9 @@ if sys.platform == "win32":
     try:
         try:
             ctypes.windll.shcore.SetProcessDpiAwareness(1)
-        except:
+        except Exception:
             ctypes.windll.user32.SetProcessDPIAware()
-    except:
-        logger.warn("Failed to set process DPI")
+    except Exception:
         pass
 
 from PIL import Image, ImageGrab

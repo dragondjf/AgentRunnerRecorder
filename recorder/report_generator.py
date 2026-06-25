@@ -236,10 +236,10 @@ def get_screenshot_info(events: List[Dict], screenshot_dir: str) -> Dict:
 
 
 def count_screenshots(screenshot_dir: str) -> int:
-    """Count PNG files in screenshot directory."""
+    """Count screenshot files in screenshot directory（.png / .jpg）."""
     if not os.path.isdir(screenshot_dir):
         return 0
-    return len([f for f in os.listdir(screenshot_dir) if f.lower().endswith('.png')])
+    return len([f for f in os.listdir(screenshot_dir) if f.lower().endswith(('.png', '.jpg', '.jpeg'))])
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -1307,6 +1307,40 @@ def generate_word(events: List[Dict], screenshot_dir: str, output_path: str,
 
 
 # ══════════════════════════════════════════════════════════════════════
+# 点击图标提取（自动生成）
+# ══════════════════════════════════════════════════════════════════════
+
+def generate_click_icons(inputs_dir: str, project_name: str = "") -> Optional[Dict]:
+    """从 report JSON + ui_controls 自动生成点击坐标图标。
+
+    需要 report JSON 已通过 generate_json() 生成。输出到
+    {inputs_dir}/clicked_icons/ 目录，包含 step_{NN}_({x},{y})_{name}.jpg
+    和 mapping.json。
+
+    Returns:
+        extract_click_icons 结果 dict，或 None（无可用的 report/session 数据）。
+    """
+    from .click_icon_extractor import extract_click_icons
+
+    report_json = os.path.join(inputs_dir, f"report_{project_name}.json")
+    session_json = os.path.join(inputs_dir, "ui_controls", "session.json")
+
+    if not os.path.exists(report_json):
+        return {"ok": False, "error": f"report JSON 不存在"}
+
+    # session.json 不是必须的（没有它仍然可以从截图裁剪）
+    if not os.path.exists(session_json):
+        pass
+
+    return extract_click_icons(
+        report_json_path=report_json,
+        session_json_path=session_json,
+        inputs_dir=inputs_dir,
+        icon_size=64,
+    )
+
+
+# ══════════════════════════════════════════════════════════════════════
 # 统一入口
 # ══════════════════════════════════════════════════════════════════════
 
@@ -1358,5 +1392,13 @@ def generate_reports(log_path: str, screenshot_dir: str, output_dir: str,
         print(f"[report_generator] JSON report: {json_path}")
     except Exception as e:
         print(f"[report_generator] JSON error: {e}")
+    
+    # 5. Clicked Icons（点击坐标图标自动提取）
+    icons_result = generate_click_icons(output_dir, project_name)
+    if icons_result and icons_result.get("ok"):
+        result["clicked_icons"] = icons_result["mapping_path"]
+        print(f"[report_generator] Clicked icons: {icons_result['hits']} hits / {icons_result['misses']} misses")
+    elif icons_result and not icons_result.get("ok"):
+        print(f"[report_generator] Clicked icons skipped: {icons_result.get('error', 'unknown')}")
     
     return result

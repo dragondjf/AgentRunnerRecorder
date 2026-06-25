@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import datetime
 import json
+import os
 import threading
 import time
 from dataclasses import asdict, dataclass
@@ -46,6 +47,7 @@ class RecordingSession:
         output_dir: str | Path | None = None,
         fps: int = 15,
         monitor_idx: int = 0,
+        ui_win=None,
     ):
         self.project_name = project_name
         self.fps = fps
@@ -73,6 +75,12 @@ class RecordingSession:
         self._screenshot_dir: Path | None = None
         self._sct = None  # mss instance, created lazily
         self._mon = None  # monitor dict
+
+        # UI 控件采集桥接
+        self._ui_bridge = None
+        self._ui_win = ui_win
+        self._last_frame_bgr = None   # 用于传给 ui_bridge 的截图缓存
+        self._ui_stats: dict = {}
 
     # -- public API -----------------------------------------------------------
 
@@ -102,11 +110,17 @@ class RecordingSession:
         self._write_header()
         self._write_config(info)
 
-        # 3. Start event listener (uses capture's start_time for sync)
+        # 3. 延迟初始化 UI 采集桥接（等 output_dir 确定后）
+        if self._ui_win is not None:
+            from .ui_collector_bridge import UICollectorBridge
+            self._ui_bridge = UICollectorBridge(self._ui_win, self.output_dir)
+
+        # 4. Start event listener (uses capture's start_time for sync)
         self._listener = EventListener(
             callback=self._write_event,
             start_time=self._capture.start_time,
             on_stop=self.stop,
+            on_ui_click=self._ui_bridge.on_mouse_click if self._ui_bridge else None,
         )
         self._listener.start()
 
@@ -139,6 +153,15 @@ class RecordingSession:
             except Exception:
                 pass
             self._sct = None
+
+        # 停止 UI 采集器
+        if self._ui_bridge:
+            try:
+                self._ui_stats = self._ui_bridge.stop()
+            except Exception:
+                import traceback
+                traceback.print_exc()
+            self._ui_bridge = None
 
         for cb in self._on_stop_cbs:
             try:
@@ -264,6 +287,15 @@ class RecordingSession:
             "message": json.dumps(config_payload),
             "window": "System Info",
         }
+        # 写入用户选择的目标应用信息
+        if self._ui_win is not None:
+            event["target_app"] = {
+                "name": getattr(self._ui_win, "name", "") or os.path.basename(getattr(self._ui_win, "exe", "")),
+                "window_title": getattr(self._ui_win, "name", ""),
+                "process_name": os.path.basename(getattr(self._ui_win, "exe", "")) if getattr(self._ui_win, "exe", None) else "",
+                "process_path": getattr(self._ui_win, "exe", ""),
+                "pid": getattr(self._ui_win, "pid", 0),
+            }
         self._log_fh.write(json.dumps(event, ensure_ascii=False) + "\n")
         self._log_fh.flush()
 
@@ -281,6 +313,14 @@ class RecordingSession:
                 # Capture screenshot
                 rel_path, abs_path = self._capture_screenshot(seq)
 
+                # 将截图帧传给 UI 控件采集器（复用截图）
+                if self._ui_bridge is not None and self._last_frame_bgr is not None:
+                    try:
+                        self._ui_bridge.on_screenshot(self._last_frame_bgr)
+                    except Exception:
+                        import traceback
+                        traceback.print_exc()
+
                 # Attach screenshot paths
                 event["screenshot"] = rel_path
                 event["screenshot_abs"] = abs_path
@@ -293,9 +333,13 @@ class RecordingSession:
             traceback.print_exc()
 
     def _capture_screenshot(self, seq: int) -> tuple[str, str]:
-        """Capture current screen and save as numbered PNG.
+        """Capture current screen and save as numbered JPEG (async I/O).
 
         Returns (relative_path, absolute_path).
+
+        性能优化：
+          - JPEG 替换 PNG：文件大小缩小 ~4x，写入耗时降低 ~3x
+          - 异步 I/O：后台线程写入磁盘，不阻塞采集循环
         """
         import mss
         import numpy as np
@@ -308,7 +352,7 @@ class RecordingSession:
             idx = min(self.monitor_idx + 1, len(monitors) - 1)
             self._mon = monitors[idx]
 
-        filename = f"{seq:04d}.png"
+        filename = f"{seq:04d}.jpg"
         abs_path = str(self._screenshot_dir / filename)
         rel_path = f"screenshots/{filename}"
 
@@ -327,7 +371,17 @@ class RecordingSession:
                     bgr, (logical_w, logical_h), interpolation=cv2.INTER_AREA
                 )
 
-            cv2.imwrite(abs_path, bgr, [cv2.IMWRITE_PNG_COMPRESSION, 3])
+            # 缓存 BGR 帧，供 ui_bridge 复用
+            self._last_frame_bgr = bgr
+
+            # 异步保存 JPEG（不阻塞采集循环，~6ms vs PNG ~22ms 同步）
+            import threading
+            _path = abs_path
+            _bgr = bgr.copy()
+            threading.Thread(
+                target=lambda: cv2.imwrite(_path, _bgr, [cv2.IMWRITE_JPEG_QUALITY, 90]),
+                daemon=True,
+            ).start()
         except Exception:
             # Screenshot failed — still record the event, mark path as error
             rel_path = ""

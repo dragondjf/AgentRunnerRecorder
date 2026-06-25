@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import os
-import platform
-import subprocess
 import threading
 import time
 from pathlib import Path
 from typing import Any
+
+from recorder.platform_utils import open_folder
 
 
 class RecorderConflict(RuntimeError):
@@ -230,10 +230,4 @@ class RecorderManager:
 
 def _open_folder(path: Path) -> None:
     """Reveal a path in the native file browser."""
-    system = platform.system()
-    if system == "Darwin":
-        subprocess.Popen(["open", str(path)])
-    elif system == "Windows":
-        os.startfile(str(path))  # type: ignore[attr-defined]
-    else:
-        subprocess.Popen(["xdg-open", str(path)])
+    open_folder(str(path))

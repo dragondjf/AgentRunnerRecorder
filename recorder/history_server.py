@@ -20,6 +20,8 @@ from datetime import datetime
 from pathlib import Path
 from urllib.parse import unquote, urlparse, parse_qs
 
+from recorder.platform_utils import open_file, open_folder, get_default_recordings_dir
+
 # ── UIRecorderCore 桥接（惰性导入，避免启动时加载 Flask 依赖） ──
 _urc_converter = None
 def _resolve_path(rel_path: str) -> str | None:
@@ -46,7 +48,7 @@ def _get_converter():
 
 RECORDINGS_ROOT = os.environ.get(
     "SCREENRECORDINGS_DIR",
-    r"C:\Users\YFJZ\Videos\ScreenRecordings",
+    get_default_recordings_dir(),
 )
 PORT_RANGE = range(8080, 8091)
 
@@ -1715,7 +1717,7 @@ class HistoryHandler(BaseHTTPRequestHandler):
             filepath = qs.get("path", [""])[0]
             if filepath and os.path.isfile(filepath):
                 try:
-                    os.startfile(filepath)
+                    open_file(filepath)
                 except OSError:
                     pass
             self._send(200, "text/html", b'<script>window.history.back();</script>')
@@ -1728,7 +1730,7 @@ class HistoryHandler(BaseHTTPRequestHandler):
             qs = urllib.parse.parse_qs(params)
             if qs.get("root", [""])[0]:
                 try:
-                    os.startfile(os.getcwd())
+                    open_folder(os.getcwd())
                 except OSError:
                     pass
             elif qs.get("id", [""])[0]:
@@ -1737,7 +1739,7 @@ class HistoryHandler(BaseHTTPRequestHandler):
                 target = os.path.join(RECORDINGS_ROOT, folder_id)
                 if os.path.isdir(target):
                     try:
-                        os.startfile(target)
+                        open_folder(target)
                     except OSError:
                         pass
             self._send(302, "text/html", b'<script>window.history.back();</script>')

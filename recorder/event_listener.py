@@ -19,7 +19,7 @@ from typing import Callable
 
 from pynput import keyboard, mouse
 
-from .window_tracker import get_active_window
+from .window_tracker import get_active_window, get_active_window_info
 
 # ---------------------------------------------------------------------------
 # Stop-hotkey definition: Ctrl + Shift + F5
@@ -43,12 +43,14 @@ class EventListener:
         callback: Callable[[dict], None],
         start_time: float,
         on_stop: Callable[[], None] | None = None,
+        on_ui_click: Callable[[int, int], None] | None = None,
         drag_threshold: int = 5,
         dblclick_threshold: float = 0.4,
     ):
         self._cb = callback
         self._t0 = start_time
         self._on_stop = on_stop
+        self._on_ui_click = on_ui_click
         self._drag_px = drag_threshold
         self._dbl_sec = dblclick_threshold
 
@@ -114,11 +116,18 @@ class EventListener:
 
     def _emit(self, message: str) -> None:
         try:
-            win = get_active_window()
+            win_info = get_active_window_info()
         except Exception:
-            win = ""
+            win_info = None
+        win_title = win_info.get("title", "") if win_info else ""
         try:
-            self._cb({"timestamp": self._ts(), "message": message, "window": win})
+            event = {"timestamp": self._ts(), "message": message, "window": win_title}
+            # 附加结构化进程信息（向后兼容：window 字段仍为纯标题字符串）
+            if win_info:
+                event["process_name"] = win_info.get("process_name", "")
+                event["process_path"] = win_info.get("process_path", "")
+                event["pid"] = win_info.get("pid", 0)
+            self._cb(event)
         except Exception:
             import traceback
             traceback.print_exc()
@@ -188,6 +197,13 @@ class EventListener:
                 self._drag_btn = None
             else:
                 self._emit(f"{b}Release at ({x}, {y})")
+                # 左键释放时触发 UI 控件采集
+                if b == "L" and self._on_ui_click:
+                    try:
+                        self._on_ui_click(x, y)
+                    except Exception:
+                        import traceback
+                        traceback.print_exc()
                 self._last_release[b] = (x, y, now)
 
     # -- move -----------------------------------------------------------------

@@ -1,5 +1,10 @@
+# 通用依赖 (跨平台)
 pillow>=8.0
 opencv-python-headless>=4.5
 numpy>=1.21
 mss>=0.5
 pynput>=1.7
+
+# Windows 用户请额外安装 requirements-windows.txt:
+#   pip install -r requirements.txt -r requirements-windows.txt
+

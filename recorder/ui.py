@@ -2,14 +2,14 @@
 
 from __future__ import annotations
 
-import platform
-import subprocess
 import time
 from pathlib import Path
 
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+
+from recorder.platform_utils import open_folder
 
 console = Console()
 
@@ -36,18 +36,7 @@ def _notify(title: str, msg: str) -> None:
 
 
 def _open_folder(path: str | Path) -> None:
-    p = str(path)
-    s = platform.system()
-    try:
-        if s == "Darwin":
-            subprocess.Popen(["open", p])
-        elif s == "Windows":
-            import os
-            os.startfile(p)  # type: ignore[attr-defined]
-        else:
-            subprocess.Popen(["xdg-open", p])
-    except Exception:
-        pass
+    open_folder(str(path))
 
 
 def _fmt_time(seconds: float) -> str:
