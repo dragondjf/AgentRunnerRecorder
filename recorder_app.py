@@ -443,6 +443,7 @@ class ScreenRecorderApp:
         # ═══ 进程选择面板（点击录制时展开）═══
         self._picker_frame = tk.Frame(self._main, bg=C.SURFACE)
         self._picker_visible = False
+        self._picker_load_job = None  # 防抖 after ID
 
         # ─ 搜索框 ─
         picker_top = tk.Frame(self._picker_frame, bg=C.SURFACE)
@@ -742,7 +743,12 @@ class ScreenRecorderApp:
             self._log(f"已选择目标进程: {win.name} (PID:{win.pid})")
 
     def _show_picker_panel(self):
-        """展开内联进程选择面板 — 面板瞬间展示，子线程异步加载进程列表。"""
+        """展开内联进程选择面板 — 面板瞬间展示，200ms 防抖后子线程异步加载。"""
+        # 取消之前等待中的加载任务（防抖）
+        if self._picker_load_job:
+            self.root.after_cancel(self._picker_load_job)
+            self._picker_load_job = None
+
         # 1. 清空列表显示"加载中"，立即展开面板
         tree = self._picker_tree
         tree.delete(*tree.get_children())
@@ -761,7 +767,12 @@ class ScreenRecorderApp:
         self._picker_search_entry.focus_set()
         self._refit()
 
-        # 2. 子线程异步加载进程列表（真正不阻塞 UI）
+        # 2. 200ms 防抖后子线程加载进程列表
+        self._picker_load_job = self.root.after(200, self._start_picker_load)
+
+    def _start_picker_load(self):
+        """防抖计时到期，启动子线程加载进程列表。"""
+        self._picker_load_job = None
         threading.Thread(target=self._load_picker_data, daemon=True, name="picker-loader").start()
 
     def _load_picker_data(self):
