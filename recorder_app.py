@@ -900,6 +900,19 @@ class ScreenRecorderApp:
         """进程选择完成后，开始录制流程。"""
         self._hide_picker_panel()
 
+        # 如果选择了窗口，用完整 enumerate_windows() 重新匹配以获得 _ctrl + exe
+        if self._selected_ui_win is not None:
+            fast_win = self._selected_ui_win
+            try:
+                from recorder.ui_collector import enumerate_windows
+                for full_win in enumerate_windows():
+                    if full_win.pid == fast_win.pid and full_win.name == fast_win.name:
+                        self._selected_ui_win = full_win
+                        self._log(f"已解析完整窗口信息: {full_win.name} (PID:{full_win.pid})")
+                        break
+            except Exception:
+                self._selected_ui_win = fast_win  # 回退
+
         base_dir = self._pending_base_dir
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         self._project_name = f"recording_{ts}"
