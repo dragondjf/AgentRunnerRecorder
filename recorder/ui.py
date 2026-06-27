@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import platform
+import subprocess
 import time
 from pathlib import Path
 
