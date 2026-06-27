@@ -835,6 +835,9 @@ class ScreenRecorderApp:
     def _toggle_record(self):
         if self._recording:
             self._stop_recording()
+        elif self._picker_visible:
+            # 进程选择面板已展开但尚未启动录制 → 收起面板
+            self._hide_picker_panel()
         else:
             self._start_recording()
 

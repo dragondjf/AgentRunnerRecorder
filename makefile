@@ -9,10 +9,15 @@ DIST12=dist12
 build_ext:
 	python release.py build_ext
 
-dist:build_ext
+dist:
 	rm -rf ${DIST}
 	mkdir -p ${DIST}
 	cp -rf build/lib.*-3*/* ${DIST}/
+	cp -rf urecorder/static ${DIST}/urecorder
+	cp  urecorder/application.json ${DIST}/urecorder
+	cp  urecorder/.env ${DIST}/urecorder
+	cp -rf images ${DIST}/images
+	cp recorder_app.py ${DIST}/recorder_app.py
 
 webrunner_x86_64_windows_release:dist
 	mkdir -p ${DIST_RELEASE}_zip
