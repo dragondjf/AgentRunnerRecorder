@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一键OCR助手 - SnapScribe</title>
+    <style>
+        /* 主题变量定义 - 与 editor.html 保持一致 */
+        :root {
+            /* 默认主题 - 浅色 */
+            --color-primary: #0066cc;
+            --color-primary-light: #4cd0ff;
+            --color-primary-dark: #004499;
+            --color-primary-glow: rgba(0, 102, 204, 0.2);
+            
+            --color-success: #00a870;
+            --color-warning: #ff8a00;
+            --color-danger: #ff3d71;
+            --color-info: #5a6c8a;
+            
+            --color-bg-main: #f5f7fa;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #eef2f7;
+            --color-bg-card: rgba(255, 255, 255, 0.9);
+            --color-bg-glass: rgba(255, 255, 255, 0.7);
+            
+            --color-text-primary: #1a202c;
+            --color-text-regular: #2d3748;
+            --color-text-secondary: #4a5568;
+            --color-text-placeholder: #a0aec0;
+            
+            --color-border-base: #e2e8f0;
+            --color-border-light: #cbd5e0;
+            --color-border-lighter: #a0aec0;
+            
+            --border-radius-base: 8px;
+            --border-radius-lg: 12px;
+            --spacing-xs: 5px;
+            --spacing-sm: 10px;
+            --spacing-md: 20px;
+            --spacing-lg: 30px;
+            --spacing-xl: 40px;
+            
+            --font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            --font-size-h1: 24px;
+            --font-size-h2: 20px;
+            --font-size-base: 14px;
+            --font-size-small: 12px;
+            --line-height-base: 1.6;
+            
+            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 0 10px var(--color-primary-glow);
+            
+            --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+            --gradient-bg: linear-gradient(135deg, var(--color-bg-main), var(--color-bg-tertiary));
+        }
+        
+        /* 深色主题 */
+        body.theme-dark {
+            --color-primary: #00a8ff;
+            --color-primary-light: #4cd0ff;
+            --color-primary-dark: #0066cc;
+            --color-primary-glow: rgba(0, 168, 255, 0.5);
+            
+            --color-success: #00d68f;
+            --color-warning: #ffaa00;
+            --color-danger: #ff3d71;
+            --color-info: #8f9bb3;
+            
+            --color-bg-main: #0f172a;
+            --color-bg-secondary: #1e293b;
+            --color-bg-tertiary: #334155;
+            --color-bg-card: rgba(30, 41, 59, 0.8);
+            --color-bg-glass: rgba(15, 23, 42, 0.7);
+            
+            --color-text-primary: #f1f5f9;
+            --color-text-regular: #cbd5e1;
+            --color-text-secondary: #94a3b8;
+            --color-text-placeholder: #64748b;
+            
+            --color-border-base: #334155;
+            --color-border-light: #475569;
+            --color-border-lighter: #64748b;
+            
+            --gradient-bg: linear-gradient(135deg, var(--color-bg-main), var(--color-bg-secondary));
+        }
+        
+        /* 蓝色主题 */
+        body.theme-blue {
+            --color-primary: #1e88e5;
+            --color-primary-light: #64b5f6;
+            --color-primary-dark: #0d47a1;
+            --color-primary-glow: rgba(30, 136, 229, 0.2);
+            
+            --color-bg-main: #e3f2fd;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #bbdefb;
+            
+            --color-text-primary: #0d47a1;
+            --color-text-regular: #1565c0;
+            --color-text-secondary: #1976d2;
+        }
+
+        /* 绿色主题 */
+        body.theme-green {
+            --color-primary: #43a047;
+            --color-primary-light: #81c784;
+            --color-primary-dark: #2e7d32;
+            --color-primary-glow: rgba(67, 160, 71, 0.2);
+            
+            --color-bg-main: #e8f5e9;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #c8e6c9;
+            
+            --color-text-primary: #1b5e20;
+            --color-text-regular: #2e7d32;
+            --color-text-secondary: #388e3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--gradient-bg);
+            color: var(--color-text-regular);
+            overflow-x: hidden;
+            min-height: 100vh;
+            transition: var(--transition-base);
+        }
+        
+        .ocr-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: var(--color-bg-secondary);
+        }
+        
+        /* 顶部工具栏 - 与 editor.html 保持一致 */
+        .toolbar {
+            display: flex;
+            padding: var(--spacing-sm);
+            background: var(--color-bg-card);
+            border-bottom: 1px solid var(--color-border-base);
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            backdrop-filter: blur(10px);
+            align-items: center;
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .toolbar .ocr-title {
+            font-size: var(--font-size-h1);
+            font-weight: 600;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
+        
+        .top-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            align-items: center;
+            margin-left: auto;
+            justify-content: flex-end;
+        }
+        
+        .toolbar-btn, .control-button {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-regular);
+            border: 1px solid var(--color-border-base);
+            padding: 10px 18px;
+            border-radius: var(--border-radius-base);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .toolbar-btn::before, .control-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .toolbar-btn:hover::before, .control-button:hover::before {
+            left: 100%;
+        }
+        
+        .toolbar-btn:hover, .control-button:hover {
+            color: var(--color-text-primary);
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-1px);
+        }
+        
+        .toolbar-btn.upload, .control-button.upload {
+            background: var(--color-info);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.upload:hover, .control-button.upload:hover {
+            background: #4a5568;
+        }
+        
+        .toolbar-btn.primary, .control-button.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.primary:hover, .control-button.primary:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px) scale(1.02);
+        }
+        
+        .toolbar-btn.warning, .control-button.warning {
+            background: var(--color-warning);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.warning:hover, .control-button.warning:hover {
+            background: #e67e00;
+        }
+        
+        .toolbar-btn.secondary, .control-button.secondary {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.secondary:hover, .control-button.secondary:hover {
+            background: var(--color-primary-dark);
+        }
+
+        /* 图片显示区域 - 与 editor.html 保持一致 */
+        .image-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-lg);
+            background: var(--gradient-bg);
+            position: relative;
+            overflow: auto;
+        }
+        
+        /* 拖拽上传区域容器 - 覆盖在图片上方 */
+        .drag-drop-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            pointer-events: none; /* 防止阻止点击事件 */
+        }
+        
+        .drag-drop-container.active {
+            pointer-events: auto; /* 激活时允许拖拽交互 */
+        }
+        
+        /* 拖拽上传区域 - 与 editor.html 保持一致 */
+        .drag-drop-area {
+            width: 600px;
+            height: 320px;
+            border: 2px dashed var(--color-primary);
+            border-radius: var(--border-radius-lg);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: var(--color-bg-glass);
+            backdrop-filter: blur(10px);
+            color: var(--color-primary);
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition-base);
+        }
+        
+        .drag-drop-area.active {
+            display: flex;
+        }
+        
+        .drag-drop-area.drag-over {
+            background: var(--color-primary-glow);
+            border-color: var(--color-primary-dark);
+            color: var(--color-primary-dark);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .drag-drop-content {
+            text-align: center;
+            pointer-events: none;
+        }
+        
+        .drag-drop-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .drag-drop-text {
+            margin-bottom: 8px;
+        }
+        
+        .drag-drop-hint {
+            font-size: 14px;
+            opacity: 0.8;
+            font-weight: normal;
+        }
+        
+        #imageDisplay {
+            max-width: 100%;
+            max-height: 80vh;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+
+        /* OCR结果侧边栏 - 右侧弹出 */
+        .ocr-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100vh;
+            background: var(--color-bg-secondary);
+            box-shadow: var(--shadow-lg);
+            transition: right 0.3s ease;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .ocr-sidebar.open {
+            right: 0;
+        }
+        
+        .ocr-sidebar-header {
+            padding: var(--spacing-md);
+            background: var(--color-bg-card);
+            border-bottom: 1px solid var(--color-border-base);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ocr-sidebar-title {
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        .ocr-sidebar-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--color-text-secondary);
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius-base);
+            transition: var(--transition-base);
+        }
+        
+        .ocr-sidebar-close:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+        }
+        
+        .ocr-sidebar-content {
+            flex: 1;
+            padding: var(--spacing-md);
+            overflow-y: auto;
+        }
+        
+        .ocr-result {
+            background: var(--color-bg-card);
+            border-radius: var(--border-radius-base);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .ocr-result-label {
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+        
+        .ocr-result-text {
+            font-size: var(--font-size-base);
+            color: var(--color-text-regular);
+            line-height: var(--line-height-base);
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* 主题选择器 - 与 editor.html 保持一致 */
+        .theme-selector {
+            position: relative;
+        }
+        
+        .theme-selector-btn {
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: var(--font-size-base);
+            transition: var(--transition-base);
+        }
+        
+        .theme-selector-btn:hover {
+            border-color: var(--color-primary);
+            color: var(--color-text-primary);
+        }
+        
+        .theme-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            box-shadow: var(--shadow-lg);
+            padding: 8px 0;
+            min-width: 150px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: var(--transition-base);
+        }
+        
+        .theme-selector.open .theme-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .theme-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--color-text-regular);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            border-radius: var(--border-radius-base);
+            transition: var(--transition-base);
+            user-select: none;
+        }
+        
+        .theme-option:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+        }
+        
+        .theme-option.active {
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .theme-option:first-child {
+            border-top-left-radius: var(--border-radius-base);
+            border-top-right-radius: var(--border-radius-base);
+        }
+        
+        .theme-option:last-child {
+            border-bottom-left-radius: var(--border-radius-base);
+            border-bottom-right-radius: var(--border-radius-base);
+        }
+        
+        .theme-preview {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            border: 2px solid var(--color-border-base);
+        }
+        
+        /* 主题预览圆圈样式 - 与 editor.html 保持一致 */
+        .theme-preview.light {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+        }
+        
+        .theme-preview.dark {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+        
+        .theme-preview.blue {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+        
+        .theme-preview.green {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .toolbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .ocr-title {
+                text-align: center;
+                margin-bottom: var(--spacing-sm);
+            }
+            
+            .top-controls {
+                margin-left: 0;
+                justify-content: center;
+            }
+            
+            .image-area {
+                padding: var(--spacing-md);
+            }
+            
+            .drag-drop-area {
+                width: 90%;
+                height: 200px;
+            }
+            
+            .ocr-sidebar {
+                width: 100vw;
+                right: -100vw;
+            }
+        }
+        
+        /* 滚动条样式 - 与 editor.html 保持一致 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--color-bg-tertiary);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="ocr-container">
+        <!-- 顶部工具栏 -->
+        <div class="toolbar">
+            <div class="ocr-title">📝 一键OCR助手</div>
+            <div class="top-controls">
+                <button class="control-button toolbar-btn info upload" id="uploadBtn">📁 上传图片</button>
+                <button class="control-button toolbar-btn secondary" id="originalImageBtn">🖼️ 原始图片</button>
+                <button class="control-button toolbar-btn primary" id="ocrBtn" disabled>🔍 一键OCR</button>
+                
+                <!-- 主题选择器 - 与 editor.html 保持一致 -->
+                <div class="theme-selector" id="themeSelector">
+                    <button class="toolbar-btn theme-selector-btn" id="themeSelectorBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        主题
+                    </button>
+                    <div class="theme-dropdown">
+                        <div class="theme-option active" data-theme="light">
+                            <div class="theme-preview light"></div>
+                            <span>浅色主题</span>
+                        </div>
+                        <div class="theme-option" data-theme="dark">
+                            <div class="theme-preview dark"></div>
+                            <span>深色主题</span>
+                        </div>
+                        <div class="theme-option" data-theme="blue">
+                            <div class="theme-preview blue"></div>
+                            <span>蓝色主题</span>
+                        </div>
+                        <div class="theme-option" data-theme="green">
+                            <div class="theme-preview green"></div>
+                            <span>绿色主题</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 图片显示区域 -->
+        <div class="image-area">
+            <img id="imageDisplay" style="display: none;" alt="待处理的图片">
+            
+            <!-- 拖拽上传区域 -->
+            <div class="drag-drop-container">
+                <div class="drag-drop-area" id="dragDropArea">
+                    <div class="drag-drop-content">
+                        <div class="drag-drop-icon">📁</div>
+                        <div class="drag-drop-text">拖拽图片到此处或点击上传</div>
+                        <div class="drag-drop-hint">支持 PNG, JPG, JPEG, GIF 格式</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OCR结果侧边栏 -->
+    <div class="ocr-sidebar" id="ocrSidebar">
+        <div class="ocr-sidebar-header">
+            <div class="ocr-sidebar-title">OCR识别结果</div>
+            <button class="ocr-sidebar-close" id="closeOcrSidebar">&times;</button>
+        </div>
+        <div class="ocr-sidebar-content">
+            <div class="ocr-result">
+                <div class="ocr-result-label">识别内容：</div>
+                <div class="ocr-result-text" id="ocrText">等待OCR处理...</div>
+            </div>
+            <div class="ocr-result">
+                <div class="ocr-result-label">置信度：</div>
+                <div class="ocr-result-text" id="ocrConfidence">--</div>
+            </div>
+            <div class="ocr-result">
+                <div class="ocr-result-label">处理时间：</div>
+                <div class="ocr-result-text" id="ocrTime">--</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 文件输入元素
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.style.display = 'none';
+        document.body.appendChild(fileInput);
+
+        // DOM元素
+        const uploadBtn = document.getElementById('uploadBtn');
+        const originalImageBtn = document.getElementById('originalImageBtn');
+        const ocrBtn = document.getElementById('ocrBtn');
+        const imageDisplay = document.getElementById('imageDisplay');
+        const dragDropArea = document.getElementById('dragDropArea');
+        const ocrSidebar = document.getElementById('ocrSidebar');
+        const closeOcrSidebar = document.getElementById('closeOcrSidebar');
+        const ocrText = document.getElementById('ocrText');
+        const ocrConfidence = document.getElementById('ocrConfidence');
+        const ocrTime = document.getElementById('ocrTime');
+
+        // 状态管理
+        let currentImagePath = null;
+        let currentImageType = 'original'; // 'original' or 'ocr'
+        let originalImageUrl = null; // 保存原始图像URL
+        
+        // 文件选择事件
+        uploadBtn.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                loadImageFromFile(e.target.files[0]);
+            }
+        });
+
+        // 拖拽上传事件
+        document.addEventListener('dragenter', handleDragEnter);
+        document.addEventListener('dragover', handleDragOver);
+        document.addEventListener('dragleave', handleDragLeave);
+        document.addEventListener('drop', handleDrop);
+
+        function handleDragEnter(e) {
+            e.preventDefault();
+            const dragDropContainer = document.querySelector('.drag-drop-container');
+            dragDropContainer.classList.add('active');
+            dragDropArea.classList.add('active');
+            dragDropArea.classList.add('drag-over');
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            const dragDropContainer = document.querySelector('.drag-drop-container');
+            dragDropContainer.classList.remove('active');
+            dragDropArea.classList.remove('active');
+            dragDropArea.classList.remove('drag-over');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            const dragDropContainer = document.querySelector('.drag-drop-container');
+            dragDropContainer.classList.remove('active');
+            dragDropArea.classList.remove('active');
+            dragDropArea.classList.remove('drag-over');
+
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.match('image.*')) {
+                loadImageFromFile(files[0]);
+            } else {
+                alert('请拖拽图片文件！');
+            }
+        }
+
+        // 从文件加载图片
+        function loadImageFromFile(file) {
+            if (!file.type.match('image.*')) {
+                alert('请选择图片文件！');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imageDisplay.src = e.target.result;
+                imageDisplay.style.display = 'block';
+                currentImagePath = null;
+                currentImageType = 'original';
+                
+                // 隐藏拖拽区域
+                const dragDropContainer = document.querySelector('.drag-drop-container');
+                dragDropContainer.classList.remove('active');
+                dragDropArea.classList.remove('active');
+                
+                // 启用OCR按钮
+                ocrBtn.disabled = false;
+                
+                console.log('图片加载完成');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 原始图片按钮事件
+        originalImageBtn.addEventListener('click', () => {
+            // 检查当前是否有显示的图片
+            if (!currentImagePath && !imageDisplay.src) {
+                alert('请先上传图片');
+                return;
+            }
+            
+            // 如果当前已经显示的是原始图像，无需操作
+            if (currentImageType === 'original') {
+                return;
+            }
+            
+            // 保存原始图像URL（如果是第一次切换）
+            if (!originalImageUrl && currentImagePath) {
+                originalImageUrl = currentImagePath;
+            }
+            
+            // 切换到原始图像
+            if (originalImageUrl) {
+                // 如果有保存的原始URL，使用它
+                showImage(originalImageUrl, 'original');
+            } else if (currentImagePath && currentImagePath.includes('ocr.png')) {
+                // 如果是.ocr.png格式的路径，切换到原始路径
+                const originalPath = currentImagePath.replace('.ocr.png', '.png');
+                showImage(originalPath, 'original');
+            } else if (imageDisplay.dataset.originalSrc) {
+                // 如果图片元素有保存原始URL，使用它
+                showImage(imageDisplay.dataset.originalSrc, 'original');
+            } else {
+                // 其他情况，尝试重新加载原始图片
+                alert('无法切换回原始图像，请重新上传图片');
+            }
+        });
+
+        // OCR按钮事件
+        ocrBtn.addEventListener('click', () => {
+            if (!imageDisplay.src) {
+                alert('请先上传图片');
+                return;
+            }
+            
+            performOCR();
+        });
+
+        // 执行OCR
+        function performOCR() {
+            // 显示加载状态
+            ocrText.textContent = '正在识别中...';
+            ocrSidebar.classList.add('open');
+            
+            // 获取当前显示的图片URL
+            let imageUrl = currentImagePath;
+            if (imageUrl && imageDisplay.src) {
+                // 如果当前是data URL格式的图片，需要特殊处理
+                if (imageUrl.startsWith('data:')) {
+                    // 如果是OCR处理后的base64图片，使用原始图片URL重新OCR
+                    if (originalImageUrl) {
+                        imageUrl = originalImageUrl;
+                        console.log('检测到base64图片，使用原始URL重新OCR:', originalImageUrl);
+                    } else {
+                        // 对于本地图片，暂时不支持，提示用户使用网络图片
+                        ocrText.textContent = '当前不支持本地图片的OCR识别，请使用网络图片URL';
+                        return;
+                    }
+                } else {
+                    console.log("===2===")
+                    imageUrl = imageDisplay.src;
+                }
+            }
+            // 构建API请求URL
+            const apiUrl = `/api/v1/webocr?url=${encodeURIComponent(imageUrl)}`;
+            
+            // 发起API请求
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP错误! 状态码: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // 显示OCR结果
+                        const ocrData = data.data;
+                        ocrText.textContent = ocrData.ocr_text || '识别结果为空';
+                        
+                        // 如果有标注图像，显示它
+                        if (ocrData.ocr_annotation_base64) {
+                            // 直接更新现有的imageDisplay元素，而不是创建新元素
+                            imageDisplay.src = ocrData.ocr_annotation_base64;
+                            imageDisplay.style.display = 'block';
+                            
+                            // 保存原始图像URL（如果是第一次OCR处理）
+                            if (!originalImageUrl) {
+                                originalImageUrl = currentImagePath;
+                            }
+                            
+                            currentImageType = 'ocr';
+                            currentImagePath = ocrData.ocr_annotation_base64;
+                        }
+                        
+                        // 更新处理时间
+                        const processTime = new Date() - startTime;
+                        ocrTime.textContent = `${(processTime / 1000).toFixed(2)}秒`;
+                        
+                        // 如果有置信度信息，显示置信度
+                        if (ocrData.ocr_result && ocrData.ocr_result.ocrResult) {
+                            const results = ocrData.ocr_result.ocrResult;
+                            const avgConfidence = results.length > 0 ? 
+                                results.reduce((sum, item) => sum + (item.confidence || 0), 0) / results.length : 0;
+                            ocrConfidence.textContent = avgConfidence > 0 ? 
+                                `${(avgConfidence * 100).toFixed(1)}%` : '--';
+                        } else {
+                            ocrConfidence.textContent = '--';
+                        }
+                        
+                        console.log('OCR识别成功:', ocrData);
+                    } else {
+                        throw new Error(data.error || 'OCR识别失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('OCR识别失败:', error);
+                    ocrText.textContent = `OCR识别失败: ${error.message}`;
+                    ocrConfidence.textContent = '--';
+                    ocrTime.textContent = '--';
+                });
+            
+            // 记录开始时间
+            const startTime = new Date();
+        }
+
+        // 显示图片
+        function showImage(imagePath, type) {
+            imageDisplay.src = imagePath;
+            imageDisplay.style.display = 'block';
+            currentImageType = type;
+            currentImagePath = imagePath;
+            
+            console.log(`显示${type === 'original' ? '原始' : 'OCR'}图片: ${imagePath}`);
+        }
+
+        // 关闭OCR侧边栏
+        closeOcrSidebar.addEventListener('click', () => {
+            ocrSidebar.classList.remove('open');
+        });
+
+        // 主题切换功能 - 与 editor.html 保持一致
+        class ThemeManager {
+            constructor() {
+                this.currentTheme = localStorage.getItem('ocr-theme') || 'light';
+                this.initTheme();
+                this.bindEvents();
+            }
+
+            initTheme() {
+                this.setTheme(this.currentTheme);
+            }
+
+            setTheme(theme) {
+                document.body.className = '';
+                document.body.classList.add(`theme-${theme}`);
+                this.currentTheme = theme;
+                localStorage.setItem('ocr-theme', theme);
+                this.updateActiveThemeOption();
+            }
+
+            updateActiveThemeOption() {
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('active');
+                    if (option.dataset.theme === this.currentTheme) {
+                        option.classList.add('active');
+                    }
+                });
+            }
+
+            bindEvents() {
+                const themeSelector = document.getElementById('themeSelector');
+                const themeSelectorBtn = document.getElementById('themeSelectorBtn');
+                const themeOptions = document.querySelectorAll('.theme-option');
+                
+                // 主题选择器按钮点击事件
+                themeSelectorBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    themeSelector.classList.toggle('open');
+                });
+
+                // 主题选项点击事件
+                themeOptions.forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const theme = e.currentTarget.dataset.theme;
+                        this.setTheme(theme);
+                        themeSelector.classList.remove('open');
+                    });
+                });
+
+                // 点击其他地方关闭主题选择器
+                document.addEventListener('click', () => {
+                    themeSelector.classList.remove('open');
+                });
+            }
+        }
+
+        // URL参数处理
+        function processUrlParameters() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const imageUrl = urlParams.get('url');
+            
+            if (imageUrl) {
+                try {
+                    // 解码URL
+                    const decodedUrl = decodeURIComponent(imageUrl);
+                    currentImagePath = decodedUrl;
+                    
+                    // 默认显示原始图片
+                    showImage(decodedUrl, 'original');
+                    ocrBtn.disabled = false;
+                    
+                    console.log('从URL加载图片:', decodedUrl);
+                } catch (error) {
+                    console.error('URL参数解析错误:', error);
+                }
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            // 初始化主题管理器
+            new ThemeManager();
+            
+            // 处理URL参数
+            processUrlParameters();
+            
+            // 如果有图片URL，自动执行OCR
+            if (currentImagePath) {
+                setTimeout(() => {
+                    performOCR();
+                }, 100); // 延迟500ms确保图片加载完成
+            }
+            
+            console.log('OCR助手初始化完成');
+        });
+
+        // 键盘快捷键
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                ocrSidebar.classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>

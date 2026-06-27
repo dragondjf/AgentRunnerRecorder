@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业图片编辑器 - SnapScribe</title>
+    <style>
+        /* 主题变量定义 - 与 index.html 保持一致 */
+        :root {
+            /* 默认主题 - 浅色 */
+            --color-primary: #0066cc;
+            --color-primary-light: #4cd0ff;
+            --color-primary-dark: #004499;
+            --color-primary-glow: rgba(0, 102, 204, 0.2);
+            
+            --color-success: #00a870;
+            --color-warning: #ff8a00;
+            --color-danger: #ff3d71;
+            --color-info: #5a6c8a;
+            
+            --color-bg-main: #f5f7fa;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #eef2f7;
+            --color-bg-card: rgba(255, 255, 255, 0.9);
+            --color-bg-glass: rgba(255, 255, 255, 0.7);
+            
+            --color-text-primary: #1a202c;
+            --color-text-regular: #2d3748;
+            --color-text-secondary: #4a5568;
+            --color-text-placeholder: #a0aec0;
+            
+            --color-border-base: #e2e8f0;
+            --color-border-light: #cbd5e0;
+            --color-border-lighter: #a0aec0;
+            
+            --border-radius-base: 8px;
+            --border-radius-lg: 12px;
+            --spacing-xs: 5px;
+            --spacing-sm: 10px;
+            --spacing-md: 20px;
+            --spacing-lg: 30px;
+            --spacing-xl: 40px;
+            
+            --font-family: 'Segoe UI', 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Roboto', 'Helvetica Neue', sans-serif;
+            --font-size-h1: 24px;
+            --font-size-h2: 20px;
+            --font-size-base: 14px;
+            --font-size-small: 12px;
+            --line-height-base: 1.6;
+            
+            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+            --shadow-glow: 0 0 10px var(--color-primary-glow);
+            
+            --gradient-primary: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+            --gradient-bg: linear-gradient(135deg, var(--color-bg-main), var(--color-bg-tertiary));
+        }
+        
+        /* 深色主题 */
+        body.theme-dark {
+            --color-primary: #00a8ff;
+            --color-primary-light: #4cd0ff;
+            --color-primary-dark: #0066cc;
+            --color-primary-glow: rgba(0, 168, 255, 0.5);
+            
+            --color-success: #00d68f;
+            --color-warning: #ffaa00;
+            --color-danger: #ff3d71;
+            --color-info: #8f9bb3;
+            
+            --color-bg-main: #0f172a;
+            --color-bg-secondary: #1e293b;
+            --color-bg-tertiary: #334155;
+            --color-bg-card: rgba(30, 41, 59, 0.8);
+            --color-bg-glass: rgba(15, 23, 42, 0.7);
+            
+            --color-text-primary: #f1f5f9;
+            --color-text-regular: #cbd5e1;
+            --color-text-secondary: #94a3b8;
+            --color-text-placeholder: #64748b;
+            
+            --color-border-base: #334155;
+            --color-border-light: #475569;
+            --color-border-lighter: #64748b;
+            
+            --gradient-bg: linear-gradient(135deg, var(--color-bg-main), var(--color-bg-secondary));
+        }
+        
+        /* 蓝色主题 */
+        body.theme-blue {
+            --color-primary: #1e88e5;
+            --color-primary-light: #64b5f6;
+            --color-primary-dark: #0d47a1;
+            --color-primary-glow: rgba(30, 136, 229, 0.2);
+            
+            --color-bg-main: #e3f2fd;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #bbdefb;
+            
+            --color-text-primary: #0d47a1;
+            --color-text-regular: #1565c0;
+            --color-text-secondary: #1976d2;
+        }
+        
+        /* 绿色主题 */
+        body.theme-green {
+            --color-primary: #43a047;
+            --color-primary-light: #81c784;
+            --color-primary-dark: #2e7d32;
+            --color-primary-glow: rgba(67, 160, 71, 0.2);
+            
+            --color-bg-main: #e8f5e9;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #c8e6c9;
+            
+            --color-text-primary: #1b5e20;
+            --color-text-regular: #2e7d32;
+            --color-text-secondary: #388e3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--gradient-bg);
+            color: var(--color-text-regular);
+            overflow-x: hidden;
+            min-height: 100vh;
+            transition: var(--transition-base);
+        }
+        
+        .editor-container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background: var(--color-bg-secondary);
+        }
+        
+        /* 顶部工具栏 - 与 index.html 保持一致 */
+        .toolbar {
+            display: flex;
+            padding: var(--spacing-sm);
+            background: var(--color-bg-card);
+            border-bottom: 1px solid var(--color-border-base);
+            box-shadow: var(--shadow-md);
+            flex-shrink: 0;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            backdrop-filter: blur(10px);
+            align-items: center;
+            position: relative;
+            z-index: 1000;
+        }
+        
+        .toolbar .editor-title {
+            font-size: var(--font-size-h1);
+            font-weight: 600;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
+        
+        .top-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            align-items: center;
+            margin-left: auto;
+            justify-content: flex-end;
+        }
+        
+        .toolbar-btn, .control-button {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-regular);
+            border: 1px solid var(--color-border-base);
+            padding: 10px 18px;
+            border-radius: var(--border-radius-base);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .toolbar-btn::before, .control-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .toolbar-btn:hover::before, .control-button:hover::before {
+            left: 100%;
+        }
+        
+        .toolbar-btn:hover, .control-button:hover {
+            color: var(--color-text-primary);
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-1px);
+        }
+        
+        .toolbar-btn.upload, .control-button.upload {
+            background: var(--color-info);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.upload:hover, .control-button.upload:hover {
+            background: #4a5568;
+        }
+        
+        .toolbar-btn.danger, .control-button.danger {
+            background: var(--color-danger);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.danger:hover, .control-button.danger:hover {
+            background: #e91e63;
+        }
+        
+        .toolbar-btn.success, .control-button.download {
+            background: var(--color-success);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.success:hover, .control-button.download:hover {
+            background: #00c06a;
+        }
+        
+        .toolbar-btn.primary, .control-button.save {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.primary:hover, .control-button.save:hover {
+            background: var(--color-primary-dark);
+            transform: translateY(-1px) scale(1.02);
+        }
+        
+        .toolbar-btn.warning, .control-button.export-json {
+            background: var(--color-warning);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.warning:hover, .control-button.export-json:hover {
+            background: #e67e00;
+        }
+        
+        .toolbar-btn.info, .control-button.import-json {
+            background: var(--color-info);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.info:hover, .control-button.import-json:hover {
+            background: #4a5568;
+        }
+        
+        .toolbar-btn.secondary, .control-button.view-screenshots {
+            background: var(--color-primary);
+            color: white;
+            border: none;
+        }
+        
+        .toolbar-btn.secondary:hover, .control-button.view-screenshots:hover {
+            background: var(--color-primary-dark);
+        }
+        
+        /* 画布区域 - 与 index.html 保持一致 */
+        .canvas-area {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-lg);
+            background: var(--gradient-bg);
+            position: relative;
+            overflow: auto;
+        }
+        
+        /* 拖拽上传区域容器 - 覆盖在canvas上方 */
+        .drag-drop-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            pointer-events: none; /* 防止阻止点击事件 */
+        }
+        
+        .drag-drop-container.active {
+            pointer-events: auto; /* 激活时允许拖拽交互 */
+        }
+        
+        /* 拖拽上传区域 - 与 index.html 保持一致 */
+        .drag-drop-area {
+            width: 600px;
+            height: 320px;
+            border: 2px dashed var(--color-primary);
+            border-radius: var(--border-radius-lg);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            background: var(--color-bg-glass);
+            backdrop-filter: blur(10px);
+            color: var(--color-primary);
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition-base);
+        }
+        
+        .drag-drop-area.active {
+            display: flex;
+        }
+        
+        .drag-drop-area.drag-over {
+            background: var(--color-primary-glow);
+            border-color: var(--color-primary-dark);
+            color: var(--color-primary-dark);
+            transform: scale(1.02);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .drag-drop-content {
+            text-align: center;
+            pointer-events: none;
+        }
+        
+        .drag-drop-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+        
+        .drag-drop-text {
+            margin-bottom: 8px;
+        }
+        
+        .drag-drop-hint {
+            font-size: 14px;
+            opacity: 0.8;
+            font-weight: normal;
+        }
+        
+        #imageCanvas {
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            cursor: crosshair;
+        }
+        
+        /* 底部工具栏 */
+        .bottom-toolbar {
+            background: var(--color-bg-card);
+            border-top: 1px solid var(--color-border-base);
+            padding: var(--spacing-sm);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+            backdrop-filter: blur(10px);
+        }
+        
+        .bottom-toolbar .tool-strip {
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+            width: auto;
+        }
+        
+        .toolbar-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .tool-strip {
+            display: flex;
+            gap: var(--spacing-xs);
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            padding: var(--spacing-xs);
+            box-shadow: var(--shadow-sm);
+        }
+
+         .tool-item {
+             width: 36px;
+             height: 36px;
+             border: none;
+             border-radius: var(--border-radius-base);
+             background: var(--color-bg-secondary);
+             cursor: pointer;
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             font-size: 16px;
+             color: var(--color-text-secondary);
+             transition: var(--transition-base);
+             position: relative;
+             border: 1px solid var(--color-border-base);
+         }
+
+         .tool-item:hover {
+             background: var(--color-bg-tertiary);
+             color: var(--color-text-primary);
+             border-color: var(--color-primary);
+             box-shadow: var(--shadow-sm);
+             transform: translateY(-1px);
+         }
+
+         .tool-item.active {
+             background: var(--gradient-primary);
+             color: white;
+             border-color: var(--color-primary);
+             box-shadow: var(--shadow-glow);
+         }
+        
+        .tool-separator {
+            width: 1px;
+            height: 24px;
+            background: #dee2e6;
+            margin: 0 4px;
+        }
+        
+        /* 工具选项面板 */
+        .tool-options {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffffff;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 12px 16px;
+            display: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            min-width: 200px;
+        }
+        
+        .tool-options.active {
+            display: block;
+        }
+        
+        .option-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            flex-wrap: nowrap;
+        }
+        
+        .option-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .option-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: #6c757d;
+            min-width: 40px;
+            flex-shrink: 0;
+        }
+        
+        .color-input {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            background: none;
+            flex-shrink: 0;
+        }
+        
+        .size-input {
+            width: 100px;
+            height: 4px;
+            border-radius: 2px;
+            background: #dee2e6;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+            flex-shrink: 0;
+        }
+        
+        .size-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+        
+        .size-display {
+            font-size: 12px;
+            color: #6c757d;
+            min-width: 45px;
+            font-weight: 500;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        
+        .text-input {
+            padding: 4px 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 3px;
+            font-size: 12px;
+            width: 100px;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        
+        .style-buttons {
+            display: flex;
+            gap: 6px;
+            margin-left: auto;
+        }
+        
+        .style-button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #dee2e6;
+            background: #ffffff;
+            border-radius: 3px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+        
+        .style-button:hover {
+            background: #f8f9fa;
+        }
+        
+        .style-button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        .number-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            width: 140px;
+            margin-left: auto;
+        }
+        
+        .number-button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid #007bff;
+            background: white;
+            color: #007bff;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 10px;
+            transition: all 0.2s ease;
+        }
+        
+        .number-button:hover,
+        .number-button.active {
+            background: #007bff;
+            color: white;
+        }
+        
+        /* 属性面板 */
+        .property-panel {
+            position: fixed;
+            top: 50%;
+            right: 24px;
+            transform: translateY(-50%);
+            width: 280px;
+            background: #ffffff;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            display: none;
+            z-index: 1000;
+            max-height: 70vh;
+            overflow-y: auto;
+            cursor: move;
+            user-select: none;
+        }
+        
+        .property-panel.active {
+            display: block;
+        }
+        
+        .property-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: grab;
+        }
+        
+        .property-title:active {
+            cursor: grabbing;
+        }
+        
+        .property-title::before {
+            content: '⚙️';
+            font-size: 14px;
+        }
+        
+        .property-item {
+            margin-bottom: 12px;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .property-item:last-of-type {
+            margin-bottom: 0;
+        }
+        
+        .property-item label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .property-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 12px;
+            background: #ffffff;
+            transition: all 0.2s ease;
+            box-sizing: border-box;
+        }
+        
+        .property-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+        
+        .property-input[type="color"] {
+            height: 32px;
+            padding: 2px;
+            cursor: pointer;
+        }
+        
+        .property-input[type="range"] {
+            height: 6px;
+            background: #dee2e6;
+            border: none;
+            border-radius: 3px;
+            outline: none;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+        
+        .property-input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .property-input[type="number"] {
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        textarea.property-input {
+            resize: vertical;
+            min-height: 60px;
+            font-family: inherit;
+            line-height: 1.3;
+        }
+        
+        .delete-button {
+            width: 100%;
+            padding: 8px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 12px;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .delete-button:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+        }
+        
+        .property-style-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        
+        .property-style-button {
+            flex: 1;
+            padding: 6px;
+            border: 2px solid #dee2e6;
+            background: #ffffff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 11px;
+            transition: all 0.2s ease;
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .property-style-button:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+        
+        .property-style-button.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+        }
+        
+        /* 暗色主题 */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #1a1a1a;
+                color: #e0e0e0;
+            }
+            
+            .editor-container {
+                background: #2d2d2d;
+            }
+            
+            .top-toolbar {
+                background: #2d2d2d;
+                border-bottom: 1px solid #404040;
+            }
+            
+            .editor-title {
+                background: linear-gradient(135deg, #8b9dc3 0%, #9575cd 100%);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+            
+            .control-button {
+                border: 1px solid #555;
+                color: #e0e0e0;
+            }
+            
+            .control-button.cancel {
+                background: #6c757d;
+                border-color: #6c757d;
+            }
+            
+            .control-button.cancel:hover {
+                background: #545b62;
+                border-color: #545b62;
+            }
+            
+            .control-button.download {
+                background: #28a745;
+                border-color: #28a745;
+            }
+            
+            .control-button.download:hover {
+                background: #1e7e34;
+                border-color: #1e7e34;
+            }
+            
+            .control-button.save {
+                background: #007bff;
+                border-color: #007bff;
+            }
+            
+            .control-button.save:hover {
+                background: #0056b3;
+                border-color: #0056b3;
+            }
+            
+            .control-button.export-json {
+                background: #ff6b35;
+                border-color: #ff6b35;
+            }
+            
+            .control-button.export-json:hover {
+                background: #e55a2b;
+                border-color: #e55a2b;
+            }
+            
+            .control-button.import-json {
+                background: #4ecdc4;
+                border-color: #4ecdc4;
+            }
+            
+            .control-button.import-json:hover {
+                background: #45b7aa;
+                border-color: #45b7aa;
+            }
+            
+            .canvas-area {
+                background: #1a1a1a;
+            }
+            
+            #imageCanvas {
+                border: 1px solid #555;
+                background: #2d2d2d;
+            }
+            
+            .drag-drop-area {
+                border: 2px dashed #8b9dc3;
+                background: rgba(139, 157, 195, 0.1);
+                color: #8b9dc3;
+            }
+            
+            .drag-drop-area.drag-over {
+                background: rgba(139, 157, 195, 0.2);
+                border-color: #7a8bb0;
+                color: #7a8bb0;
+            }
+            
+            /* 深色模式下拖拽区域样式 */
+            .drag-drop-area {
+                border: 2px dashed #8b9dc3;
+                background: rgba(26, 26, 26, 0.95);
+                color: #8b9dc3;
+            }
+            
+            .bottom-toolbar {
+                background: #2d2d2d;
+                border-top: 1px solid #404040;
+            }
+            
+            .tool-strip {
+                background: #1a1a1a;
+                border: 1px solid #555;
+            }
+            
+            .tool-item {
+                color: #b0b0b0;
+            }
+            
+            .tool-item:hover {
+                background: #404040;
+                color: #e0e0e0;
+            }
+            
+            .tool-item.active {
+                background: #007bff;
+                color: white;
+            }
+            
+            .tool-separator {
+                background: #555;
+            }
+            
+            .tool-options {
+                background: #2d2d2d;
+                border: 1px solid #555;
+                color: #e0e0e0;
+            }
+            
+            .option-label {
+                color: #b0b0b0;
+            }
+            
+            .color-input {
+                border: 1px solid #555;
+            }
+            
+            .size-input {
+                background: #555;
+            }
+            
+            .size-input::-webkit-slider-thumb {
+                background: #007bff;
+            }
+            
+            .size-display {
+                color: #b0b0b0;
+            }
+            
+            .text-input {
+                border: 1px solid #555;
+                background: #1a1a1a;
+                color: #e0e0e0;
+            }
+            
+            .text-input:focus {
+                border-color: #007bff;
+            }
+            
+            .style-button {
+                border: 1px solid #555;
+                background: #2d2d2d;
+                color: #e0e0e0;
+            }
+            
+            .style-button:hover {
+                background: #404040;
+            }
+            
+            .style-button.active {
+                background: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+            
+            .number-button {
+                border: 1px solid #007bff;
+                background: #2d2d2d;
+                color: #007bff;
+            }
+            
+            .number-button:hover,
+            .number-button.active {
+                background: #007bff;
+                color: white;
+            }
+            
+            .property-panel {
+                background: #2d2d2d;
+                border: 1px solid #555;
+            }
+            
+            .property-title {
+                color: #e0e0e0;
+                border-bottom: 1px solid #555;
+            }
+            
+            .property-item {
+                background: #1a1a1a;
+                border: 1px solid #555;
+            }
+            
+            .property-item label {
+                color: #b0b0b0;
+            }
+            
+            .property-input {
+                border: 1px solid #555;
+                background: #2d2d2d;
+                color: #e0e0e0;
+            }
+            
+            .property-input:focus {
+                border-color: #007bff;
+                box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            }
+            
+            .property-input[type="color"] {
+                border: 1px solid #555;
+            }
+            
+            .property-input[type="range"] {
+                background: #555;
+            }
+            
+            .property-input[type="range"]::-webkit-slider-thumb {
+                background: #007bff;
+                border: 2px solid #2d2d2d;
+            }
+            
+            textarea.property-input {
+                background: #2d2d2d;
+                color: #e0e0e0;
+            }
+            
+            .delete-button {
+                background: #dc3545;
+            }
+            
+            .delete-button:hover {
+                background: #c82333;
+            }
+            
+            .property-style-button {
+                border: 2px solid #555;
+                background: #2d2d2d;
+                color: #e0e0e0;
+            }
+            
+            .property-style-button:hover {
+                border-color: #007bff;
+                background: #404040;
+            }
+            
+            .property-style-button.active {
+                background: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+            
+            ::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.05);
+            }
+            
+            ::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #8b9dc3 0%, #9575cd 100%);
+            }
+            
+            ::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(135deg, #7a8bb0 0%, #8566ba 100%);
+            }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+             .tool-strip {
+                 gap: 1px;
+             }
+             
+             .tool-item {
+                 width: 32px;
+                 height: 32px;
+                 font-size: 14px;
+             }
+            
+            .property-panel {
+                position: fixed;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                top: auto;
+                transform: none;
+                width: auto;
+                border-radius: 4px 4px 0 0;
+                max-height: 50vh;
+                overflow-y: auto;
+            }
+            
+            .tool-options {
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+        
+        /* 暗色主题响应式设计 */
+        @media (max-width: 768px) and (prefers-color-scheme: dark) {
+            .property-panel {
+                background: #2d2d2d;
+                border: 1px solid #555;
+                border-bottom: none;
+            }
+            
+            .tool-options {
+                background: #2d2d2d;
+                border: 1px solid #555;
+            }
+        }
+        
+        /* 抽屉样式 - 与index.html配置面板风格保持一致 */
+        .screenshots-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.3);
+            z-index: 1500;
+            display: flex;
+            justify-content: flex-end;
+            backdrop-filter: blur(5px);
+        }
+        
+        .screenshots-drawer {
+            width: 500px;
+            height: 100%;
+            background: var(--color-bg-card);
+            border-left: 1px solid var(--color-border-base);
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-lg);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1501;
+        }
+        
+        .screenshots-drawer.show {
+            transform: translateX(0);
+        }
+        
+        .drawer-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border-base);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--color-bg-secondary);
+        }
+        
+        .drawer-header h3 {
+            margin: 0;
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--border-radius-base);
+            transition: var(--transition-base);
+        }
+        
+        .close-button:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+        }
+        
+        .drawer-content {
+            flex: 1;
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+            background: var(--color-bg-primary);
+        }
+        
+        .screenshots-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .screenshot-item {
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            padding: var(--spacing-md);
+            background: var(--color-bg-card);
+            box-shadow: var(--shadow-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .screenshot-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .screenshot-number {
+            background: var(--color-primary);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 8px;
+            flex-shrink: 0;
+        }
+        
+        .screenshot-name {
+            flex: 1;
+            font-weight: 500;
+            color: var(--color-text-primary);
+            padding: 8px 12px;
+            height: 36px;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-base);
+            background: var(--color-bg-secondary);
+            cursor: text;
+            transition: var(--transition-base);
+            font-size: var(--font-size-base);
+        }
+        
+        .screenshot-name:hover {
+            border-color: var(--color-border-base);
+        }
+        
+        .screenshot-name:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+        
+        /* 截图项操作按钮样式 */
+        .download-single-btn,
+        .delete-single-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+        
+        .download-single-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .download-single-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+        
+        .download-single-btn:active {
+            transform: translateY(0);
+        }
+        
+        .delete-single-btn {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .delete-single-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
+        }
+        
+        .delete-single-btn:active {
+            transform: translateY(0);
+        }
+        
+        .download-single-btn:disabled,
+        .delete-single-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .screenshot-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--color-bg-secondary);
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--border-radius-base);
+            padding: var(--spacing-xs);
+            min-height: 90px;
+        }
+        
+        .screenshot-preview img {
+            max-width: 100%;
+            max-height: 110px;
+            border-radius: 4px;
+        }
+        
+        .drawer-footer {
+            padding: var(--spacing-lg);
+            border-top: 1px solid var(--color-border-base);
+            background: var(--color-bg-secondary);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-sm);
+        }
+        
+        .save-button {
+            padding: 10px 20px;
+            background: var(--color-success);
+            color: white;
+            border: 1px solid var(--color-success);
+            border-radius: var(--border-radius-base);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+        
+        .save-button:hover {
+            background: #008f5a;
+            border-color: #008f5a;
+            transform: translateY(-1px);
+        }
+    </style>
+    
+    <!-- 自定义删除模态对话框样式 -->
+    <style>
+        .delete-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(5px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-base);
+        }
+        
+        .delete-modal {
+            background: var(--color-bg-card);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            min-width: 320px;
+            max-width: 400px;
+            transform: scale(0.9) translateY(-20px);
+            animation: modalSlideIn 0.3s ease-out forwards;
+            border: 1px solid var(--color-border-light);
+        }
+        
+        .delete-modal-header {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border-base);
+        }
+        
+        .delete-modal-icon {
+            font-size: 24px;
+            margin-right: var(--spacing-sm);
+            color: var(--color-warning);
+        }
+        
+        .delete-modal-title {
+            margin: 0;
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+        
+        .delete-modal-body {
+            padding: var(--spacing-md);
+        }
+        
+        .delete-modal-message {
+            margin: 0 0 var(--spacing-sm) 0;
+            font-size: var(--font-size-base);
+            color: var(--color-text-regular);
+            line-height: var(--line-height-base);
+        }
+        
+        .delete-modal-warning {
+            margin: 0;
+            font-size: var(--font-size-small);
+            color: var(--color-danger);
+            font-weight: 500;
+        }
+        
+        .delete-modal-footer {
+            display: flex;
+            gap: var(--spacing-sm);
+            padding: var(--spacing-md);
+            justify-content: flex-end;
+            border-top: 1px solid var(--color-border-base);
+        }
+        
+        .delete-modal-btn {
+            padding: 10px 20px;
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-base);
+            min-width: 80px;
+            background: var(--color-bg-secondary);
+            color: var(--color-text-regular);
+        }
+        
+        .delete-modal-cancel:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+            border-color: var(--color-border-light);
+            transform: translateY(-1px);
+        }
+        
+        .delete-modal-confirm {
+            background: var(--color-danger);
+            color: white;
+            border: none;
+        }
+        
+        .delete-modal-confirm:hover {
+            background: #e91e63;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 61, 113, 0.3);
+        }
+        
+        .delete-modal-confirm:active {
+            transform: translateY(0);
+        }
+        
+        /* 统一模态框样式 - 与index.html保持一致 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--color-bg-card);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-lg);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80%;
+            overflow-y: auto;
+            border: 1px solid var(--color-border-light);
+            backdrop-filter: blur(10px);
+            transform: translateY(-20px) scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal.show .modal-content {
+            transform: translateY(0) scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .modal-title {
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            color: var(--color-text-primary);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            font-size: 24px;
+            cursor: pointer;
+            transition: var(--transition-base);
+            padding: 5px;
+            border-radius: var(--border-radius-base);
+        }
+
+        .modal-close:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-danger);
+        }
+
+        .modal-body {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-sm);
+        }
+
+        .modal-btn {
+            padding: 10px 20px;
+            border-radius: var(--border-radius-base);
+            border: 1px solid var(--color-border-base);
+            background: var(--color-bg-secondary);
+            color: var(--color-text-regular);
+            cursor: pointer;
+            transition: var(--transition-base);
+            font-weight: 500;
+            font-size: var(--font-size-base);
+        }
+
+        .modal-btn.primary {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+        }
+
+        .modal-btn.danger {
+            background: var(--color-danger);
+            color: white;
+            border: none;
+        }
+
+        .modal-btn:hover {
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-glow);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn.danger:hover {
+            background: #e02e5c;
+            box-shadow: 0 0 10px rgba(255, 61, 113, 0.5);
+        }
+
+        /* 表单样式 - 与index.html保持一致 */
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+            color: var(--color-text-primary);
+            font-size: var(--font-size-base);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            background: var(--color-bg-secondary);
+            color: var(--color-text-regular);
+            font-size: var(--font-size-base);
+            transition: var(--transition-base);
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-text-placeholder);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            background: var(--color-bg-secondary);
+            color: var(--color-text-regular);
+            font-size: var(--font-size-base);
+            transition: var(--transition-base);
+            resize: vertical;
+            min-height: 80px;
+            box-sizing: border-box;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        /* 属性面板样式 - 与index.html保持一致 */
+        .property-panel {
+            position: fixed;
+            right: 0;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: var(--color-bg-card);
+            border-left: 1px solid var(--color-border-base);
+            box-shadow: var(--shadow-lg);
+            padding: var(--spacing-lg);
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 100;
+        }
+
+        .property-panel.show {
+            transform: translateX(0);
+        }
+
+        .property-title {
+            font-size: var(--font-size-h2);
+            font-weight: 600;
+            color: var(--color-text-primary);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .property-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .save-btn {
+            background: var(--color-success);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius-base);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .save-btn:hover {
+            background: #008f5a;
+            transform: translateY(-1px);
+        }
+
+        .delete-button {
+            background: var(--color-danger);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: var(--border-radius-base);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-base);
+            margin-top: var(--spacing-md);
+        }
+
+        .delete-button:hover {
+            background: #e02e5c;
+            transform: translateY(-1px);
+        }
+
+        /* 属性面板操作按钮 */
+        .property-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            padding-top: var(--spacing-sm);
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .property-action-btn {
+            flex: 1;
+            padding: 8px 16px;
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            background: var(--color-bg-secondary);
+            color: var(--color-text-regular);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition-base);
+            text-align: center;
+        }
+
+        .property-action-btn:hover {
+            border-color: var(--color-primary);
+            transform: translateY(-1px);
+        }
+
+        .property-action-btn.save {
+            background: var(--color-success);
+            color: white;
+            border-color: var(--color-success);
+        }
+
+        .property-action-btn.save:hover {
+            background: #008f5a;
+            border-color: #008f5a;
+        }
+
+        .property-action-btn.close {
+            background: var(--color-warning);
+            color: white;
+            border-color: var(--color-warning);
+        }
+
+        .property-action-btn.close:hover {
+            background: #e07b00;
+            border-color: #e07b00;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes modalSlideIn {
+            to {
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* 通知样式 - 与index.html保持一致 */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: var(--spacing-md);
+            background: var(--color-bg-card);
+            border-radius: var(--border-radius-base);
+            box-shadow: var(--shadow-lg);
+            border-left: 4px solid var(--color-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            z-index: 2000;
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            border-left-color: var(--color-success);
+        }
+        
+        .notification.warning {
+            border-left-color: var(--color-warning);
+        }
+        
+        .notification.error {
+            border-left-color: var(--color-danger);
+        }
+        
+        .notification.info {
+            border-left-color: var(--color-primary);
+        }
+        
+        .notification-icon {
+            font-size: 18px;
+        }
+        
+        .notification.success .notification-icon {
+            color: var(--color-success);
+        }
+        
+        .notification.warning .notification-icon {
+            color: var(--color-warning);
+        }
+        
+        .notification.error .notification-icon {
+            color: var(--color-danger);
+        }
+        
+        .notification.info .notification-icon {
+            color: var(--color-primary);
+        }
+        
+        .notification-message {
+            color: var(--color-text-primary);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+        }
+        
+        /* 主题选择器样式 - 与index.html保持一致 */
+        .theme-selector {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            z-index: 1001; /* 确保主题选择器在工具栏上方 */
+        }
+        
+        .theme-selector-btn {
+            background: var(--color-bg-secondary);
+            color: var(--color-text-regular);
+            border: 1px solid var(--color-border-base);
+            padding: 10px 18px;
+            border-radius: var(--border-radius-base);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            transition: var(--transition-base);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-weight: 500;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .theme-selector-btn:hover {
+            color: var(--color-text-primary);
+            border-color: var(--color-primary);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .theme-selector-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 160px;
+            background: var(--color-bg-card);
+            border: 1px solid var(--color-border-base);
+            border-radius: var(--border-radius-base);
+            box-shadow: var(--shadow-lg);
+            margin-top: 5px;
+            z-index: 1002; /* 增加z-index确保在下拉菜单在最上层 */
+            padding: var(--spacing-xs);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .theme-selector.open .theme-selector-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .theme-option {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            color: var(--color-text-regular);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            border-radius: var(--border-radius-base);
+            transition: var(--transition-base);
+            user-select: none;
+        }
+        
+        .theme-option:hover {
+            background: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+        }
+        
+        .theme-option.active {
+            background: var(--color-primary);
+            color: white;
+        }
+        
+        .theme-option:first-child {
+            border-top-left-radius: var(--border-radius-base);
+            border-top-right-radius: var(--border-radius-base);
+        }
+        
+        .theme-option:last-child {
+            border-bottom-left-radius: var(--border-radius-base);
+            border-bottom-right-radius: var(--border-radius-base);
+        }
+        
+        .theme-preview {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            border: 2px solid var(--color-border-base);
+        }
+        
+        /* 主题预览圆圈样式 - 与index.html保持一致 */
+        .theme-preview.light {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+        }
+        
+        .theme-preview.dark {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+        
+        .theme-preview.blue {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+        
+        .theme-preview.green {
+            background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+        }
+            border-radius: 4px;
+            border: 1px solid var(--color-border-base);
+            flex-shrink: 0;
+        }
+        
+        .theme-preview.light {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f7fa 100%);
+        }
+        
+        .theme-preview.dark {
+            background: linear-gradient(135deg, #2d2d2d 0%, #0f172a 100%);
+        }
+        
+        .theme-preview.blue {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <!-- 顶部工具栏 -->
+        <div class="top-toolbar toolbar">
+            <div class="editor-title">🎨 图片编辑器</div>
+            <div class="top-controls">
+                <button class="control-button toolbar-btn info upload" id="uploadBtn">📁 上传</button>
+                <button class="control-button toolbar-btn warning export-json" id="exportJsonBtn" title="导出JSON">💾 导出JSON</button>
+                <button class="control-button toolbar-btn info import-json" id="importJsonBtn" title="导入JSON">📂 导入JSON</button>
+                <button class="control-button toolbar-btn secondary view-screenshots" id="viewScreenshotsBtn" title="查看所有截图">🖼️ 查看所有截图</button>
+                <button class="control-button toolbar-btn success download" id="downloadBtn">⬇️ 下载</button>
+                <button class="control-button toolbar-btn primary save" id="saveBtn">💾 保存</button>
+                <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+                
+                <!-- 主题选择器 - 与index.html保持一致 -->
+                <div class="theme-selector" id="themeSelector">
+                    <button class="toolbar-btn theme-selector-btn" id="themeSelectorBtn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"></circle>
+                            <line x1="12" y1="1" x2="12" y2="3"></line>
+                            <line x1="12" y1="21" x2="12" y2="23"></line>
+                            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                            <line x1="1" y1="12" x2="3" y2="12"></line>
+                            <line x1="21" y1="12" x2="23" y2="12"></line>
+                            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                        </svg>
+                        主题
+                    </button>
+                    <div class="theme-selector-dropdown">
+                        <div class="theme-option active" data-theme="light">
+                            <div class="theme-preview light"></div>
+                            <span>浅色主题</span>
+                        </div>
+                        <div class="theme-option" data-theme="dark">
+                            <div class="theme-preview dark"></div>
+                            <span>深色主题</span>
+                        </div>
+                        <div class="theme-option" data-theme="blue">
+                            <div class="theme-preview blue"></div>
+                            <span>蓝色主题</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 画布区域 -->
+        <div class="canvas-area">
+            <canvas id="imageCanvas"></canvas>
+            <!-- 拖拽上传区域 -->
+            <div class="drag-drop-container">
+                <div class="drag-drop-area" id="dragDropArea">
+                    <div class="drag-drop-content">
+                        <span class="drag-drop-icon">📁</span>
+                        <div class="drag-drop-text">显示拖放文件到这里或点击上传</div>
+                        <div class="drag-drop-hint">支持所有图片格式（JPG、PNG、GIF等）</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部工具栏 -->
+        <div class="bottom-toolbar">
+            <div class="toolbar-content">
+                <!-- 工具条 -->
+                <div class="tool-strip">
+                    <button class="tool-item active" data-tool="select" title="选择">⚪</button>
+                    <button class="tool-item" data-tool="crop" title="裁剪">✂️</button>
+                    <div class="tool-separator"></div>
+                    <button class="tool-item" data-tool="text" title="文字">T</button>
+                    <button class="tool-item" data-tool="brush" title="画笔">🖌️</button>
+                    <div class="tool-separator"></div>
+                    <button class="tool-item" data-tool="arrow" title="箭头">➡️</button>
+                    <button class="tool-item" data-tool="ellipse" title="椭圆">⭕</button>
+                    <button class="tool-item" data-tool="rectangle" title="正方形">⬜</button>
+                    <button class="tool-item" data-tool="highlight" title="高亮">🔆</button>
+                    <div class="tool-separator"></div>
+                    <button class="tool-item" data-tool="number" title="序号">①</button>
+                    <button class="tool-item" data-tool="mosaic" title="马赛克">🔲</button>
+                    <div class="tool-separator"></div>
+                    <button class="tool-item" data-tool="grid" title="网格">⊞</button>
+                    <button class="tool-item" data-tool="undo" title="撤销">↶</button>
+                </div>
+                
+                <!-- 选择工具选项 -->
+                <div class="tool-options" id="selectOptions">
+                    <div class="option-group">
+                        <span class="option-label">提示</span>
+                        <span>点击选择已添加的元素进行编辑</span>
+                    </div>
+                </div>
+                
+                <!-- 裁剪工具选项 -->
+                <div class="tool-options" id="cropOptions">
+                    <div class="option-group">
+                        <span class="option-label">操作</span>
+                        <span>拖动鼠标选择裁剪区域，选择完成后会弹出确认对话框</span>
+                    </div>
+                </div>
+                
+                <!-- 文字工具选项 -->
+                <div class="tool-options" id="textOptions">
+                    <div class="option-group">
+                        <span class="option-label">颜色</span>
+                        <input type="color" class="color-input" id="textColor" value="#ff0000">
+                        <span class="option-label">大小</span>
+                        <input type="range" class="size-input" id="textSize" min="12" max="150" value="22">
+                        <span class="size-display" id="textSizeDisplay">22px</span>
+                    </div>
+                    <div class="option-group">
+                        <span class="option-label">样式</span>
+                        <div class="style-buttons">
+                            <button class="style-button" id="textBold" title="加粗">B</button>
+                            <button class="style-button" id="textItalic" title="斜体" style="font-style: italic;">I</button>
+                            <button class="style-button" id="textUnderline" title="下划线" style="text-decoration: underline;">U</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 画笔工具选项 -->
+                <div class="tool-options" id="brushOptions">
+                    <div class="option-group">
+                        <span class="option-label">颜色</span>
+                        <input type="color" class="color-input" id="brushColor" value="#ff0000">
+                        <span class="option-label">粗细</span>
+                        <input type="range" class="size-input" id="brushSize" min="1" max="20" value="6">
+                        <span class="size-display" id="brushSizeDisplay">6px</span>
+                    </div>
+                </div>
+                
+                <!-- 椭圆工具选项 -->
+                <div class="tool-options" id="ellipseOptions">
+                    <div class="option-group">
+                        <span class="option-label">颜色</span>
+                        <input type="color" class="color-input" id="ellipseColor" value="#ff0000">
+                        <span class="option-label">线宽</span>
+                        <input type="range" class="size-input" id="ellipseStroke" min="1" max="10" value="6">
+                        <span class="size-display" id="ellipseStrokeDisplay">6px</span>
+                    </div>
+                </div>
+                
+                <!-- 正方形工具选项 -->
+                <div class="tool-options" id="rectangleOptions">
+                    <div class="option-group">
+                        <span class="option-label">颜色</span>
+                        <input type="color" class="color-input" id="rectangleColor" value="#ff0000">
+                        <span class="option-label">线宽</span>
+                        <input type="range" class="size-input" id="rectangleStroke" min="1" max="10" value="2">
+                        <span class="size-display" id="rectangleStrokeDisplay">2px</span>
+                    </div>
+                </div>
+                
+                <!-- 箭头工具选项 -->
+                <div class="tool-options" id="arrowOptions">
+                    <div class="option-group">
+                        <span class="option-label">颜色</span>
+                        <input type="color" class="color-input" id="arrowColor" value="#ff0000">
+                        <span class="option-label">线宽</span>
+                        <input type="range" class="size-input" id="arrowStroke" min="1" max="10" value="3">
+                        <span class="size-display" id="arrowStrokeDisplay">3px</span>
+                    </div>
+                </div>
+                
+                <!-- 高亮工具选项 -->
+                <div class="tool-options" id="highlightOptions">
+                    <div class="option-group">
+                        <span class="option-label">高亮区域</span>
+                        <span class="size-display">完全透明显示</span>
+                    </div>
+                </div>
+                
+                <!-- 序号工具选项 -->
+                <div class="tool-options" id="numberOptions">
+                    <div class="option-group">
+                        <span class="option-label">选择数字</span>
+                        <div class="number-grid">
+                            <button class="number-button active" data-number="1">1</button>
+                            <button class="number-button" data-number="2">2</button>
+                            <button class="number-button" data-number="3">3</button>
+                            <button class="number-button" data-number="4">4</button>
+                            <button class="number-button" data-number="5">5</button>
+                            <button class="number-button" data-number="6">6</button>
+                            <button class="number-button" data-number="7">7</button>
+                            <button class="number-button" data-number="8">8</button>
+                            <button class="number-button" data-number="9">9</button>
+                            <button class="number-button" data-number="10">10</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 马赛克工具选项 -->
+                <div class="tool-options" id="mosaicOptions">
+                    <div class="option-group">
+                        <span class="option-label">强度</span>
+                        <input type="range" class="size-input" id="mosaicIntensity" min="5" max="30" value="10">
+                        <span class="size-display" id="mosaicIntensityDisplay">10px</span>
+                        <span class="option-label">大小</span>
+                        <input type="range" class="size-input" id="mosaicSize" min="10" max="50" value="20">
+                        <span class="size-display" id="mosaicSizeDisplay">20px</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 属性面板 -->
+        <div class="property-panel" id="propertyPanel">
+            <div class="property-title">元素属性</div>
+            <div id="propertyContent">
+                <!-- 动态内容 -->
+            </div>
+            <div class="property-actions">
+                <button class="property-action-btn close" id="closePropertyPanel">关闭</button>
+                <button class="property-action-btn save" id="savePropertyChanges">保存并继续</button>
+            </div>
+            <button class="delete-button" id="deleteElement">删除元素</button>
+        </div>
+    </div>
+    
+    <!-- 通知区域 - 与index.html保持一致 -->
+    <div class="notification" id="notification">
+        <span class="notification-icon">✓</span>
+        <span class="notification-message">操作成功</span>
+    </div>
+
+    <!-- 查看所有截图抽屉 -->
+    <div class="screenshots-drawer-overlay" id="screenshotsOverlay" style="display: none;">
+        <div class="screenshots-drawer">
+            <div class="drawer-header">
+                <h3>查看所有截图</h3>
+                <button class="close-button" id="closeDrawerBtn">&times;</button>
+            </div>
+            <div class="drawer-content">
+                <div class="screenshots-list" id="screenshotsList">
+                    <!-- 动态内容 -->
+                </div>
+            </div>
+            <div class="drawer-footer">
+                <button class="save-button" id="exportAllScreenshotsBtn">一键导出所有图片</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- 自定义删除确认模态对话框 -->
+    <div id="deleteModal" class="delete-modal-overlay" style="display: none;">
+        <div class="delete-modal">
+            <div class="delete-modal-header">
+                <div class="delete-modal-icon">⚠️</div>
+                <h3 class="delete-modal-title">确认删除</h3>
+            </div>
+            <div class="delete-modal-body">
+                <p class="delete-modal-message">您确定要删除此截图吗？</p>
+                <p class="delete-modal-warning">此操作不可撤销。</p>
+            </div>
+            <div class="delete-modal-footer">
+                <button type="button" class="delete-modal-btn delete-modal-cancel" id="deleteCancelBtn">取消</button>
+                <button type="button" class="delete-modal-btn delete-modal-confirm" id="deleteConfirmBtn">确认删除</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 主题切换功能 - 与index.html保持一致
+        // 通知功能 - 与index.html保持一致
+        function showNotification(message, type = 'success') {
+            const notification = document.getElementById('notification');
+            
+            // 设置图标
+            const iconMap = {
+                'success': '✓',
+                'warning': '⚠',
+                'error': '✗',
+                'info': 'ℹ'
+            };
+            
+            notification.querySelector('.notification-icon').textContent = iconMap[type] || '✓';
+            notification.className = `notification ${type} show`;
+            notification.querySelector('.notification-message').textContent = message;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // 主题切换功能 - 与index.html保持一致
+        class ThemeManager {
+            constructor() {
+                this.currentTheme = localStorage.getItem('editor-theme') || 'light';
+                this.initTheme();
+                this.bindEvents();
+            }
+
+            initTheme() {
+                this.setTheme(this.currentTheme);
+            }
+
+            setTheme(theme) {
+                document.body.className = '';
+                document.body.classList.add(`theme-${theme}`);
+                this.currentTheme = theme;
+                localStorage.setItem('editor-theme', theme);
+                this.updateActiveThemeOption();
+                showNotification(`已切换到${theme}主题`, 'success');
+            }
+
+            updateActiveThemeOption() {
+                document.querySelectorAll('.theme-option').forEach(option => {
+                    option.classList.remove('active');
+                    if (option.dataset.theme === this.currentTheme) {
+                        option.classList.add('active');
+                    }
+                });
+            }
+
+            bindEvents() {
+                const themeSelector = document.getElementById('themeSelector');
+                const themeSelectorBtn = document.getElementById('themeSelectorBtn');
+                const themeOptions = document.querySelectorAll('.theme-option');
+                
+                // 主题选择器按钮点击事件
+                themeSelectorBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    themeSelector.classList.toggle('open');
+                });
+
+                // 主题选项点击事件
+                themeOptions.forEach(option => {
+                    option.addEventListener('click', (e) => {
+                        const theme = e.currentTarget.dataset.theme;
+                        this.setTheme(theme);
+                        themeSelector.classList.remove('open');
+                    });
+                });
+
+                // 点击其他地方关闭主题选择器
+                document.addEventListener('click', () => {
+                    themeSelector.classList.remove('open');
+                });
+            }
+        }
+
+        // 页面加载完成后初始化主题管理器
+        document.addEventListener('DOMContentLoaded', () => {
+            new ThemeManager();
+        });
+    </script>
+    
+    <script src="js/editor.js"></script>
+</body>
+</html>

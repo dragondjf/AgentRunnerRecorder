@@ -100,4 +100,5 @@ coll = COLLECT(
     strip=False,
     upx=False,
     name='AgentRunnerRecorder',
+    contents_directory='.',
 )
