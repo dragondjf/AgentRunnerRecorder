@@ -14,6 +14,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('images', 'images'),
+        (Path(__file__).parent / 'urecorder', 'urecorder'),
     ],
     hiddenimports=[
         'recorder',
@@ -36,6 +37,10 @@ a = Analysis(
         'win32api',
         'win32con',
         'win32gui',
+        'flask',
+        'flask_cors',
+        'loguru',
+        'werkzeug',
     ],
     hookspath=[],
     hooksconfig={},
