@@ -1,3 +1,4 @@
 # Windows 平台专属依赖 (仅 Windows 需要安装)
 uiautomation>=2.0
 pywin32>=303
+pyautogui>=0.9
