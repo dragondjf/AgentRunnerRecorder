@@ -31,6 +31,6 @@ urecorder/postcase/results
 *.log
 urecorder/filestorage
 # Build artifacts
-AgentRunnerRecorder-Setup.exe
-AgentRunnerRecorder-*.zip
+AgentRunnerRecorder-Setup.*
 *.spec.bak
+*.manifest

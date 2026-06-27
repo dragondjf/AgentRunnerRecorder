@@ -1,6 +1,10 @@
 # -*- mode: python ; coding: utf-8 -*-
 # PyInstaller spec — AgentRunner Recorder
-# onefile mode, cross-platform compatible
+# onedir mode，输出结构: dist/AgentRunnerRecorder/
+#   AgentRunnerRecorder.exe      ← 启动器
+#   _internal/                    ← 依赖 + Cython .pyd
+#   urecorder/                    ← Flask 应用 + 静态文件
+#   images/                       ← 图标资源
 
 import os
 import sys
@@ -64,7 +68,7 @@ a = Analysis(
 
 pyz = PYZ(a.pure, cipher=block_cipher)
 
-# 跨平台图标选择：Windows 用 .ico，macOS/Linux 用 .png
+# 跨平台图标选择
 if sys.platform == 'win32':
     _icon = 'images/app_icon.ico'
 elif sys.platform == 'darwin':
@@ -72,12 +76,12 @@ elif sys.platform == 'darwin':
 else:
     _icon = 'images/app_icon.png'
 
+# ── onedir 模式：bootloader + COLLECT ──
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.datas,
     [],
+    exclude_binaries=True,
     name='AgentRunnerRecorder',
     debug=False,
     bootloader_ignore_signals=False,
@@ -85,4 +89,13 @@ exe = EXE(
     upx=False,
     console=False,
     icon=_icon,
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=False,
+    name='AgentRunnerRecorder',
 )

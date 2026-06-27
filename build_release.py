@@ -84,9 +84,8 @@ def detect_platform() -> dict:
     if system == "Windows":
         return {
             "name": "win64",
-            "artifact": "AgentRunnerRecorder-Setup.exe",
-            "source_exe": "AgentRunnerRecorder.exe",
-            "pack": "copy_exe",
+            "artifact": "AgentRunnerRecorder-Setup.zip",
+            "pack": "zip",
         }
     elif system == "Darwin":
         return {
@@ -136,28 +135,29 @@ def build_pyinstaller(python: str) -> None:
 
 
 def package_output(plat: dict) -> Path:
-    """封装产物。"""
+    """封装产物 — onedir 模式打包整个 dist/AgentRunnerRecorder/ 为 zip。"""
     print("\n\033[1;34m[4/5] 封装产物...\033[0m")
 
-    src = DIST / plat["source_exe"]
-    if not src.exists():
-        # macOS .app bundle
-        src = DIST / f"{plat['source_exe']}.app"
-    if not src.exists():
-        raise FileNotFoundError(f"构建产物未找到: {src}")
+    src_dir = DIST / "AgentRunnerRecorder"  # onedir 输出目录
+    if not src_dir.is_dir():
+        raise FileNotFoundError(f"构建产物未找到: {src_dir}")
 
-    artifact_path = ROOT / plat["artifact"]
+    artifact_path = ROOT / plat["artifact"].replace(".exe", ".zip")
 
     if plat["pack"] == "copy_exe":
-        shutil.copy2(src, artifact_path)
-    else:
+        # Windows: 仍保留单体 .exe 命名习惯，实际打包为 zip
         import zipfile
         with zipfile.ZipFile(artifact_path, "w", zipfile.ZIP_DEFLATED) as zf:
-            if src.is_dir():
-                for f in src.rglob("*"):
-                    zf.write(f, f.relative_to(DIST))
-            else:
-                zf.write(src, src.name)
+            for f in src_dir.rglob("*"):
+                if f.is_file():
+                    zf.write(f, f.relative_to(src_dir.parent))
+    else:
+        # macOS / Linux: 同上
+        import zipfile
+        with zipfile.ZipFile(artifact_path, "w", zipfile.ZIP_DEFLATED) as zf:
+            for f in src_dir.rglob("*"):
+                if f.is_file():
+                    zf.write(f, f.relative_to(src_dir.parent))
 
     print(f"  \033[32m✓\033[0m {artifact_path}  ({_fmt_size(artifact_path.stat().st_size)})")
     return artifact_path
