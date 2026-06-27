@@ -16,10 +16,12 @@ block_cipher = None
 
 # 收集 urecorder/ 全部文件，排除运行时数据和缓存
 # SPECPATH = spec 文件所在目录（项目根目录）
-_urc_toc = Tree(os.path.join(SPECPATH, 'urecorder'),
-                prefix='urecorder',
-                excludes=['filestorage', '__pycache__', 'data', 'docs', 'guiocr',
-                          '*.bat', 'server.log'])
+_urc_tree = Tree(os.path.join(SPECPATH, 'urecorder'),
+                 prefix='urecorder',
+                 excludes=['filestorage', '__pycache__', 'data', 'docs', 'guiocr',
+                           '*.bat', 'server.log'])
+# Tree 返回 (src, dest, 'DATA')， datas 只需要 (src, dest)
+_urc_datas = [(entry[0], entry[1]) for entry in _urc_tree]
 
 a = Analysis(
     ['recorder_app.py'],
@@ -27,7 +29,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('images', 'images'),
-    ] + _urc_toc,
+    ] + _urc_datas,
     hiddenimports=[
         'recorder',
         'recorder.core',
