@@ -14,7 +14,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('images', 'images'),
-        (Path(__file__).parent / 'urecorder', 'urecorder'),
+        ('urecorder', 'urecorder'),
     ],
     hiddenimports=[
         'recorder',
