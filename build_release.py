@@ -37,6 +37,13 @@ REQUIREMENTS_WIN = ROOT / "requirements-windows.txt"
 
 _is_windows = platform.system() == "Windows"
 
+# 阿里云镜像 + trusted-host（解决 venv 内 SSL 证书问题）
+_PIP_MIRROR = "https://mirrors.aliyun.com/pypi/simple/"
+_PIP_TRUSTED = "mirrors.aliyun.com"
+
+# 子进程环境变量（修复 Windows GBK 无法解码 UTF-8 中文问题）
+_SUBPROCESS_ENV = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+
 
 def _venv_python() -> str:
     """返回 .venv 中的 python 路径。"""
@@ -56,19 +63,17 @@ def setup_venv() -> str:
 
 
 def run(cmd: list[str], **kwargs) -> None:
-    """打印并执行命令（使用 venv python）。"""
-    # 自动将 python/python3 替换为 venv 中的 python
+    """打印并执行命令（使用 venv python + UTF-8 环境）。"""
     print(f"\n  \033[36m$\033[0m {' '.join(cmd)}")
-    subprocess.run(cmd, check=True, cwd=str(ROOT), **kwargs)
+    env = kwargs.pop("env", None) or _SUBPROCESS_ENV
+    subprocess.run(cmd, check=True, cwd=str(ROOT), env=env, **kwargs)
 
 
-def _pip_install(python: str, *pkgs: str) -> None:
-    """用 venv python 安装包。"""
-    for pkg in pkgs:
-        if pkg.startswith("-r"):
-            run([python, "-m", "pip", "install", pkg])
-        else:
-            run([python, "-m", "pip", "install", pkg])
+def _pip(python: str, *args: str) -> None:
+    """在 venv 中执行 pip install，自动加阿里源 + trusted-host。"""
+    run([python, "-m", "pip", "install",
+         "-i", _PIP_MIRROR, "--trusted-host", _PIP_TRUSTED,
+         *args])
 
 
 def detect_platform() -> dict:
@@ -100,14 +105,14 @@ def detect_platform() -> dict:
 
 
 def install_deps(python: str, plat: dict) -> None:
-    """在 venv 中安装构建依赖。"""
+    """在 venv 中安装构建依赖（阿里源）。"""
     print("\n\033[1;34m[1/5] 安装依赖 (venv)...\033[0m")
-    run([python, "-m", "pip", "install", "--upgrade", "pip"])
-    run([python, "-m", "pip", "install", "-r", str(REQUIREMENTS)])
-    run([python, "-m", "pip", "install", "pyinstaller"])
+    _pip(python, "--upgrade", "pip")
+    _pip(python, "-r", str(REQUIREMENTS))
+    _pip(python, "pyinstaller")
 
     if plat["name"] == "win64" and REQUIREMENTS_WIN.exists():
-        run([python, "-m", "pip", "install", "-r", str(REQUIREMENTS_WIN)])
+        _pip(python, "-r", str(REQUIREMENTS_WIN))
 
 
 def check_linux_gui() -> None:
@@ -120,7 +125,7 @@ def check_linux_gui() -> None:
 def build_cython(python: str) -> None:
     """Cython 编译 Python 源码（可选，加固反编译）。"""
     print("\n\033[1;34m[2/5] Cython 编译...\033[0m")
-    run([python, "-m", "pip", "install", "Cython"])
+    _pip(python, "Cython")
     run([python, "release.py", "build_ext"])
 
 
