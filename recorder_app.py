@@ -760,11 +760,9 @@ class ScreenRecorderApp:
         tree.insert("", tk.END, iid="loading",
                     values=("加载中...", "", ""))
 
-        self._picker_search_var.set("")
-        try:
-            self._picker_search_var.trace_remove("write", self._picker_search_trace_id)
-        except Exception:
-            pass
+        # 清空搜索框（直接用 Entry.delete/insert 避免触发 StringVar trace）
+        self._picker_search_entry.delete(0, tk.END)
+        self._picker_search_entry.insert(0, "")
 
         after = self._settings_frame if self._settings_visible else self._toolbar
         self._picker_frame.pack(fill=tk.X, padx=12, pady=(4, 0), after=after)
@@ -809,7 +807,7 @@ class ScreenRecorderApp:
         tree = self._picker_tree
         tree.delete(*tree.get_children())
 
-        # 搜索过滤回调（存为实例变量，防止 GC 导致 trace Tcl 命令失效）
+        # 搜索过滤回调（存为实例变量，防止 GC）
         def _rebuild(ft=""):
             tree.delete(*tree.get_children())
             ft = ft.lower() if ft else ""
@@ -825,19 +823,23 @@ class ScreenRecorderApp:
         self._picker_rebuild = _rebuild  # 保持引用避免 GC
         _rebuild()
 
-        # 搜索联动
+        # 搜索联动 — 用 Entry <KeyRelease> 代替 StringVar trace，避免 Tcl 命令失效
         try:
-            self._picker_search_var.trace_remove("write", self._picker_search_trace_id)
+            self._picker_search_entry.unbind("<KeyRelease>")
         except Exception:
             pass
-        self._picker_search_trace_id = self._picker_search_var.trace_add(
-            "write", lambda *a: self._picker_rebuild(self._picker_search_var.get()))
+        self._picker_search_entry.bind("<KeyRelease>",
+            lambda e: self._picker_rebuild(self._picker_search_entry.get()))
 
     def _hide_picker_panel(self):
         """隐藏进程选择面板。"""
         if self._picker_visible:
             self._picker_frame.pack_forget()
             self._picker_visible = False
+            try:
+                self._picker_search_entry.unbind("<KeyRelease>")
+            except Exception:
+                pass
             self._refit()
 
     # ── 选择面板按钮回调 ──
