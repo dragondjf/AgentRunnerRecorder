@@ -444,6 +444,7 @@ class ScreenRecorderApp:
         self._picker_frame = tk.Frame(self._main, bg=C.SURFACE)
         self._picker_visible = False
         self._picker_load_job = None  # 防抖 after ID
+        self._picker_gen = 0          # 版本号，丢弃过期回调
 
         # ─ 搜索框 ─
         picker_top = tk.Frame(self._picker_frame, bg=C.SURFACE)
@@ -749,6 +750,10 @@ class ScreenRecorderApp:
             self.root.after_cancel(self._picker_load_job)
             self._picker_load_job = None
 
+        # 递增版本号，之后到达的过期回调会被丢弃
+        self._picker_gen += 1
+        gen = self._picker_gen
+
         # 1. 清空列表显示"加载中"，立即展开面板
         tree = self._picker_tree
         tree.delete(*tree.get_children())
@@ -768,14 +773,17 @@ class ScreenRecorderApp:
         self._refit()
 
         # 2. 200ms 防抖后子线程加载进程列表
-        self._picker_load_job = self.root.after(200, self._start_picker_load)
+        self._picker_load_job = self.root.after(200, lambda: self._start_picker_load(gen))
 
-    def _start_picker_load(self):
+    def _start_picker_load(self, gen: int):
         """防抖计时到期，启动子线程加载进程列表。"""
         self._picker_load_job = None
-        threading.Thread(target=self._load_picker_data, daemon=True, name="picker-loader").start()
+        threading.Thread(
+            target=lambda: self._load_picker_data(gen),
+            daemon=True, name="picker-loader"
+        ).start()
 
-    def _load_picker_data(self):
+    def _load_picker_data(self, gen: int):
         """子线程中获取进程列表（Win32 快速枚举），完成后切回主线程填充 Treeview。"""
         filtered = []
         try:
@@ -789,19 +797,22 @@ class ScreenRecorderApp:
         except Exception:
             pass
 
-        # 切回主线程更新 UI
-        self.root.after(0, lambda: self._populate_picker(filtered))
+        # 切回主线程更新 UI（携带版本号，过期丢弃）
+        self.root.after(0, lambda g=gen, f=filtered: self._populate_picker(g, f))
 
-    def _populate_picker(self, filtered: list):
-        """在主线程中将进程列表填充到 Treeview。"""
+    def _populate_picker(self, gen: int, filtered: list):
+        """在主线程中将进程列表填充到 Treeview（仅当 gen 为最新版本号时生效）。"""
+        if gen != self._picker_gen:
+            return  # 过期回调，丢弃
+
         self._picker_filtered = filtered
-
         tree = self._picker_tree
         tree.delete(*tree.get_children())
 
-        def _do_populate(ft=""):
+        # 搜索过滤回调（存为实例变量，防止 GC 导致 trace Tcl 命令失效）
+        def _rebuild(ft=""):
             tree.delete(*tree.get_children())
-            ft = ft.lower()
+            ft = ft.lower() if ft else ""
             for i, w in enumerate(self._picker_filtered):
                 prog = w.name.split(" - ")[0] if " - " in w.name else w.name
                 if ft:
@@ -811,7 +822,8 @@ class ScreenRecorderApp:
                 tree.insert("", tk.END, iid=str(i),
                             values=(prog[:30], w.pid, w.name))
 
-        _do_populate()
+        self._picker_rebuild = _rebuild  # 保持引用避免 GC
+        _rebuild()
 
         # 搜索联动
         try:
@@ -819,7 +831,7 @@ class ScreenRecorderApp:
         except Exception:
             pass
         self._picker_search_trace_id = self._picker_search_var.trace_add(
-            "write", lambda *a: _do_populate(self._picker_search_var.get()))
+            "write", lambda *a: self._picker_rebuild(self._picker_search_var.get()))
 
     def _hide_picker_panel(self):
         """隐藏进程选择面板。"""
