@@ -742,7 +742,30 @@ class ScreenRecorderApp:
             self._log(f"已选择目标进程: {win.name} (PID:{win.pid})")
 
     def _show_picker_panel(self):
-        """展开内联进程选择面板，刷新窗口列表。"""
+        """展开内联进程选择面板 — 面板瞬间展示，数据异步加载。"""
+        # 1. 清空列表显示"加载中"，立即展开面板
+        tree = self._picker_tree
+        tree.delete(*tree.get_children())
+        tree.insert("", tk.END, iid="loading",
+                    values=("加载中...", "", ""))
+
+        self._picker_search_var.set("")
+        try:
+            self._picker_search_var.trace_remove("write", self._picker_search_trace_id)
+        except Exception:
+            pass
+
+        after = self._settings_frame if self._settings_visible else self._toolbar
+        self._picker_frame.pack(fill=tk.X, padx=12, pady=(4, 0), after=after)
+        self._picker_visible = True
+        self._picker_search_entry.focus_set()
+        self._refit()
+
+        # 2. 异步加载进程列表（不阻塞 UI）
+        self._main.after(10, self._load_picker_data)
+
+    def _load_picker_data(self):
+        """异步加载进程列表到选择面板。"""
         self._picker_filtered = []
         try:
             from recorder.ui_collector import enumerate_windows
@@ -755,7 +778,6 @@ class ScreenRecorderApp:
         except Exception:
             pass
 
-        # 填充列表
         tree = self._picker_tree
         tree.delete(*tree.get_children())
 
@@ -765,30 +787,21 @@ class ScreenRecorderApp:
             for i, w in enumerate(self._picker_filtered):
                 prog = w.name.split(" - ")[0] if " - " in w.name else w.name
                 if ft:
-                    # 多维度搜索：程序名、PID、窗口标题
                     combined = f"{prog} {w.pid} {w.name}".lower()
                     if ft not in combined:
                         continue
                 tree.insert("", tk.END, iid=str(i),
-                            values=(prog[:30],
-                                    w.pid, w.name))
+                            values=(prog[:30], w.pid, w.name))
 
         _populate()
+
         # 搜索联动
-        self._picker_search_var.set("")
         try:
             self._picker_search_var.trace_remove("write", self._picker_search_trace_id)
         except Exception:
             pass
         self._picker_search_trace_id = self._picker_search_var.trace_add(
             "write", lambda *a: _populate(self._picker_search_var.get()))
-
-        # 显示面板
-        after = self._settings_frame if self._settings_visible else self._toolbar
-        self._picker_frame.pack(fill=tk.X, padx=12, pady=(4, 0), after=after)
-        self._picker_visible = True
-        self._picker_search_entry.focus_set()
-        self._refit()
 
     def _hide_picker_panel(self):
         """隐藏进程选择面板。"""
