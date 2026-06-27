@@ -43,6 +43,7 @@ ui_collector — 跨平台 Windows UI 控件增量采集库
 from .window import (
     WindowInfo,
     enumerate_windows,
+    enumerate_windows_fast,
     activate_window,
     capture_window_screenshot,
     find_window_by_title,
@@ -75,6 +76,7 @@ __all__ = [
 
     # 窗口操作
     'enumerate_windows',
+    'enumerate_windows_fast',
     'activate_window',
     'capture_window_screenshot',
     'find_window_by_title',

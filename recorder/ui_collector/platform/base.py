@@ -112,6 +112,10 @@ class PlatformAdapter(ABC):
         """枚举所有可见顶层窗口"""
         ...
 
+    def enumerate_windows_fast(self) -> list[WindowInfo]:
+        """快速枚举窗口（无 UIA/exe 路径），默认回退到 enumerate_windows"""
+        return self.enumerate_windows()
+
     @abstractmethod
     def activate_window(self, win: WindowInfo) -> None:
         """激活窗口到前台并确保可见"""

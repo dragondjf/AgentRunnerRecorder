@@ -27,6 +27,11 @@ def enumerate_windows() -> list[WindowInfo]:
     return _get_adapter().enumerate_windows()
 
 
+def enumerate_windows_fast() -> list[WindowInfo]:
+    """快速枚举顶层窗口（纯 Win32，无 UIA/OpenProcess）"""
+    return _get_adapter().enumerate_windows_fast()
+
+
 def find_window_by_title(title_substring: str) -> Optional[WindowInfo]:
     """按标题子串查找窗口"""
     for w in enumerate_windows():

@@ -776,11 +776,11 @@ class ScreenRecorderApp:
         threading.Thread(target=self._load_picker_data, daemon=True, name="picker-loader").start()
 
     def _load_picker_data(self):
-        """子线程中获取进程列表，完成后切回主线程填充 Treeview。"""
+        """子线程中获取进程列表（Win32 快速枚举），完成后切回主线程填充 Treeview。"""
         filtered = []
         try:
-            from recorder.ui_collector import enumerate_windows
-            windows = enumerate_windows()
+            from recorder.ui_collector import enumerate_windows_fast
+            windows = enumerate_windows_fast()
             for w in windows:
                 name = w.name.strip()
                 if not name or name in ("桌面", "任务栏", "Program Manager", "Shell_TrayWnd"):

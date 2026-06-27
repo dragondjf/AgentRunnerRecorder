@@ -64,6 +64,24 @@ class WindowsAdapter(PlatformAdapter):
 
         return windows
 
+    def enumerate_windows_fast(self) -> list[WindowInfo]:
+        """快速枚举顶层窗口 — 纯 Win32 API，无 UIA/OpenProcess，用于进程选择面板。"""
+        windows: list[WindowInfo] = []
+        _skip = ("Program Manager", "")
+
+        def _callback(hwnd: int, _param):
+            if not win32gui.IsWindowVisible(hwnd):
+                return True
+            title = win32gui.GetWindowText(hwnd).strip()
+            if not title or title in _skip:
+                return True
+            _, pid = win32process.GetWindowThreadProcessId(hwnd)
+            windows.append(WindowInfo(name=title, pid=pid, hwnd=hwnd))
+            return True
+
+        win32gui.EnumWindows(_callback, None)
+        return windows
+
     def _get_exe_path(self, pid: int) -> str:
         try:
             h_process = win32api.OpenProcess(
