@@ -112,12 +112,16 @@ def detect_platform() -> dict:
 def install_deps(python: str, plat: dict) -> None:
     """在 venv 中安装构建依赖（阿里源）。"""
     print("\n\033[1;34m[1/5] 安装依赖 (venv)...\033[0m")
-    _pip(python, "--upgrade", "pip")
-    _pip(python, "-r", str(REQUIREMENTS))
-    _pip(python, "pyinstaller")
+    # pip --upgrade 可能因 SOCKS 代理失败，非关键操作加 try
+    try:
+        _pip(python, "--upgrade", "pip", "--proxy", "")
+    except Exception:
+        pass
+    _pip(python, "-r", str(REQUIREMENTS), "--proxy", "")
+    _pip(python, "pyinstaller", "--proxy", "")
 
     if plat["name"] == "win64" and REQUIREMENTS_WIN.exists():
-        _pip(python, "-r", str(REQUIREMENTS_WIN))
+        _pip(python, "-r", str(REQUIREMENTS_WIN), "--proxy", "")
 
 
 def check_linux_gui() -> None:
@@ -130,7 +134,7 @@ def check_linux_gui() -> None:
 def build_cython(python: str) -> None:
     """Cython 编译 Python 源码（可选，加固反编译）。"""
     print("\n\033[1;34m[2/5] Cython 编译...\033[0m")
-    _pip(python, "Cython")
+    _pip(python, "Cython", "--proxy", "")
     run([python, "release.py", "build_ext"])
 
 
