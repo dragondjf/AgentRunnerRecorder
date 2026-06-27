@@ -18,6 +18,7 @@ Simple Screen Recorder — 简易录屏工具
 import os
 import sys
 import time
+import json
 import threading
 import zipfile
 import subprocess
@@ -235,6 +236,7 @@ class ScreenRecorderApp:
         # UI 控件采集相关
         self._ui_win_list: list = []       # WindowInfo 对象列表
         self._ui_win_var = tk.StringVar(value="不采集（默认）")
+        self._guirunner_url = tk.StringVar(value="http://127.0.0.1:60000")
         self._ui_win_combo = None           # Combobox widget
         self._selected_ui_win = None        # 选中的 WindowInfo 或 None
 
@@ -418,6 +420,26 @@ class ScreenRecorderApp:
             font=("", 8), fg=C.TEXT2, bg=C.SURFACE,
         ).pack(anchor=tk.W)
 
+        # ═══ GuiRunner 配置 ═══
+        # 分隔线
+        tk.Frame(inner_set, height=1, bg=C.BORDER).pack(fill=tk.X, pady=(14, 10))
+
+        r3 = tk.Frame(inner_set, bg=C.SURFACE)
+        r3.pack(fill=tk.X)
+        tk.Label(r3, text="GuiRunner", font=("", 9, "bold"), fg=C.ACCENT2, bg=C.SURFACE).pack(anchor=tk.W)
+
+        r3b = tk.Frame(inner_set, bg=C.SURFACE)
+        r3b.pack(fill=tk.X, pady=(6, 0))
+        tk.Label(r3b, text="服务地址", font=("", 9), fg=C.TEXT2, bg=C.SURFACE).pack(side=tk.LEFT)
+        self._guirunner_entry = tk.Entry(
+            r3b, textvariable=self._guirunner_url, font=("", 9),
+            bg=C.SURFACE2, fg=C.TEXT, insertbackground=C.TEXT,
+            relief=tk.FLAT, bd=0, highlightthickness=1,
+            highlightbackground=C.BORDER, highlightcolor=C.ACCENT2,
+            width=36,
+        )
+        self._guirunner_entry.pack(side=tk.LEFT, padx=(8, 0), ipady=4)
+
         # ═══ 进程选择面板（点击录制时展开）═══
         self._picker_frame = tk.Frame(self._main, bg=C.SURFACE)
         self._picker_visible = False
@@ -558,8 +580,10 @@ class ScreenRecorderApp:
             after = self._status_bar if self._status_bar.winfo_ismapped() else self._main.winfo_children()[0]
             self._settings_frame.pack(fill=tk.X, padx=12, pady=(0, 6), after=after)
             self._settings_visible = True
-            # 展开设置面板时自动刷新窗口列表
-            self._refresh_ui_windows()
+            # 先显示加载状态，异步刷新窗口列表（避免 enumerate_windows 阻塞 UI 首帧渲染）
+            self._ui_win_combo["values"] = ["刷新中..."]
+            self._ui_win_var.set("刷新中...")
+            self._main.after(50, self._refresh_ui_windows)
         self._refit()
 
     def _toggle_log(self):
@@ -577,7 +601,9 @@ class ScreenRecorderApp:
     def _open_history(self):
         """Open web history server."""
         from recorder.history_server import start_server
+        import recorder.history_server as hs_mod
         if not self._history_server or not self._history_server.running:
+            hs_mod._guirunner_url = self._guirunner_url.get().strip()
             self._history_server = start_server(open_browser=True)
         else:
             import webbrowser
@@ -597,7 +623,8 @@ class ScreenRecorderApp:
                          ("json", "JSON", self._export_json),
                          ("html", "HTML", self._export_html),
                          ("word", "Word", self._export_word),
-                         ("zip", "ZIP", self._export_zip)]
+                         ("zip", "ZIP", self._export_zip),
+                         ("edit", "GuiRunner", self._export_guirunner)]
                 for i in range(0, len(items), 3):
                     row = tk.Frame(self._export_panel, bg=C.SURFACE2)
                     row.pack(anchor="center", pady=4)
@@ -666,6 +693,14 @@ class ScreenRecorderApp:
 
     def _refresh_ui_windows(self):
         """刷新可用窗口列表"""
+        # 先显示加载状态（无论来自 toggle 还是刷新按钮）
+        try:
+            self._ui_win_combo["values"] = ["刷新中..."]
+            self._ui_win_var.set("刷新中...")
+            self._ui_win_combo.update_idletasks()
+        except Exception:
+            pass
+
         try:
             from recorder.ui_collector import enumerate_windows
             windows = enumerate_windows()
@@ -689,6 +724,8 @@ class ScreenRecorderApp:
             self._selected_ui_win = None
             self._log(f"已刷新进程列表: {len(filtered)} 个可用窗口")
         except Exception as e:
+            self._ui_win_combo["values"] = ["刷新失败"]
+            self._ui_win_var.set("刷新失败")
             self._log(f"刷新进程列表失败: {e}")
             import traceback
             traceback.print_exc()
@@ -1223,6 +1260,65 @@ class ScreenRecorderApp:
             messagebox.showinfo("导出成功", f"已导出到:\n{zip_path}\n大小: {self._fmt_size(zs)}")
         except Exception as e:
             messagebox.showerror("导出失败", str(e))
+        finally:
+            self.root.config(cursor="")
+
+    def _export_guirunner(self):
+        """一键生成 HAR 并推送到 GuiRunner 创建脚本工程。"""
+        # 1. 确保报告已生成
+        inputs = self._ensure_reports()
+        if not inputs:
+            return
+
+        # 2. 确保 mapping.json 存在（含 clicked_icons）
+        mapping_path = os.path.join(inputs, "clicked_icons", "mapping.json")
+        if not os.path.exists(mapping_path):
+            self._log("正在生成点击图标和 HAR...")
+            from recorder.report_generator import generate_click_icons
+            result = generate_click_icons(inputs, self._project_name)
+            if not result or not result.get("ok"):
+                messagebox.showwarning("提示", "无法生成点击图标，请先录制")
+                return
+
+        # 3. 确保 HAR 存在
+        output_dir = os.path.join(inputs, "clicked_icons")
+        har_path = os.path.join(output_dir, "default.har")
+        if not os.path.exists(har_path):
+            from recorder.click_icon_extractor import load_report_json, generate_har, read_target_app, find_input_log
+            report_json = os.path.join(inputs, f"report_{self._project_name}.json")
+            if not os.path.exists(report_json):
+                messagebox.showwarning("提示", "未找到 report JSON")
+                return
+
+            # 读取 mapping + target_app
+            with open(mapping_path, "r", encoding="utf-8") as f:
+                mapping = json.load(f)
+
+            input_log = find_input_log(inputs)
+            target_app = read_target_app(input_log) if input_log else None
+
+            har_path = generate_har(report_json, mapping, target_app, output_dir, self._project_name)
+            if not har_path:
+                messagebox.showwarning("提示", "HAR 生成失败")
+                return
+
+        # 4. 推送到 GuiRunner
+        guirunner_url = self._guirunner_url.get().strip()
+        self._log(f"正在推送到 GuiRunner ({guirunner_url})...")
+        self.root.config(cursor="watch")
+        self.root.update()
+        try:
+            from recorder.click_icon_extractor import push_har_to_guirunner
+            ok = push_har_to_guirunner(har_path, self._project_name, base_url=guirunner_url)
+            if ok:
+                self._log("GuiRunner 脚本工程已创建/更新")
+                messagebox.showinfo("成功", f"GuiRunner 工程 '{self._project_name}' 已推送")
+            else:
+                self._log("GuiRunner 推送失败（后端可能未启动）")
+                messagebox.showwarning("提示", f"推送失败，请确认 GuiRunner 后端已启动\n({guirunner_url})")
+        except Exception as e:
+            self._log(f"GuiRunner 推送异常: {e}")
+            messagebox.showerror("错误", f"推送失败:\n{e}")
         finally:
             self.root.config(cursor="")
 

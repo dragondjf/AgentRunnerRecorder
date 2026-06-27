@@ -886,17 +886,50 @@ def export_data():
         
         logger.info(f"[导出入口] 数据目录确认存在: {data_path}, 大小={sum(f.stat().st_size for f in data_path.rglob('*') if f.is_file()) / 1024:.1f}KB")
         
+        # ── GuiRunner: 直接复用 recorder 的完整导出管线，不走 uiexporter ──
+        if export_type == 'gui-runner':
+            from flask import current_app
+            guirunner_url = current_app.config.get('GUIRUNNER_URL', 'http://127.0.0.1:60000')
+            
+            # 找到录制目录 — project 名称即 recording_ 目录名
+            recordings_root = os.environ.get("SCREENRECORDINGS_DIR")
+            if not recordings_root:
+                from recorder.platform_utils import get_default_recordings_dir
+                recordings_root = get_default_recordings_dir()
+            
+            rec_dir = os.path.join(recordings_root, project)
+            if not os.path.isdir(rec_dir):
+                logger.error(f"[导出入口] GuiRunner 录制目录不存在: {rec_dir}")
+                return jsonify({
+                    'success': False,
+                    'error': f'未找到录制目录: {rec_dir}，请先在 recorder 中录制对应项目',
+                    'timestamp': datetime.now().isoformat()
+                }), 404
+            
+            from recorder.click_icon_extractor import export_recording_to_guirunner
+            result = export_recording_to_guirunner(rec_dir, guirunner_url)
+            if result.get('ok'):
+                result['success'] = True
+                result['timestamp'] = datetime.now().isoformat()
+                return jsonify(result)
+            else:
+                return jsonify({
+                    'success': False,
+                    'error': result.get('message', 'GuiRunner 推送失败'),
+                    'timestamp': datetime.now().isoformat()
+                }), 500
+
         # 调用uiexporter模块进行导出
         try:
             _t1 = _time.time()
             success, output_path = uiexporter_export(export_type, str(data_path))
             _elapsed = _time.time() - _t1
-            
+
             logger.info(f"[导出入口] uiexporter 返回: success={success}, output_path={output_path}, 耗时={_elapsed:.2f}s")
-            
+
             if success and output_path:
                 logger.info(f"导出成功: {output_path}")
-                
+
                 # 返回文件下载响应
                 return send_from_directory(
                     directory=os.path.dirname(output_path),

@@ -24,6 +24,8 @@ from recorder.platform_utils import open_file, open_folder, get_default_recordin
 
 # ── UIRecorderCore 桥接（惰性导入，避免启动时加载 Flask 依赖） ──
 _urc_converter = None
+# ── GuiRunner 配置（由 recorder_app 设置） ──
+_guirunner_url = "http://127.0.0.1:60000"
 def _resolve_path(rel_path: str) -> str | None:
     """Resolve a relative web path to an absolute filesystem path, preventing traversal."""
     safe = os.path.normpath(rel_path).lstrip(os.sep)
@@ -1146,7 +1148,7 @@ def _html_detail_page(rec: dict) -> str:
     actions_html += f"""<button class="action-item" onclick="openFolder('{rec['id']}')">\n          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>\u6253\u5f00\u6587\u4ef6\u5939</button>\n"""
     actions_html += f"""<button class="action-item" onclick="editRecording('{rec['id']}')">\n          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>\u5728 UIRecorderCore \u4e2d\u7f16\u8f91</button>\n"""
     actions_html += f"""<button class="action-item" onclick="exportRecording('{rec['id']}')">\n          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>\u5bfc\u51fa\u6240\u6709\u683c\u5f0f</button>\n"""
-    for fmt, label in [("video","Video"),("md","Markdown"),("json","JSON"),("html","HTML"),("docx","Word"),("zip","ZIP")]:
+    for fmt, label in [("video","Video"),("md","Markdown"),("json","JSON"),("html","HTML"),("docx","Word"),("zip","ZIP"),("guirunner","GuiRunner")]:
         actions_html += f"""<button class="action-item" onclick="exportFormat('{rec['id']}','{fmt}')">\n          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>\u5bfc\u51fa {label}</button>\n"""
     actions_html += f"""<button class="action-item danger" onclick="confirmDelete('{rec['id']}')">\n          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>\u5220\u9664\u672c\u6b21\u5f55\u5236</button>\n"""
 
@@ -1511,9 +1513,29 @@ button {{ font-family: inherit; cursor: pointer; outline: none; }}
   .center-header {{ padding: 12px 16px; }}
   .ss-grid-wrapper {{ padding: 12px 16px; }}
 }}
+
+/* ========== Toast ========== */
+#toast-container {{
+  position: fixed; top: 16px; right: 16px; z-index: 10000;
+  display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none;
+}}
+.toast {{
+  padding: 10px 18px; border-radius: 8px; font-size: 13px;
+  font-family: var(--font-primary); max-width: 400px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  opacity: 0; transform: translateX(40px);
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: auto;
+}}
+.toast.show {{ opacity: 1; transform: translateX(0); }}
+.toast-info {{ background: #1e293b; color: #e2e8f0; border: 1px solid #334155; }}
+.toast-success {{ background: #052e16; color: #86efac; border: 1px solid #166534; }}
+.toast-error {{ background: #450a0a; color: #fca5a5; border: 1px solid #991b1b; }}
 </style>
 </head>
 <body>
+<div id="toast-container"></div>
 <div class="app">
   <div class="sidebar">
     <div class="sidebar-header">
@@ -1607,7 +1629,42 @@ function openLocal(path) {{ window.location.href = "/open-local?path=" + encodeU
 function openFolder(path) {{ window.location.href = "/open-folder?id=" + encodeURIComponent(path); }}
 function editRecording(id) {{ window.open("/edit-recording/" + encodeURIComponent(id), "_blank"); }}
 function exportRecording(id) {{ window.open("/export-recording/" + encodeURIComponent(id), "_blank"); }}
-function exportFormat(id, fmt) {{ window.open("/export-recording/" + encodeURIComponent(id) + "?format=" + fmt, "_blank"); }}
+function exportFormat(id, fmt) {{
+  if (fmt === "guirunner") {{
+    showToast("\u6b63\u5728\u5bfc\u51fa GuiRunner...", "info");
+    fetch("/export-recording/" + encodeURIComponent(id) + "?format=guirunner")
+      .then(function(r) {{ return r.json().then(function(data) {{ return {{ok: data.ok, data: data, status: r.status}}; }}); }})
+      .then(function(result) {{
+        if (result.ok && result.data.ok) {{
+          showToast("\u2713 \u5bfc\u51fa\u6210\u529f\uff01" + result.data.project + " \u5df2\u63a8\u9001\u5230 GuiRunner", "success");
+        }} else {{
+          var msg = result.data.message || "\u63a8\u9001\u5931\u8d25";
+          showToast("\u2717 " + msg, "error", 5000);
+        }}
+      }})
+      .catch(function(err) {{
+        showToast("\u2717 \u8bf7\u6c42\u5931\u8d25: " + err.message, "error", 5000);
+      }});
+    return;
+  }}
+  window.open("/export-recording/" + encodeURIComponent(id) + "?format=" + fmt, "_blank");
+}}
+
+// ========== Toast ==========
+function showToast(msg, type, duration) {{
+  type = type || "info";
+  duration = duration || 3000;
+  var container = document.getElementById("toast-container");
+  var el = document.createElement("div");
+  el.className = "toast toast-" + type;
+  el.textContent = msg;
+  container.appendChild(el);
+  requestAnimationFrame(function() {{ el.classList.add("show"); }});
+  setTimeout(function() {{
+    el.classList.remove("show");
+    setTimeout(function() {{ container.removeChild(el); }}, 300);
+  }}, duration);
+}}
 function confirmDelete(id) {{
   var msg = "\u786e\u5b9a\u8981\u5220\u9664\u5f55\u5236 " + id + " \u5417\uff1f" + String.fromCharCode(10) + "\u6b64\u64cd\u4f5c\u4e0d\u53ef\u6062\u590d\u3002";\n  if (confirm(msg)) {{
     window.location.href = "/delete?id=" + encodeURIComponent(id);
@@ -1944,6 +2001,29 @@ class HistoryHandler(BaseHTTPRequestHandler):
             if f.lower().endswith(".mp4"):
                 video_path = os.path.join(inputs_dir, f)
                 break
+
+        # ── GuiRunner export（复用公共导出函数，与 urecorder 同一管线）──
+        if fmt == "guirunner":
+            import json as _json
+            import webbrowser as _webbrowser
+            from recorder.click_icon_extractor import export_recording_to_guirunner
+
+            result = export_recording_to_guirunner(rec_dir, _guirunner_url)
+
+            if result.get("ok"):
+                # 在详情页场景下自动打开编辑器
+                editor_url = result.get("editor_url", "")
+                if editor_url:
+                    _webbrowser.open_new_tab(editor_url)
+                resp = _json.dumps({"ok": True, "project": result.get("project", rec_id), "editor_url": editor_url})
+                self._send(200, "application/json; charset=utf-8", resp.encode("utf-8"))
+            else:
+                resp = _json.dumps({
+                    "ok": False,
+                    "message": result.get("message", "GuiRunner 导出失败"),
+                })
+                self._send(200, "application/json; charset=utf-8", resp.encode("utf-8"))
+            return
 
         # Video export
         if fmt == "video":

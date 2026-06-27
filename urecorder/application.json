@@ -53,7 +53,8 @@
       "help-docs",
       "gui-runner"
     ],
-    "default_format": "zip"
+    "default_format": "zip",
+    "guirunner_url": "http://127.0.0.1:60000"
   },
   "ui": {
     "theme": "dark",

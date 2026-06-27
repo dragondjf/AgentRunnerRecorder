@@ -15,12 +15,10 @@ from .html_exporter import HtmlExporter
 from .markdown_exporter import MarkdownExporter
 from .test_docs_exporter import TestDocsExporter
 from .help_docs_exporter import HelpDocsExporter
-from .gui_runner_exporter import GuiRunnerExporter
-
 __version__ = "1.0.0"
 __author__ = "UIExporter Team"
 
-# 导出器映射
+# 导出器映射（gui-runner 已迁移到 recorder.click_icon_extractor.export_recording_to_guirunner）
 EXPORTERS = {
     'zip': ZipExporter,
     'word': WordExporter,
@@ -29,11 +27,10 @@ EXPORTERS = {
     'markdown': MarkdownExporter,
     'test-docs': TestDocsExporter,
     'help-docs': HelpDocsExporter,
-    'gui-runner': GuiRunnerExporter
 }
 
 # 支持的导出格式
-SUPPORTED_FORMATS = list(EXPORTERS.keys())
+SUPPORTED_FORMATS = list(EXPORTERS.keys()) + ['gui-runner']
 
 def get_exporter(export_type: str, data_dir: str):
     """
@@ -55,33 +52,39 @@ def get_exporter(export_type: str, data_dir: str):
     exporter_class = EXPORTERS[export_type]
     return exporter_class(data_dir)
 
-def export_data(export_type: str, data_dir: str) -> tuple[bool, str]:
+def export_data(export_type: str, data_dir: str) -> tuple[bool, str | dict]:
     """
     导出数据
-    
+
     Args:
         export_type: 导出类型
         data_dir: 数据目录
-        
+
     Returns:
-        tuple[bool, str]: (导出是否成功, 输出文件路径)
+        tuple[bool, str|dict]: (成功标志, 文件路径 或 gui-runner 结果 dict)
     """
     import time as _time
     _t0 = _time.time()
-    
+
     try:
         logger.info(f"[uiexporter] 开始导出: type={export_type}, data_dir={data_dir}")
-        
+
         exporter = get_exporter(export_type, str(data_dir))
         logger.info(f"[uiexporter] 导出器实例化完成: {type(exporter).__name__}")
-        
+
         _t1 = _time.time()
-        output_path = exporter.export()
+        result = exporter.export()
         _elapsed_export = _time.time() - _t1
         _total_elapsed = _time.time() - _t0
-        
-        logger.info(f"[uiexporter] 导出完成: output_path={output_path}, exporter耗时={_elapsed_export:.2f}s, 总耗时={_total_elapsed:.2f}s")
-        return True, str(output_path)
+
+        # gui-runner 返回 dict（含推送结果），其他类型返回文件路径
+        if isinstance(result, dict):
+            ok = result.get("ok", False)
+            logger.info(f"[uiexporter] 导出完成: ok={ok}, result={result}, 耗时={_elapsed_export:.2f}s")
+            return ok, result
+        else:
+            logger.info(f"[uiexporter] 导出完成: output_path={result}, exporter耗时={_elapsed_export:.2f}s, 总耗时={_total_elapsed:.2f}s")
+            return True, str(result)
     except Exception as e:
         logger.error(f"[uiexporter] 导出失败: {e}", exc_info=True)
         return False, ""

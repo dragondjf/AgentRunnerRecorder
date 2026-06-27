@@ -507,7 +507,269 @@ def extract_click_icons(
     result["items"] = items
 
     print(f"[click_icon] 完成: {hits} 命中 / {misses} 未命中 → {output_dir}")
+
+    # ── 7. 生成 HAR 协议文件 ──
+    try:
+        generate_har(report_json_path, mapping, target_app, output_dir)
+    except Exception as e:
+        print(f"[click_icon] HAR 生成失败: {e}")
+
+    result["har_path"] = os.path.join(output_dir, "default.har")
     return result
+
+
+# ══════════════════════════════════════════════════════════════════
+# HAR 协议生成
+# ══════════════════════════════════════════════════════════════════
+
+def _step_to_har_entry(step: Dict, icon_map: Dict[int, str]) -> Optional[Dict]:
+    """将 report 中的一个 step 转换为 HAR entry，返回 None 表示跳过。"""
+    category = step.get("category", "")
+    message = step.get("message", "")
+    description = step.get("description", "")
+    step_num = step["step"]
+    icon_file = icon_map.get(step_num, "")
+
+    if category == "mouse":
+        if "双击" in description:
+            method = "gui_double_click"
+        elif "右键" in description:
+            method = "gui_right_click"
+        else:
+            method = "gui_click"
+
+        if icon_file:
+            return {"method": method, "image": icon_file, "text": "", "timeout": 30}
+        coords = step.get("coordinates", {})
+        if coords:
+            x, y = coords.get("x"), coords.get("y")
+            if x is not None and y is not None:
+                return {"method": method, "image": "", "text": f"({x}, {y})", "timeout": 10}
+        return None
+
+    elif category == "keyboard":
+        key = message.replace("Key Press: ", "").strip()
+        return {"method": "gui_keyboard", "image": "", "text": key, "timeout": 10}
+
+    elif category == "hotkey":
+        hotkey = message.replace("Hotkey: ", "").strip()
+        return {"method": "gui_keyboard", "image": "", "text": hotkey, "timeout": 10}
+
+    elif category == "scroll":
+        direction = "+5" if "ScrollDown" in message else "-5"
+        return {"method": "gui_wheel", "image": "", "text": direction, "timeout": 10}
+
+    return None  # drag / system 跳过
+
+
+def generate_har(report_json_path: str, mapping: Dict, target_app: Optional[Dict],
+                 output_dir: str, project_name: str = "") -> Optional[str]:
+    """从 report JSON + mapping 生成 GuiRunner 6.0 兼容的 .har 协议文件。
+
+    HAR 结构:
+      gui_start → gui_focus_current_window → [steps...] → gui_stop
+
+    Returns:
+        har 文件路径，或 None（无可用步骤时）。
+    """
+    report = load_report_json(report_json_path)
+    steps = report.get("steps", [])
+    if not steps:
+        print("[click_icon] 无步骤数据，跳过 HAR 生成")
+        return None
+
+    # 构建 step_num → icon_filename 映射
+    icon_map = {}
+    for item in mapping.get("items", []):
+        if item.get("icon_file"):
+            icon_map[item["step"]] = item["icon_file"]
+
+    entries = []
+
+    # 1. gui_start
+    if target_app and target_app.get("process_path"):
+        entries.append({
+            "method": "gui_start",
+            "image": "",
+            "text": target_app["process_path"],
+            "timeout": 30,
+        })
+
+    # 2. gui_focus_current_window
+    entries.append({
+        "method": "gui_focus_current_window",
+        "image": "",
+        "text": "",
+        "timeout": 30,
+    })
+
+    # 3. 遍历 report steps
+    for step in steps:
+        entry = _step_to_har_entry(step, icon_map)
+        if entry:
+            entries.append(entry)
+
+    # 4. gui_stop
+    if target_app and target_app.get("process_path"):
+        entries.append({
+            "method": "gui_stop",
+            "image": "",
+            "text": target_app["process_path"],
+            "timeout": 30,
+        })
+
+    har = {
+        "log": {
+            "version": "6.0",
+            "creator": {"name": "GuiRunner", "version": "0.1"},
+            "taskmode": "recorder",
+            "entries": entries,
+        }
+    }
+
+    har_path = os.path.join(output_dir, "default.har")
+    with open(har_path, "w", encoding="utf-8") as f:
+        json.dump(har, f, ensure_ascii=False, indent=2)
+
+    print(f"[click_icon] HAR 已生成: {har_path} ({len(entries)} 个 entry)")
+    return har_path
+
+
+def push_har_to_guirunner(har_path: str, project_name: str,
+                          base_url: str = "http://127.0.0.1:60000") -> bool:
+    """将 HAR 文件推送到 GuiRunner 后端，创建/更新脚本工程。
+
+    调用 POST /api/editor/project/create_or_update (multipart/form-data)，
+    参考 guirunnercore/gui_project.py 的 MultipartEncoder 方式。
+    """
+    try:
+        import requests
+        from requests_toolbelt import MultipartEncoder
+    except ImportError:
+        print("[click_icon] 缺少 requests / requests-toolbelt，跳过推送")
+        return False
+
+    url = base_url.rstrip("/") + "/api/editor/project/create_or_update"
+
+    fields = {
+        "url": "",
+        "repo_url": "",
+        "project": project_name,
+        "protocol": "GUI",
+        "description": "",
+        "mode": "edit",
+        "script_path": "",
+        "template_path": har_path,
+        "notify": "ws",
+    }
+
+    try:
+        data = MultipartEncoder(fields=fields)
+        headers = {
+            "Accept": "application/json, text/plain, */*",
+            "Accept-Language": "zh-CN,zh;q=0.9",
+            "Connection": "keep-alive",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
+            "Content-Type": data.content_type,
+            "Content-length": str(data.len),
+        }
+        res = requests.post(url, headers=headers, data=data.to_string(), timeout=10)
+        result = res.json()
+        print(f"[click_icon] 推送 GuiRunner: {result}")
+        ok = result.get("code") == 1000
+        if ok:
+            print(f"[click_icon] 推送成功: {project_name}")
+        return ok
+    except Exception as e:
+        print(f"[click_icon] 推送失败: {e}")
+        return False
+
+
+# ══════════════════════════════════════════════════════════════════
+# 公共导出函数（recorder 详情页 + urecorder 共用）
+# ══════════════════════════════════════════════════════════════════
+
+def export_recording_to_guirunner(rec_dir: str, guirunner_url: str) -> dict:
+    """从录制目录导出到 GuiRunner（完整管线：report → mapping → HAR → push）。
+
+    recorder 详情页和 urecorder 共用此函数，避免两套 HAR 构建逻辑。
+
+    Args:
+        rec_dir: 录制目录路径（如 C:/Users/.../recording_20260625_222701）
+        guirunner_url: GuiRunner 后端地址
+
+    Returns:
+        {"ok": True, "project": str, "editor_url": str}  或
+        {"ok": False, "message": str}
+    """
+    rec_id = os.path.basename(rec_dir)
+    inputs_dir = os.path.join(rec_dir, "inputs")
+
+    if not os.path.isdir(inputs_dir):
+        return {"ok": False, "message": f"录制数据目录不存在: {inputs_dir}"}
+
+    # 查找 input_log
+    log_file = find_input_log(inputs_dir)
+    if not log_file:
+        return {"ok": False, "message": "未找到 input_log 文件"}
+
+    # 1. 确保 report JSON 存在
+    report_path = os.path.join(inputs_dir, "report_" + rec_id + ".json")
+    if not os.path.isfile(report_path):
+        try:
+            from recorder.report_generator import parse_log, generate_json
+            events = parse_log(log_file)
+            ss_dir = os.path.join(inputs_dir, "screenshots")
+            video_path = ""
+            for f in os.listdir(inputs_dir):
+                if f.lower().endswith(".mp4"):
+                    video_path = os.path.join(inputs_dir, f)
+                    break
+            generate_json(events, ss_dir, report_path, rec_id, video_path)
+            print(f"[export_guirunner] report JSON 已生成: {report_path}")
+        except Exception as e:
+            return {"ok": False, "message": f"Report JSON 生成失败: {e}"}
+
+    # 2. 确保 clicked_icons/mapping.json 存在
+    icons_dir = os.path.join(inputs_dir, "clicked_icons")
+    mapping_path = os.path.join(icons_dir, "mapping.json")
+    if not os.path.isfile(mapping_path):
+        try:
+            from recorder.report_generator import generate_click_icons
+            result = generate_click_icons(inputs_dir, rec_id)
+            if not result or not result.get("ok"):
+                return {"ok": False, "message": "点击图标生成失败：无点击事件"}
+            print(f"[export_guirunner] mapping.json 已生成: {mapping_path}")
+        except Exception as e:
+            return {"ok": False, "message": f"点击图标生成失败: {e}"}
+
+    # 3. 确保 HAR 存在
+    har_path = os.path.join(icons_dir, "default.har")
+    if not os.path.isfile(har_path):
+        try:
+            with open(mapping_path, "r", encoding="utf-8") as f:
+                mapping = json.load(f)
+            target_app = read_target_app(log_file) if log_file else None
+            result_path = generate_har(report_path, mapping, target_app, icons_dir, rec_id)
+            if not result_path:
+                return {"ok": False, "message": "HAR 生成失败：无可执行步骤"}
+            har_path = result_path
+            print(f"[export_guirunner] HAR 已生成: {har_path}")
+        except Exception as e:
+            return {"ok": False, "message": f"HAR 生成失败: {e}"}
+
+    # 4. 推送到 GuiRunner
+    ok = push_har_to_guirunner(har_path, rec_id, base_url=guirunner_url)
+    if ok:
+        editor_url = guirunner_url.rstrip("/") + "/static/webeditor/index.html#/?project=" + rec_id
+        print(f"[export_guirunner] 推送成功: {rec_id}")
+        return {"ok": True, "project": rec_id, "editor_url": editor_url}
+    else:
+        return {
+            "ok": False,
+            "message": f"请确保 GuiRunner 后端已启动 ({guirunner_url})",
+            "har_path": har_path.replace("\\", "/"),
+        }
 
 
 # ══════════════════════════════════════════════════════════════════

@@ -126,6 +126,23 @@ app.config['STATIC_FILE_PORT'] = STATIC_FILE_PORT
 app.config['AI_SERVER_HOST'] = AI_Server_HOST
 app.config['AI_SERVER_PORT'] = AI_Server_PORT
 
+# 初始化 GuiRunner 服务地址
+_guirunner_url = APP_CONFIG.get('export', {}).get('guirunner_url', 'http://127.0.0.1:60000')
+# .env 文件可覆盖（优先级更高）
+_env_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), '.env')
+if os.path.isfile(_env_file):
+    try:
+        with open(_env_file, 'r', encoding='utf-8') as _f:
+            for _line in _f:
+                _line = _line.strip()
+                if _line.startswith('GUIRUNNER_URL='):
+                    _guirunner_url = _line.split('=', 1)[1].strip().strip('"').strip("'")
+                    break
+    except Exception:
+        pass
+app.config['GUIRUNNER_URL'] = _guirunner_url
+logger.info(f"✅ GuiRunner 服务地址: {_guirunner_url}")
+
 # 监控器相关配置
 app.config['MONITOR_INSTANCE'] = None
 app.config['MONITOR_THREAD'] = None

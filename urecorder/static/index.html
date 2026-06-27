@@ -5496,16 +5496,30 @@
         async function exportToFormat(formatType, formatName) {
             try {
                 showNotification(`📤 正在导出${formatName}格式...`, 'info');
-                
+
                 // 构建API请求URL
                 const apiUrl = `/api/v1/export?type=${formatType}`;
-                
-                // 发起请求，让浏览器直接处理下载
+
+                // 发起请求
                 const response = await fetch(apiUrl);
-                
+
+                // gui-runner 返回 JSON（推送结果），不是文件下载
+                if (formatType === 'gui-runner') {
+                    const result = await response.json();
+                    if (response.ok && result.ok) {
+                        showNotification(`✅ GuiRunner 推送成功！${result.project} 已创建/更新`, 'success');
+                        if (result.editor_url) {
+                            window.open(result.editor_url, '_blank');
+                        }
+                    } else {
+                        const errMsg = result.message || result.error || '推送失败';
+                        showNotification(`❌ GuiRunner 导出失败: ${errMsg}`, 'error');
+                    }
+                    return;
+                }
+
                 // 检查响应状态
                 if (!response.ok) {
-                    // 如果是JSON错误响应，解析错误信息
                     const contentType = response.headers.get('content-type');
                     if (contentType && contentType.includes('application/json')) {
                         const errorData = await response.json();
@@ -5514,7 +5528,7 @@
                         throw new Error(`HTTP ${response.status}`);
                     }
                 }
-                
+
                 // 获取文件名从Content-Disposition头
                 const contentDisposition = response.headers.get('content-disposition');
                 let filename = `export_${formatType}_${Date.now()}`;
@@ -5524,34 +5538,31 @@
                         filename = matches[1].replace(/['"]/g, '');
                     }
                 }
-                
+
                 // 获取响应数据
                 const blob = await response.blob();
-                
+
                 // 创建下载链接并触发下载
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.style.display = 'none';
                 a.href = url;
                 a.download = filename;
-                a.setAttribute('data-export-download', 'true'); // 标记为导出下载链接
-                
-                // 触发下载到浏览器默认下载目录
+                a.setAttribute('data-export-download', 'true');
+
                 document.body.appendChild(a);
                 a.click();
-                
-                // 清理资源
+
                 setTimeout(() => {
                     window.URL.revokeObjectURL(url);
                     document.body.removeChild(a);
                 }, 100);
-                
+
                 showNotification(`✅ ${formatName}文件导出成功，已保存到下载目录`, 'success');
-                
+
             } catch (error) {
                 console.error(`${formatName}导出失败:`, error);
-                showNotification(` ${formatName}正在实现中，敬请期待`, 'info');
-                // showNotification(`❌ ${formatName}导出失败: ${error.message}`, 'error');
+                showNotification(`❌ ${formatName}导出失败: ${error.message}`, 'error');
             }
         }
 
