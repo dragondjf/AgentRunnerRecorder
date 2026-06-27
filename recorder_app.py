@@ -742,7 +742,7 @@ class ScreenRecorderApp:
             self._log(f"已选择目标进程: {win.name} (PID:{win.pid})")
 
     def _show_picker_panel(self):
-        """展开内联进程选择面板 — 面板瞬间展示，数据异步加载。"""
+        """展开内联进程选择面板 — 面板瞬间展示，子线程异步加载进程列表。"""
         # 1. 清空列表显示"加载中"，立即展开面板
         tree = self._picker_tree
         tree.delete(*tree.get_children())
@@ -761,12 +761,12 @@ class ScreenRecorderApp:
         self._picker_search_entry.focus_set()
         self._refit()
 
-        # 2. 异步加载进程列表（不阻塞 UI）
-        self._main.after(10, self._load_picker_data)
+        # 2. 子线程异步加载进程列表（真正不阻塞 UI）
+        threading.Thread(target=self._load_picker_data, daemon=True, name="picker-loader").start()
 
     def _load_picker_data(self):
-        """异步加载进程列表到选择面板。"""
-        self._picker_filtered = []
+        """子线程中获取进程列表，完成后切回主线程填充 Treeview。"""
+        filtered = []
         try:
             from recorder.ui_collector import enumerate_windows
             windows = enumerate_windows()
@@ -774,14 +774,21 @@ class ScreenRecorderApp:
                 name = w.name.strip()
                 if not name or name in ("桌面", "任务栏", "Program Manager", "Shell_TrayWnd"):
                     continue
-                self._picker_filtered.append(w)
+                filtered.append(w)
         except Exception:
             pass
+
+        # 切回主线程更新 UI
+        self.root.after(0, lambda: self._populate_picker(filtered))
+
+    def _populate_picker(self, filtered: list):
+        """在主线程中将进程列表填充到 Treeview。"""
+        self._picker_filtered = filtered
 
         tree = self._picker_tree
         tree.delete(*tree.get_children())
 
-        def _populate(ft=""):
+        def _do_populate(ft=""):
             tree.delete(*tree.get_children())
             ft = ft.lower()
             for i, w in enumerate(self._picker_filtered):
@@ -793,7 +800,7 @@ class ScreenRecorderApp:
                 tree.insert("", tk.END, iid=str(i),
                             values=(prog[:30], w.pid, w.name))
 
-        _populate()
+        _do_populate()
 
         # 搜索联动
         try:
@@ -801,7 +808,7 @@ class ScreenRecorderApp:
         except Exception:
             pass
         self._picker_search_trace_id = self._picker_search_var.trace_add(
-            "write", lambda *a: _populate(self._picker_search_var.get()))
+            "write", lambda *a: _do_populate(self._picker_search_var.get()))
 
     def _hide_picker_panel(self):
         """隐藏进程选择面板。"""
