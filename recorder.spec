@@ -6,7 +6,16 @@ import os
 import sys
 from pathlib import Path
 
+from PyInstaller.building.datastruct import Tree
+
 block_cipher = None
+
+# 收集 urecorder/ 全部文件，排除运行时数据和缓存
+# SPECPATH = spec 文件所在目录（项目根目录）
+_urc_toc = Tree(os.path.join(SPECPATH, 'urecorder'),
+                prefix='urecorder',
+                excludes=['filestorage', '__pycache__', 'data', 'docs', 'guiocr',
+                          '*.bat', 'server.log'])
 
 a = Analysis(
     ['recorder_app.py'],
@@ -14,8 +23,7 @@ a = Analysis(
     binaries=[],
     datas=[
         ('images', 'images'),
-        ('urecorder', 'urecorder'),
-    ],
+    ] + _urc_toc,
     hiddenimports=[
         'recorder',
         'recorder.core',
