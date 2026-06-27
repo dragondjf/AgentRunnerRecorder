@@ -41,8 +41,14 @@ _is_windows = platform.system() == "Windows"
 _PIP_MIRROR = "https://mirrors.aliyun.com/pypi/simple/"
 _PIP_TRUSTED = "mirrors.aliyun.com"
 
-# 子进程环境变量（修复 Windows GBK 无法解码 UTF-8 中文问题）
-_SUBPROCESS_ENV = {**os.environ, "PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"}
+# 子进程环境变量（修复 Windows GBK 无法解码 UTF-8 中文问题 + 清除 SOCKS 代理）
+_SUBPROCESS_ENV = {
+    k: v for k, v in os.environ.items()
+    if k.upper() not in ("ALL_PROXY", "HTTP_PROXY", "HTTPS_PROXY", "SOCKS_PROXY",
+                          "all_proxy", "http_proxy", "https_proxy", "socks_proxy")
+}
+_SUBPROCESS_ENV["PYTHONUTF8"] = "1"
+_SUBPROCESS_ENV["PYTHONIOENCODING"] = "utf-8"
 
 
 def _venv_python() -> str:
