@@ -30,5 +30,7 @@ urecorder/postcase/results
 # Logs
 *.log
 urecorder/filestorage
-# UIRecorderCore filestorage
-urecorder/filestorage/
+# Build artifacts
+AgentRunnerRecorder-Setup.exe
+AgentRunnerRecorder-*.zip
+*.spec.bak

@@ -3,11 +3,13 @@
 本地打包脚本 — 构建当前平台的二进制发布包。
 
 用法:
-    python build_release.py              # 自动检测平台，一键构建
+    python build_release.py              # 自动创建 .venv，一键构建
     python build_release.py --cython     # 先 Cython 编译再 PyInstaller 打包
     python build_release.py --clean      # 构建前清理旧的 build/dist
     python build_release.py --skip-deps  # 跳过依赖安装（已装好时）
     python build_release.py -h           # 显示帮助
+
+所有依赖安装在 .venv/ 虚拟环境中，不污染系统 Python。
 
 平台自动检测，输出产物:
     Windows  → AgentRunnerRecorder-Setup.exe
@@ -23,19 +25,50 @@ import platform
 import shutil
 import subprocess
 import sys
+import venv
 from pathlib import Path
 
 ROOT = Path(__file__).parent
+VENV = ROOT / ".venv"
 DIST = ROOT / "dist"
 SPEC = ROOT / "recorder.spec"
 REQUIREMENTS = ROOT / "requirements.txt"
 REQUIREMENTS_WIN = ROOT / "requirements-windows.txt"
 
+_is_windows = platform.system() == "Windows"
+
+
+def _venv_python() -> str:
+    """返回 .venv 中的 python 路径。"""
+    if _is_windows:
+        return str(VENV / "Scripts" / "python.exe")
+    return str(VENV / "bin" / "python3")
+
+
+def setup_venv() -> str:
+    """创建虚拟环境（首次），返回 python 路径。"""
+    python = _venv_python()
+    if not VENV.is_dir():
+        print("\n\033[1;34m创建虚拟环境 .venv/ ...\033[0m")
+        venv.create(VENV, with_pip=True)
+        print(f"  \033[32m✓\033[0m {VENV}")
+    return python
+
 
 def run(cmd: list[str], **kwargs) -> None:
-    """打印并执行命令。"""
+    """打印并执行命令（使用 venv python）。"""
+    # 自动将 python/python3 替换为 venv 中的 python
     print(f"\n  \033[36m$\033[0m {' '.join(cmd)}")
     subprocess.run(cmd, check=True, cwd=str(ROOT), **kwargs)
+
+
+def _pip_install(python: str, *pkgs: str) -> None:
+    """用 venv python 安装包。"""
+    for pkg in pkgs:
+        if pkg.startswith("-r"):
+            run([python, "-m", "pip", "install", pkg])
+        else:
+            run([python, "-m", "pip", "install", pkg])
 
 
 def detect_platform() -> dict:
@@ -66,47 +99,35 @@ def detect_platform() -> dict:
         }
 
 
-def install_deps(plat: dict) -> None:
-    """安装构建依赖。"""
-    print("\n\033[1;34m[1/5] 安装依赖...\033[0m")
-    run([sys.executable, "-m", "pip", "install", "--upgrade", "pip"])
-    run([sys.executable, "-m", "pip", "install", "-r", str(REQUIREMENTS)])
-    run([sys.executable, "-m", "pip", "install", "pyinstaller"])
+def install_deps(python: str, plat: dict) -> None:
+    """在 venv 中安装构建依赖。"""
+    print("\n\033[1;34m[1/5] 安装依赖 (venv)...\033[0m")
+    run([python, "-m", "pip", "install", "--upgrade", "pip"])
+    run([python, "-m", "pip", "install", "-r", str(REQUIREMENTS)])
+    run([python, "-m", "pip", "install", "pyinstaller"])
 
     if plat["name"] == "win64" and REQUIREMENTS_WIN.exists():
-        run([sys.executable, "-m", "pip", "install", "-r", str(REQUIREMENTS_WIN)])
+        run([python, "-m", "pip", "install", "-r", str(REQUIREMENTS_WIN)])
 
 
 def check_linux_gui() -> None:
     """检查 Linux GUI 依赖（非 root 时仅警告）。"""
     if platform.system() != "Linux":
         return
-    missing = []
-    for lib in ["libgtk-3-0", "libxkbcommon-x11-0"]:
-        try:
-            subprocess.run(["ldconfig", "-p"], capture_output=True, timeout=5)
-        except Exception:
-            pass
     print("  \033[33m提示: Linux 请确保已安装 libgtk-3-0 libxkbcommon-x11-0 等 GUI 库\033[0m")
 
 
-def build_cython() -> None:
+def build_cython(python: str) -> None:
     """Cython 编译 Python 源码（可选，加固反编译）。"""
     print("\n\033[1;34m[2/5] Cython 编译...\033[0m")
-
-    # 确保 Cython 已安装
-    try:
-        import Cython
-    except ImportError:
-        run([sys.executable, "-m", "pip", "install", "Cython"])
-
-    run([sys.executable, "release.py", "build_ext"])
+    run([python, "-m", "pip", "install", "Cython"])
+    run([python, "release.py", "build_ext"])
 
 
-def build_pyinstaller() -> None:
+def build_pyinstaller(python: str) -> None:
     """PyInstaller 打包。"""
     print("\n\033[1;34m[3/5] PyInstaller 打包...\033[0m")
-    run(["pyinstaller", "--noconfirm", str(SPEC)])
+    run([python, "-m", "PyInstaller", "--noconfirm", str(SPEC)])
 
 
 def package_output(plat: dict) -> Path:
@@ -123,10 +144,8 @@ def package_output(plat: dict) -> Path:
     artifact_path = ROOT / plat["artifact"]
 
     if plat["pack"] == "copy_exe":
-        # Windows: 直接复制
         shutil.copy2(src, artifact_path)
     else:
-        # macOS / Linux: zip
         import zipfile
         with zipfile.ZipFile(artifact_path, "w", zipfile.ZIP_DEFLATED) as zf:
             if src.is_dir():
@@ -140,13 +159,12 @@ def package_output(plat: dict) -> Path:
 
 
 def clean() -> None:
-    """清理旧的构建产物。"""
+    """清理旧的构建产物（保留 .venv）。"""
     for d in ["build", "dist"]:
         p = ROOT / d
         if p.exists():
             print(f"  \033[33m清理 {d}/\033[0m")
             shutil.rmtree(p)
-    # 清理 Cython 生成的 .c 文件
     pattern_count = 0
     for ext in [".c", ".so", ".pyd"]:
         for f in ROOT.rglob(f"*{ext}"):
@@ -172,20 +190,23 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 示例:
-  python build_release.py                    # 一键构建
+  python build_release.py                    # 自动创建 .venv 并一键构建
   python build_release.py --cython --clean   # 清理 + Cython + 打包
   python build_release.py --skip-deps        # 跳过依赖安装
         """,
     )
-    parser.add_argument("--cython", action="store_true", help="先进行 Cython 编译再打包")
+    parser.add_argument("--cython", action="store_true", help="先 Cython 编译再打包")
     parser.add_argument("--clean", action="store_true", help="构建前清理旧的 build/dist")
-    parser.add_argument("--skip-deps", action="store_true", help="跳过依赖安装（已安装时）")
+    parser.add_argument("--skip-deps", action="store_true", help="跳过依赖安装（已装好时）")
     args = parser.parse_args()
 
-    # 检查 Python 版本
     py_ver = f"{sys.version_info.major}.{sys.version_info.minor}"
     print(f"\033[1mAgentRunner Recorder 打包构建\033[0m")
     print(f"  Python  {py_ver}  |  {platform.system()} {platform.machine()}")
+
+    # 创建/复用虚拟环境
+    python = setup_venv()
+    print(f"  venv    {VENV}")
 
     plat = detect_platform()
     print(f"  目标平台  {plat['name']}")
@@ -195,14 +216,14 @@ def main():
         clean()
 
     if not args.skip_deps:
-        install_deps(plat)
+        install_deps(python, plat)
 
     check_linux_gui()
 
     if args.cython:
-        build_cython()
+        build_cython(python)
 
-    build_pyinstaller()
+    build_pyinstaller(python)
 
     artifact = package_output(plat)
 
