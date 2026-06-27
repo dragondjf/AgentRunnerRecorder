@@ -20,8 +20,8 @@ _urc_tree = Tree(os.path.join(SPECPATH, 'urecorder'),
                  prefix='urecorder',
                  excludes=['filestorage', '__pycache__', 'data', 'docs', 'guiocr',
                            '*.bat', 'server.log'])
-# Tree 返回 (src, dest, 'DATA')， datas 只需要 (src, dest)
-_urc_datas = [(entry[0], entry[1]) for entry in _urc_tree]
+# Tree 返回 (相对dest, 绝对src, 'DATA')，datas 需要 (绝对src, 相对dest)
+_urc_datas = [(entry[1], entry[0]) for entry in _urc_tree]
 
 a = Analysis(
     ['recorder_app.py'],
