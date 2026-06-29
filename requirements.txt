@@ -17,6 +17,10 @@ pydantic>=2.0
 httpx>=0.24
 pyyaml>=6.0
 
+# urecorder Qwen VL 蓝图依赖 (autogen_ext 传递依赖)
+openai>=1.0
+tiktoken>=0.5
+
 # 构建依赖 (Cython 编译 / PyInstaller 打包时需要)
 setuptools>=65
 Cython>=3.0

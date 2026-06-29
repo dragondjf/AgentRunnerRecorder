@@ -102,10 +102,21 @@ app.register_blueprint(api_blueprint, url_prefix='/api/v1')
 # 注册Qwen VL蓝图
 try:
     from view import qwen_vl_bp
-    app.register_blueprint(qwen_vl_bp, url_prefix='/api/v1/vl')
-    logger.info("✅ 成功加载view模块和qwen_vl_bp蓝图")
+    if qwen_vl_bp is not None:
+        app.register_blueprint(qwen_vl_bp, url_prefix='/api/v1/vl')
+        logger.info("✅ 成功加载qwen_vl_bp蓝图")
+    else:
+        logger.warning("⚠️ qwen_vl_bp 未加载（依赖缺失：autogen_agentchat 等）")
 except ImportError as e:
     logger.warning(f"⚠️ 导入view模块失败: {e}")
+
+# 注册录制历史蓝图（从 recorder/history_server.py 迁移，统一到 Flask 12000 端口）
+try:
+    from view.history_bp import history_bp
+    app.register_blueprint(history_bp, url_prefix='/history')
+    logger.info("✅ 成功加载录制历史蓝图")
+except ImportError as e:
+    logger.warning(f"⚠️ 导入录制历史蓝图失败（recorder 包不可用，独立 Flask 模式）: {e}")
 
 
 # 根据配置启用CORS
@@ -199,6 +210,7 @@ def print_server_info():
     logger.info(f"  AI服务器: http://{AI_Server_HOST}:{AI_Server_PORT}")
     logger.info(f"  前端界面: http://{FLASK_HOST}:{FLASK_PORT}/static/index.html")
     logger.info("📡 API端点:")
+    logger.info(f"  GET  /history/ - 录制历史浏览")
     logger.info("  GET  /api/v1/uirecoreder?filename=records.json - 读取JSON数据")
     logger.info("  POST /api/v1/uirecoreder?filename=records.json - 保存JSON数据")
     logger.info("  GET  /api/v1/config - 读取配置文件")

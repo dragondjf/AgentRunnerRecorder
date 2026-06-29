@@ -33,7 +33,7 @@ a = Analysis(
         'recorder.manager',
         'recorder.report_generator',
         'recorder.urc_bridge',
-        'recorder.history_server',
+        'urecorder.view.history_bp',
         'recorder.platform_utils',
         'recorder.click_icon_extractor',
         'recorder.ui_collector',

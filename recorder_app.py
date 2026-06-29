@@ -303,7 +303,6 @@ class ScreenRecorderApp:
         self._history_btn.pack(side=tk.LEFT, padx=(0, BTN_GAP))
 
         # Export: icon button + lazy-loaded expandable bar
-        self._history_server = None
         self._export_menu_open = False
         self._export_btn = tk.Button(right, image=Icons.get("export", 32),
                                          command=self._toggle_export_menu, bg=C.BG,
@@ -601,15 +600,24 @@ class ScreenRecorderApp:
         self._refit()
 
     def _open_history(self):
-        """Open web history server."""
-        from recorder.history_server import start_server
-        import recorder.history_server as hs_mod
-        if not self._history_server or not self._history_server.running:
-            hs_mod._guirunner_url = self._guirunner_url.get().strip()
-            self._history_server = start_server(open_browser=True)
-        else:
-            import webbrowser
-            webbrowser.open(f"http://127.0.0.1:{self._history_server.port}")
+        """Open recording history (served by URC Flask on port 12000, unified from HistoryServer)."""
+        import urllib.request
+        import webbrowser
+
+        # Sync GuiRunner URL to Flask config
+        guirunner_url = self._guirunner_url.get().strip()
+        try:
+            req = urllib.request.Request(
+                f"{self._urc_server.base_url}/history/api/guirunner-url",
+                data=json.dumps({"url": guirunner_url}).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            urllib.request.urlopen(req, timeout=3)
+        except Exception:
+            pass  # Flask may not be ready yet, URL will be read from app config
+
+        webbrowser.open(f"{self._urc_server.base_url}/history/")
 
     def _toggle_export_menu(self):
         """Toggle the export sub-icon bar below the toolbar."""

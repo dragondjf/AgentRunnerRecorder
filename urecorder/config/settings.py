@@ -235,5 +235,20 @@ class ModelPresets:
         return info.get("vision", False)
 
 
-# 全局配置实例
-config = Config.from_env()
+# 全局配置 —— 每次访问都重新读取环境变量（支持运行时热更新）
+class _ConfigProxy:
+    """动态配置代理，每次属性访问都重新从环境变量加载"""
+    def __init__(self):
+        self._cache = None
+
+    def _reload(self) -> "Config":
+        self._cache = Config.from_env()
+        return self._cache
+
+    def __getattr__(self, name):
+        return getattr(self._reload(), name)
+
+config = _ConfigProxy()
+
+# 兼容旧代码直接导入 Config 类
+__all__ = ['Config', 'LLMConfig', 'AgentConfig', 'ModelPresets', 'config']

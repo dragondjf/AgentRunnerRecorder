@@ -1219,6 +1219,78 @@ def get_server_config():
 
 
 # ============================================================================
+# 模型配置接口（读取 .env 并提供前端修改）
+# ============================================================================
+
+@api_blueprint.route('/model-config', methods=['GET', 'POST'])
+def model_config():
+    """获取/更新模型配置"""
+    from flask import current_app
+    import os as _os
+    from pathlib import Path as _Path
+
+    _env_path = _Path(__file__).parent.parent / ".env"
+
+    if request.method == 'GET':
+        # 读取 .env 文件
+        config = {
+            'apiKey': _os.getenv('OPENAI_API_KEY', ''),
+            'baseUrl': _os.getenv('OPENAI_BASE_URL', 'https://dashscope.aliyuncs.com/compatible-mode/v1'),
+            'modelName': _os.getenv('MODEL_NAME', 'qwen3-vl-8b-instruct'),
+        }
+        return jsonify({'success': True, 'config': config})
+
+    elif request.method == 'POST':
+        data = request.get_json(silent=True) or {}
+        updates = {}
+
+        if 'apiKey' in data:
+            updates['OPENAI_API_KEY'] = data['apiKey']
+        if 'baseUrl' in data:
+            updates['OPENAI_BASE_URL'] = data['baseUrl']
+        if 'modelName' in data:
+            updates['MODEL_NAME'] = data['modelName']
+
+        if not updates:
+            return jsonify({'success': False, 'error': '没有提供任何配置项'}), 400
+
+        # 更新环境变量（当前进程）
+        for key, value in updates.items():
+            _os.environ[key] = str(value)
+
+        # 写回 .env 文件
+        try:
+            existing = {}
+            if _env_path.exists():
+                with open(_env_path, 'r', encoding='utf-8') as f:
+                    for line in f:
+                        line = line.strip()
+                        if '=' in line and not line.startswith('#'):
+                            k, v = line.split('=', 1)
+                            existing[k.strip()] = v.strip().strip('"').strip("'")
+
+            existing.update(updates)
+
+            with open(_env_path, 'w', encoding='utf-8') as f:
+                for key, value in existing.items():
+                    f.write(f"{key}={value}\n")
+
+            logger.info(f"✅ 模型配置已更新: {list(updates.keys())}")
+        except Exception as e:
+            logger.error(f"写入 .env 失败: {e}")
+
+        return jsonify({
+            'success': True,
+            'updated': list(updates.keys()),
+            'config': {
+                'apiKey': _os.getenv('OPENAI_API_KEY', ''),
+                'baseUrl': _os.getenv('OPENAI_BASE_URL', ''),
+                'modelName': _os.getenv('MODEL_NAME', ''),
+            },
+        })
+
+
+# ============================================================================
 # 健康检查接口
 # ============================================================================
 

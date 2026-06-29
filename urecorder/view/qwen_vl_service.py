@@ -33,10 +33,15 @@ logger.info(f"MODEL_NAME={os.getenv('MODEL_NAME', 'NOT SET')}")
 # 创建蓝图
 qwen_vl_bp = Blueprint("vl", __name__, static_folder="static")
 
-# 配置（从环境变量读取）
-MODEL_NAME = os.getenv("MODEL_NAME", "qwen-vl-max-latest")
-API_KEY = os.getenv("OPENAI_API_KEY", "your-api-key")
-BASE_URL = os.getenv("OPENAI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
+# 配置（每次调用时实时读取，支持运行时热更新）
+def _get_model_config():
+    """动态读取最新模型配置"""
+    load_dotenv(_env_path)  # 重新加载 .env
+    return {
+        'model': os.getenv("MODEL_NAME", "qwen-vl-max-latest"),
+        'api_key': os.getenv("OPENAI_API_KEY", "your-api-key"),
+        'base_url': os.getenv("OPENAI_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"),
+    }
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "bmp", "webp"}
 
@@ -44,10 +49,11 @@ def allowed_file(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
 
 async def generate_with_autogen(file_path: str, context: str, requirements: str) -> AsyncGenerator[str, None]:
+    cfg = _get_model_config()
     model_client = OpenAIChatCompletionClient(
-        model=MODEL_NAME,
-        api_key=API_KEY,
-        base_url=BASE_URL,
+        model=cfg['model'],
+        api_key=cfg['api_key'],
+        base_url=cfg['base_url'],
         http_client=_http_client,
         model_info={
             "vision": True,
@@ -153,10 +159,11 @@ async def ai_analysis(image_source: str, context: str = "", requirements: str = 
 
 async def generate_with_autogen_non_streaming(file_path: str, context: str, requirements: str) -> dict:
     """非流式AI分析实现"""
+    cfg = _get_model_config()
     model_client = OpenAIChatCompletionClient(
-        model=MODEL_NAME,
-        api_key=API_KEY,
-        base_url=BASE_URL,
+        model=cfg['model'],
+        api_key=cfg['api_key'],
+        base_url=cfg['base_url'],
         http_client=_http_client,
         model_info={
             "vision": True,

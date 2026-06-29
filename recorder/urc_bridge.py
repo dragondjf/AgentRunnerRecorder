@@ -141,6 +141,11 @@ class UIRecorderCoreServer:
     def is_ready(self) -> bool:
         return self._ready
 
+    @property
+    def history_url(self) -> str:
+        """录制历史浏览页面 URL（由 Flask 蓝图 /history/ 提供）。"""
+        return f"{self.base_url}/history/"
+
     def start(self, wait_ready: bool = True, timeout: float = 15.0) -> bool:
         """启动 UIRecorderCore 服务。"""
         _urc_log(f"start() 调用，URC_DIR={URC_DIR}，CWD={os.getcwd()}")
@@ -209,11 +214,18 @@ class UIRecorderCoreServer:
                 _urc_log("  ✓ qwen_vl_bp")
             except ImportError as e:
                 _urc_log(f"  ⚠ qwen_vl_bp 跳过: {e}")
+            try:
+                import urecorder.view.history_bp
+                _urc_log("  ✓ history_bp")
+            except ImportError as e:
+                _urc_log(f"  ⚠ history_bp 跳过: {e}")
 
             sys.modules["view"] = sys.modules["urecorder.view"]
             sys.modules["view.api_blueprint"] = sys.modules["urecorder.view.api_blueprint"]
             if "urecorder.view.qwen_vl_bp" in sys.modules:
                 sys.modules["view.qwen_vl_bp"] = sys.modules["urecorder.view.qwen_vl_bp"]
+            if "urecorder.view.history_bp" in sys.modules:
+                sys.modules["view.history_bp"] = sys.modules["urecorder.view.history_bp"]
 
             _urc_log("导入 urecorder.config...")
             import urecorder.config
