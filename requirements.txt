@@ -7,6 +7,15 @@ pynput>=1.7
 requests>=2.28
 requests-toolbelt>=1.0.0
 loguru>=0.7
+flask>=2.0
+flask-cors>=3.0
+psutil>=5.9
+python-dotenv>=1.0
+pydantic>=2.0
+
+# urecorder 依赖 (Flask 服务启动必需)
+httpx>=0.24
+pyyaml>=6.0
 
 # 构建依赖 (Cython 编译 / PyInstaller 打包时需要)
 setuptools>=65
@@ -14,5 +23,6 @@ Cython>=3.0
 
 # Windows 用户请额外安装 requirements-windows.txt:
 #   pip install -r requirements.txt -r requirements-windows.txt
+
 
 

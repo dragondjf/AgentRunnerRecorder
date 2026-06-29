@@ -25,7 +25,10 @@ except ImportError:
 
 # 设置默认日志等级为 WARNING
 logger.remove()  # 关键！清除默认 DEBUG 输出
-logger.add(sys.stderr, level="WARNING")
+if sys.stderr is not None:
+    logger.add(sys.stderr, level="WARNING")
+else:
+    logger.add(os.devnull, level="WARNING")  # PyInstaller console=False 时 stderr 为 None
 
 
 def load_application_config():

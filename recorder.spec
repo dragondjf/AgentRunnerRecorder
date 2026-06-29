@@ -1,35 +1,29 @@
 # -*- mode: python ; coding: utf-8 -*-
 # PyInstaller spec — AgentRunner Recorder
-# onedir mode，输出结构: dist/AgentRunnerRecorder/
-#   AgentRunnerRecorder.exe      ← 启动器
-#   _internal/                    ← 依赖 + Cython .pyd
-#   urecorder/                    ← Flask 应用 + 静态文件
-#   images/                       ← 图标资源
+# onedir mode
+# PREBUILT=1: 使用 make dist 的产物（dist/ 目录下已有编译好的 .pyd）
 
 import os
 import sys
-from pathlib import Path
 
-from PyInstaller.building.datastruct import Tree
+_PREBUILT = os.environ.get('PREBUILT') == '1'
+_ENTRY = 'dist/recorder_app.py' if _PREBUILT else 'recorder_app.py'
+_PATHEX = ['dist'] if _PREBUILT else []
+_DATAS = [
+    ('dist/images', 'images'),
+    ('dist/urecorder', 'urecorder'),
+] if _PREBUILT else [
+    ('images', 'images'),
+    ('urecorder', 'urecorder'),
+]
 
 block_cipher = None
 
-# 收集 urecorder/ 全部文件，排除运行时数据和缓存
-# SPECPATH = spec 文件所在目录（项目根目录）
-_urc_tree = Tree(os.path.join(SPECPATH, 'urecorder'),
-                 prefix='urecorder',
-                 excludes=['filestorage', '__pycache__', 'data', 'docs', 'guiocr',
-                           '*.bat', 'server.log'])
-# Tree 返回 (相对dest, 绝对src, 'DATA')，datas 需要 (绝对src, 相对dest)
-_urc_datas = [(entry[1], entry[0]) for entry in _urc_tree]
-
 a = Analysis(
-    ['recorder_app.py'],
-    pathex=[],
+    [_ENTRY],
+    pathex=_PATHEX,
     binaries=[],
-    datas=[
-        ('images', 'images'),
-    ] + _urc_datas,
+    datas=_DATAS,
     hiddenimports=[
         'recorder',
         'recorder.core',
@@ -55,6 +49,14 @@ a = Analysis(
         'flask_cors',
         'loguru',
         'werkzeug',
+        'psutil',
+        'dotenv',
+        'pydantic',
+        'httpx',
+        'yaml',
+        'urecorder.flask_app',
+        'requests',
+        'requests_toolbelt',
     ],
     hookspath=[],
     hooksconfig={},

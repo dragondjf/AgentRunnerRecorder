@@ -18,9 +18,66 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+# ── 调试日志 ──────────────────────────────────────────────────────
+_urc_log_path = None
+
+def _urc_log(msg: str):
+    """同时输出到 stdout 和日志文件。"""
+    global _urc_log_path
+    ts = datetime.now().strftime("%H:%M:%S")
+    line = f"[URC {ts}] {msg}"
+    print(line, flush=True)
+    # 写入日志文件
+    if _urc_log_path is None:
+        # 尝试 exe 同级目录，失败则用临时目录
+        candidates = [
+            os.path.join(os.path.dirname(sys.executable), "urc_debug.log"),
+            os.path.join(os.getcwd(), "urc_debug.log"),
+            os.path.join(os.environ.get("TEMP", os.environ.get("TMP", ".")), "urc_debug.log"),
+        ]
+        for p in candidates:
+            try:
+                with open(p, "a", encoding="utf-8") as f:
+                    f.write(f"=== URC Debug Log ===\n")
+                _urc_log_path = p
+                print(f"[URC] 日志文件: {p}", flush=True)
+                break
+            except Exception:
+                continue
+        if _urc_log_path is None:
+            _urc_log_path = ""  # 放弃写文件
+    if _urc_log_path:
+        try:
+            with open(_urc_log_path, "a", encoding="utf-8") as f:
+                f.write(line + "\n")
+        except Exception:
+            pass
+
+
 # ── 路径常量 ──────────────────────────────────────────────────────
-# UIRecorderCore 代码库位于 AgentRunnerRecorder/urecorder/
-URC_DIR = Path(__file__).resolve().parent.parent / "urecorder"
+# UIRecorderCore 代码库，自动适配 开发/PyInstaller onefile/PyInstaller onedir
+def _find_urc_dir() -> Path:
+    _urc_log(f"sys.executable = {sys.executable}")
+    _urc_log(f"__file__       = {__file__}")
+    candidates = [
+        # 开发环境：recorder/urc_bridge.py → ../urecorder
+        Path(__file__).resolve().parent.parent / "urecorder",
+    ]
+    # PyInstaller onedir: exe 所在目录
+    _exe_dir = Path(os.path.dirname(sys.executable))
+    candidates.append(_exe_dir / "urecorder")
+    candidates.append(_exe_dir / "_internal" / "urecorder")
+    if getattr(sys, '_MEIPASS', ''):
+        candidates.append(Path(sys._MEIPASS) / "urecorder")
+    for p in candidates:
+        _urc_log(f"  尝试 {p}  exist={p.is_dir()}")
+        if p.is_dir():
+            _urc_log(f"  => 选中 {p}")
+            return p
+    _urc_log(f"  => 未找到，回退 {candidates[-1]}")
+    return candidates[-1]  # 回退
+
+URC_DIR = _find_urc_dir()
 URC_FILESTORAGE = URC_DIR / "filestorage"
 URC_PORT = 12000
 URC_HOST = "127.0.0.1"
@@ -85,31 +142,29 @@ class UIRecorderCoreServer:
         return self._ready
 
     def start(self, wait_ready: bool = True, timeout: float = 15.0) -> bool:
-        """启动 UIRecorderCore 服务。
-
-        参数:
-            wait_ready: 是否等待服务就绪
-            timeout: 最长等待秒数
-        返回:
-            True 表示服务已就绪
-        """
+        """启动 UIRecorderCore 服务。"""
+        _urc_log(f"start() 调用，URC_DIR={URC_DIR}，CWD={os.getcwd()}")
         with self._lock:
             if self._ready:
+                _urc_log("已就绪，跳过")
                 return True
 
             # 先检查是否已有外部实例在运行
             if _check_urc_alive():
+                _urc_log("外部实例已运行")
                 self._ready = True
                 return True
 
             # 确保 urecorder/ 可导入
+            _urc_log(f"检查 URC_DIR 存在: {URC_DIR} → {URC_DIR.is_dir()}")
             if not ensure_urc_importable():
+                _urc_log(f"ERROR: URC_DIR 不存在！")
                 raise RuntimeError(
-                    f"UIRecorderCore 代码库不存在: {URC_DIR}\\n"
+                    f"UIRecorderCore 代码库不存在: {URC_DIR}\n"
                     f"请确保已完整拷贝到 AgentRunnerRecorder/urecorder/"
                 )
 
-            # 启动后台线程
+            _urc_log("启动 Flask 线程...")
             self._thread = threading.Thread(
                 target=self._run_flask,
                 daemon=True,
@@ -118,66 +173,77 @@ class UIRecorderCoreServer:
             self._thread.start()
 
         if wait_ready:
-            return self._wait_ready(timeout)
+            ok = self._wait_ready(timeout)
+            _urc_log(f"等待就绪结果: {ok}")
+            return ok
         return False
 
     def _run_flask(self):
         """后台线程入口：切换 CWD → 启动 Flask。"""
         old_cwd = os.getcwd()
+        _urc_log(f"_run_flask 开始，CWD={old_cwd}，URC_DIR={URC_DIR}")
         os.chdir(str(URC_DIR))
         try:
+            _urc_log(f"CWD 已切换到 {os.getcwd()}")
+
             # 将父目录加入 sys.path，使 urecorder 可作为包导入
             parent = str(URC_DIR.parent)
+            _urc_log(f"sys.path 插入 parent={parent}")
             if parent not in sys.path:
                 sys.path.insert(0, parent)
-            # 同时将 urecorder/ 自身加入 sys.path，使 import flask_app 可找到
             urc_str = str(URC_DIR)
+            _urc_log(f"sys.path 插入 urc={urc_str}")
             if urc_str not in sys.path:
                 sys.path.insert(0, urc_str)
 
-            # 先以包方式导入所有需要相对导入的子模块
-            # 此时 Python 将 view 识别为 urecorder.view 子包，
-            # ..core 正确解析为 urecorder.core
-            import urecorder.view.api_blueprint  # 含 from ..core.uiexporter import ...
-            try:
-                import urecorder.view.qwen_vl_bp  # 依赖 autogen，可能未安装
-            except ImportError:
-                print("[URC] 警告: qwen_vl_bp 导入失败（autogen 依赖未安装），AI 分析功能不可用")
+            # 检查关键文件
+            for fname in ['flask_app.py', '__init__.py', 'application.json', '.env']:
+                fp = os.path.join(urc_str, fname)
+                _urc_log(f"  检查文件 {fname}: {os.path.isfile(fp)}")
 
-            # 建立 sys.modules 别名，使 flask_app.py 中的绝对导入
-            # from view.api_blueprint import api_blueprint
-            # from view import qwen_vl_bp
-            # 能直接从 sys.modules 中找到已加载的模块
+            _urc_log("导入 urecorder.view.api_blueprint...")
+            import urecorder.view.api_blueprint
+            _urc_log("  ✓ api_blueprint")
+            try:
+                import urecorder.view.qwen_vl_bp
+                _urc_log("  ✓ qwen_vl_bp")
+            except ImportError as e:
+                _urc_log(f"  ⚠ qwen_vl_bp 跳过: {e}")
+
             sys.modules["view"] = sys.modules["urecorder.view"]
             sys.modules["view.api_blueprint"] = sys.modules["urecorder.view.api_blueprint"]
             if "urecorder.view.qwen_vl_bp" in sys.modules:
                 sys.modules["view.qwen_vl_bp"] = sys.modules["urecorder.view.qwen_vl_bp"]
 
-            # 导入 postcase 依赖（config、utils）并设置别名
+            _urc_log("导入 urecorder.config...")
             import urecorder.config
             import urecorder.config.settings
+            _urc_log("  ✓ config")
+            _urc_log("导入 urecorder.utils...")
             import urecorder.utils
             import urecorder.utils.llm
+            _urc_log("  ✓ utils")
             sys.modules["config"] = sys.modules["urecorder.config"]
             sys.modules["config.settings"] = sys.modules["urecorder.config.settings"]
             sys.modules["utils"] = sys.modules["urecorder.utils"]
             sys.modules["utils.llm"] = sys.modules["urecorder.utils.llm"]
 
-            # 导入并注册 postcase 蓝图
+            _urc_log("导入 urecorder.postcase...")
             import urecorder.postcase
             import urecorder.postcase.routes
             import urecorder.postcase.routes.test_cases
             import urecorder.postcase.routes.api_routes
+            _urc_log("  ✓ postcase")
             sys.modules["postcase"] = sys.modules["urecorder.postcase"]
             sys.modules["postcase.routes"] = sys.modules["urecorder.postcase.routes"]
             sys.modules["postcase.routes.test_cases"] = sys.modules["urecorder.postcase.routes.test_cases"]
             sys.modules["postcase.routes.api_routes"] = sys.modules["urecorder.postcase.routes.api_routes"]
 
-            # 现在导入 flask_app，其绝对导入 from view.xxx 将命中 sys.modules 别名
+            _urc_log("导入 flask_app...")
             import flask_app
             app = flask_app.app
+            _urc_log("  ✓ flask_app")
 
-            # 注册 postcase 蓝图
             app.register_blueprint(
                 sys.modules["postcase"].postcase_bp,
                 url_prefix="/api/v1/postcase",
@@ -185,7 +251,7 @@ class UIRecorderCoreServer:
             app.register_blueprint(
                 sys.modules["postcase"].postcase_api_bp,
             )
-            print("[URC] postcase 蓝图已注册")
+            _urc_log("蓝图已注册，启动 Flask...")
             app.run(
                 host=self.host,
                 port=self.port,
@@ -194,8 +260,10 @@ class UIRecorderCoreServer:
             )
         except Exception as e:
             import traceback
-            traceback.print_exc()
+            _urc_log(f"!!! 异常: {e}")
+            _urc_log(traceback.format_exc())
         finally:
+            _urc_log(f"_run_flask 结束，恢复 CWD={old_cwd}")
             os.chdir(old_cwd)
 
     def _wait_ready(self, timeout: float = 15.0) -> bool:

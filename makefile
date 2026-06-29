@@ -18,6 +18,7 @@ dist:
 	cp  urecorder/.env ${DIST}/urecorder
 	cp -rf images ${DIST}/images
 	cp recorder_app.py ${DIST}/recorder_app.py
+	python build_release.py
 
 webrunner_x86_64_windows_release:dist
 	mkdir -p ${DIST_RELEASE}_zip
