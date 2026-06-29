@@ -9,7 +9,7 @@ DIST12=dist12
 build_ext:
 	python release.py build_ext
 
-dist:
+dist:build_ext
 	rm -rf ${DIST}
 	mkdir -p ${DIST}
 	cp -rf build/lib.*-3*/* ${DIST}/

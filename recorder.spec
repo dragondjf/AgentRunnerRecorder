@@ -12,9 +12,11 @@ _PATHEX = ['dist'] if _PREBUILT else []
 _DATAS = [
     ('dist/images', 'images'),
     ('dist/urecorder', 'urecorder'),
+    ('dist/recorder', 'recorder'),
 ] if _PREBUILT else [
     ('images', 'images'),
     ('urecorder', 'urecorder'),
+    ('recorder', 'recorder'),
 ]
 
 block_cipher = None
@@ -34,6 +36,7 @@ a = Analysis(
         'recorder.report_generator',
         'recorder.urc_bridge',
         'urecorder.view.history_bp',
+        'urecorder.view.qwen_vl_service',
         'recorder.platform_utils',
         'recorder.click_icon_extractor',
         'recorder.ui_collector',

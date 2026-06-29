@@ -210,10 +210,10 @@ class UIRecorderCoreServer:
             import urecorder.view.api_blueprint
             _urc_log("  ✓ api_blueprint")
             try:
-                import urecorder.view.qwen_vl_bp
-                _urc_log("  ✓ qwen_vl_bp")
+                import urecorder.view.qwen_vl_service
+                _urc_log("  ✓ qwen_vl_service")
             except ImportError as e:
-                _urc_log(f"  ⚠ qwen_vl_bp 跳过: {e}")
+                _urc_log(f"  ⚠ qwen_vl_service 跳过: {e}")
             try:
                 import urecorder.view.history_bp
                 _urc_log("  ✓ history_bp")
@@ -222,8 +222,8 @@ class UIRecorderCoreServer:
 
             sys.modules["view"] = sys.modules["urecorder.view"]
             sys.modules["view.api_blueprint"] = sys.modules["urecorder.view.api_blueprint"]
-            if "urecorder.view.qwen_vl_bp" in sys.modules:
-                sys.modules["view.qwen_vl_bp"] = sys.modules["urecorder.view.qwen_vl_bp"]
+            if "urecorder.view.qwen_vl_service" in sys.modules:
+                sys.modules["view.qwen_vl_bp"] = sys.modules["urecorder.view.qwen_vl_service"]
             if "urecorder.view.history_bp" in sys.modules:
                 sys.modules["view.history_bp"] = sys.modules["urecorder.view.history_bp"]
 
