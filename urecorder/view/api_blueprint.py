@@ -872,7 +872,7 @@ def export_data():
         # 获取数据目录
         project = request.args.get('project', '')
         if not project:
-            project = current_app.config.get('CURRENT_PROJECT_NAME', '')
+            project = current_app.config.get('CURRENT_PROJECT_NAME') or ''
         
         data_path = Path(DATA_DIR, project)
 

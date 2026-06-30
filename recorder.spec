@@ -9,7 +9,22 @@ import sys
 _PREBUILT = os.environ.get('PREBUILT') == '1'
 _ENTRY = 'dist/recorder_app.py' if _PREBUILT else 'recorder_app.py'
 _PATHEX = ['dist'] if _PREBUILT else []
-_DATAS = [
+
+# 收集 pypandoc 打包所需的 pandoc 二进制文件
+def _find_pypandoc_datas():
+    """找到 pypandoc 的 pandoc 二进制目录，返回 PyInstaller datas 格式"""
+    try:
+        import pypandoc
+        # pypandoc_binary: files/ 下包含 pandoc.exe (Windows) 或 pandoc (Linux/macOS)
+        pkg_dir = os.path.dirname(pypandoc.__file__)
+        files_dir = os.path.join(pkg_dir, 'files')
+        if os.path.isdir(files_dir):
+            return [(files_dir, 'pypandoc/files')]
+    except Exception:
+        pass
+    return []
+
+_DATAS_BASE = [
     ('dist/images', 'images'),
     ('dist/urecorder', 'urecorder'),
     ('dist/recorder', 'recorder'),
@@ -18,6 +33,8 @@ _DATAS = [
     ('urecorder', 'urecorder'),
     ('recorder', 'recorder'),
 ]
+
+_DATAS = _DATAS_BASE + _find_pypandoc_datas()
 
 block_cipher = None
 
@@ -48,6 +65,32 @@ a = Analysis(
         'win32api',
         'win32con',
         'win32gui',
+        'win32process',
+        'pythoncom',
+        'pynput',
+        'pynput.keyboard',
+        'pynput.mouse',
+        # Pillow (PIL) — 图标/截图处理
+        'PIL',
+        'PIL.Image', 'PIL.ImageTk', 'PIL.ImageDraw',
+        # 录制核心依赖
+        'mss',
+        'numpy',
+        'cv2',
+        # recorder 桌面端
+        'rich',
+        # Word 报告生成
+        'docx',
+        # pypandoc (Word/PDF/HTML 导出)
+        'pypandoc',
+        # Qwen VL 蓝图依赖
+        'openai', 'tiktoken',
+        'autogen_agentchat', 'autogen_agentchat.agents', 'autogen_agentchat.messages',
+        'autogen_core',
+        'autogen_ext', 'autogen_ext.models', 'autogen_ext.models.openai',
+        'autogen_core.codec_tools',
+        # postcase 导出依赖
+        'pandas', 'xlsxwriter', 'PyPDF2', 'pdfplumber',
         'flask',
         'flask_cors',
         'loguru',
@@ -60,12 +103,20 @@ a = Analysis(
         'urecorder.flask_app',
         'requests',
         'requests_toolbelt',
+        # tkinter 子模块 (PyInstaller 不会自动检测)
+        'tkinter.filedialog',
+        'tkinter.messagebox',
+        'tkinter.ttk',
+        # recorder.app 新增模块
+        'recorder.theme',
+        'recorder.ui_components',
+        'recorder.hotkey',
     ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[
-        'matplotlib', 'scipy', 'pandas', 'IPython',
+        'matplotlib', 'scipy', 'IPython',
         'jupyter', 'notebook', 'pytest', 'setuptools',
     ],
     noarchive=False,
