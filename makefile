@@ -20,6 +20,17 @@ dist:build_ext
 	cp recorder_app.py ${DIST}/recorder_app.py
 	python build_release.py
 
+WEBRUNNER_URL := http://192.168.1.70:9090/webrunner/agentrunnerrecorder.git
+
+# 将当前仓库推送到内网 webrunner 仓库
+# - 不修改 remote 配置（不会影响 origin/GitHub remote）
+# - 不使用 persistent remote，URL 直接内联到 push 命令
+# - 每次执行 make push 完成一次 master + --tags 推送
+push:
+	@echo "[make push] Pushing to $(WEBRUNNER_URL)"
+	git push $(WEBRUNNER_URL) master --tags
+	@echo "[make push] Done."
+
 webrunner_x86_64_windows_release:dist
 	mkdir -p ${DIST_RELEASE}_zip
 	zip -r ${DIST_RELEASE}_zip/locustplus_x86_64_windows_release_${GIT_HASH}_${TIMESTAMP}.zip ${DIST_RELEASE}

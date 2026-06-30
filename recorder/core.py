@@ -317,7 +317,7 @@ class RecordingSession:
                 # 将截图帧传给 UI 控件采集器（复用截图）
                 if self._ui_bridge is not None and self._last_frame_bgr is not None:
                     try:
-                        self._ui_bridge.on_screenshot(self._last_frame_bgr)
+                        self._ui_bridge.on_screenshot(self._last_frame_bgr, seq)
                     except Exception:
                         import traceback
                         traceback.print_exc()
