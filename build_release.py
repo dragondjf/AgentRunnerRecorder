@@ -15,6 +15,7 @@
 """
 
 import argparse
+import io
 import os
 import platform
 import shutil
@@ -22,6 +23,22 @@ import subprocess
 import sys
 import venv
 from pathlib import Path
+
+# 强制 UTF-8 输出,避免 Windows cp1252 / PowerShell 环境打印中文报错
+if sys.platform == "win32":
+    for _stream_name in ("stdout", "stderr"):
+        _stream = getattr(sys, _stream_name, None)
+        if _stream is not None and hasattr(_stream, "reconfigure"):
+            try:
+                _stream.reconfigure(encoding="utf-8", errors="replace")
+            except Exception:
+                pass
+    if not sys.stdout or not getattr(sys.stdout, "encoding", "") or sys.stdout.encoding.lower().startswith("cp"):
+        try:
+            sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+            sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+        except Exception:
+            pass
 
 ROOT = Path(__file__).parent
 VENV = ROOT / ".venv"
