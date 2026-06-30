@@ -102,6 +102,8 @@ class ScreenRecorderApp:
         self._show_top_right()
         self.root.protocol("WM_DELETE_WINDOW", self._on_close)
         self.root.deiconify()
+        # 处理用户用系统按钮最小化/恢复的场景：恢复时强制重排
+        self.root.bind("<Map>", lambda e: self.root.after(50, self._refit))
 
     # ── UI Build ──────────────────────────────────────────────
 
@@ -613,6 +615,8 @@ class ScreenRecorderApp:
         if self._update_job: self.root.after_cancel(self._update_job); self._update_job = None
         self._countdown = 0; self._countdown_job = None
         self._layout_idle(); self._status_bar.pack_forget(); self._refit()
+        # 强制多帧刷新以修正 iconify 后的几何缓存
+        self.root.after(50, self._refit)
         if self._session:
             stats = self._session.stats()
             self._log(f"\u5f55\u5236\u5b8c\u6210  \u65f6\u957f {self._fmt_time(stats.duration_s)}  |  "
@@ -636,6 +640,8 @@ class ScreenRecorderApp:
         else:
             self._session.pause(); self._paused = True; self._layout_paused()
             self._log("\u6682\u505c\u5f55\u5236"); self.root.deiconify(); self.root.lift()
+            # 恢复后强制重排，避免 DPI/最小化/恢复后布局错位
+            self.root.after(50, self._refit)
 
     def _update_status_loop(self):
         if not self._recording or not self._session: return
