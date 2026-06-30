@@ -829,8 +829,15 @@ class ScreenRecorderApp:
             from recorder.click_icon_extractor import push_har_to_guirunner
             ok = push_har_to_guirunner(har_path, self._project_name, base_url=guirunner_url)
             if ok:
-                self._log("GuiRunner \u811a\u672c\u5de5\u7a0b\u5df2\u521b\u5efa/\u66f4\u65b0")
-                messagebox.showinfo("\u6210\u529f", f"GuiRunner \u5de5\u7a0b '{self._project_name}' \u5df2\u63a8\u9001")
+                editor_url = guirunner_url.rstrip("/") + "/static/webeditor/index.html#/?project=" + self._project_name
+                self._log(f"GuiRunner \u5de5\u7a0b\u5df2\u521b\u5efa/\u66f4\u65b0: {editor_url}")
+                # \u76f4\u63a5\u5728\u9ed8\u8ba4\u6d4f\u89c8\u5668\u6253\u5f00 editor \u9875\u9762\uff0c\u907f\u514d\u5f39\u51fa messagebox
+                try:
+                    import webbrowser
+                    webbrowser.open_new_tab(editor_url)
+                except Exception as wb_err:
+                    self._log(f"\u6d4f\u89c8\u5668\u6253\u5f00\u5931\u8d25: {wb_err}")
+                    messagebox.showinfo("\u6210\u529f", f"GuiRunner \u5de5\u7a0b\u5df2\u63a8\u9001\uff1a\n{editor_url}")
             else:
                 self._log("GuiRunner \u63a8\u9001\u5931\u8d25\uff08\u540e\u7aef\u53ef\u80fd\u672a\u542f\u52a8\uff09")
                 messagebox.showwarning("\u63d0\u793a", f"\u63a8\u9001\u5931\u8d25\uff0c\u8bf7\u786e\u8ba4 GuiRunner \u540e\u7aef\u5df2\u542f\u52a8\n({guirunner_url})")
