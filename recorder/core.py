@@ -121,6 +121,7 @@ class RecordingSession:
             start_time=self._capture.start_time,
             on_stop=self.stop,
             on_ui_click=self._ui_bridge.on_mouse_click if self._ui_bridge else None,
+            target_win=self._ui_win,
         )
         self._listener.start()
 

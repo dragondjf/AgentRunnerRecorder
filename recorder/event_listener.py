@@ -12,6 +12,9 @@ all the heavy work (lock, JSON, GetForegroundWindow, etc.).
 
 from __future__ import annotations
 
+import ctypes
+import logging
+import platform
 import queue
 import threading
 import time
@@ -21,10 +24,63 @@ from pynput import keyboard, mouse
 
 from .window_tracker import get_active_window, get_active_window_info
 
+_LOG = logging.getLogger(__name__)
+_SYSTEM = platform.system()
+
 # ---------------------------------------------------------------------------
 # Stop-hotkey definition: Ctrl + Shift + F5
 # ---------------------------------------------------------------------------
 _STOP_KEY = keyboard.Key.f5
+
+
+# ---------------------------------------------------------------------------
+# Cross-platform target-window rectangle query.
+# Used to filter events that occur outside the user's chosen target app
+# (taskbar, Recorder toolbar, other windows, etc.).
+# ---------------------------------------------------------------------------
+def _query_window_rect(hwnd) -> tuple[int, int, int, int] | None:
+    """Return (left, top, width, height) of *hwnd*, or None when invalid.
+
+    Implementation notes:
+        * Windows: ``GetWindowRect`` via ctypes.  Fast (~0.02 ms/call).
+        * Linux:   ``python-xlib`` is already a pynput dependency.
+        * Darwin:  macOS target windows do not generally move while a recording
+          is in progress; we fall back to a *None* result (filter active).
+    """
+    if not hwnd:
+        return None
+    try:
+        if _SYSTEM == "Windows":
+            import ctypes.wintypes as wt
+
+            rect = wt.RECT()
+            ok = ctypes.windll.user32.GetWindowRect(int(hwnd), ctypes.byref(rect))
+            if not ok:
+                return None
+            # If the window is minimised / hidden, width or height may be 0.
+            w = rect.right - rect.left
+            h = rect.bottom - rect.top
+            if w <= 0 or h <= 0:
+                return None
+            return (int(rect.left), int(rect.top), int(w), int(h))
+
+        if _SYSTEM == "Linux":
+            try:
+                from Xlib import display  # type: ignore
+            except Exception:
+                return None
+            d = display.Display()
+            w = d.create_resource_object("window", int(hwnd))
+            geom = w.get_geometry()
+            # ``get_geometry`` returns coordinates relative to the parent.
+            # For top-level windows this is usually the root window,
+            # which is what we want here.
+            return (int(geom.x), int(geom.y), int(geom.width), int(geom.height))
+
+        # macOS / unsupported — leave filtering to the PID check.
+        return None
+    except Exception:
+        return None
 
 
 class EventListener:
@@ -46,6 +102,7 @@ class EventListener:
         on_ui_click: Callable[[int, int], None] | None = None,
         drag_threshold: int = 5,
         dblclick_threshold: float = 0.4,
+        target_win=None,
     ):
         self._cb = callback
         self._t0 = start_time
@@ -53,6 +110,16 @@ class EventListener:
         self._on_ui_click = on_ui_click
         self._drag_px = drag_threshold
         self._dbl_sec = dblclick_threshold
+
+        # ── target-window filtering (None → no filtering, fully backwards-compatible) ──
+        # target_win is a ``WindowInfo`` dataclass from ``ui_collector.platform.base``
+        # exposing at least: ``hwnd`` (int | None), ``pid`` (int) and bounding-box
+        # fields ``win_left / win_top / win_width / win_height``.
+        self._target_win = target_win
+        self._rect_cache: tuple[int, int, int, int] | None = None
+        self._rect_cache_ts: float = 0.0
+        self._rect_cache_ttl: float = 0.2  # 200 ms — keep ctypes calls cheap
+        self._filter_warned: bool = False  # avoid log spam when target is gone
 
         # ── event queue: hook → worker ──
         self._q: queue.Queue[tuple | None] = queue.Queue()
@@ -113,6 +180,80 @@ class EventListener:
         s = int(e % 60)
         ms = int((e % 1) * 1000)
         return f"{h:02d}:{m:02d}:{s:02d}.{ms:03d}"
+
+    # -- target-window filtering (worker thread only) -----------------------
+
+    def _is_in_target_window(self, x: int, y: int) -> bool:
+        """Return True if (x, y) is inside the user-selected target window.
+
+        When no target window is set (``_target_win is None``) we always
+        return True — fully backwards-compatible with the legacy behaviour.
+
+        The window rectangle is queried via the platform-specific
+        :func:`_query_window_rect` helper, cached for 200 ms to keep the cost
+        negligible for high-frequency mouse-move events.
+        """
+        win = self._target_win
+        if win is None:
+            return True
+
+        # Refresh cache lazily.
+        now = time.monotonic()
+        if (
+            self._rect_cache is None
+            or (now - self._rect_cache_ts) > self._rect_cache_ttl
+        ):
+            self._rect_cache = _query_window_rect(getattr(win, "hwnd", None))
+            self._rect_cache_ts = now
+
+        rect = self._rect_cache
+        if rect is None:
+            # Window gone — be conservative: drop the event.  This protects the
+            # log from trailing clicks the user makes on the taskbar / Recorder
+            # toolbar while shutting the target app down.
+            if not self._filter_warned:
+                _LOG.info(
+                    "[EventListener] target window hwnd=%s unavailable; "
+                    "filtering is now rejecting all events.",
+                    getattr(win, "hwnd", None),
+                )
+                self._filter_warned = True
+            return False
+        self._filter_warned = False
+
+        l, t, w, h = rect
+        return l <= x <= l + w and t <= y <= t + h
+
+    def _pid_matches_target(self, win_info) -> bool:
+        """Return True when the foreground process is the chosen target.
+
+        When either side lacks a ``pid`` (e.g. macOS) we fall back to ``True``
+        so the rectangle check remains the primary guard.
+        """
+        win = self._target_win
+        if win is None or win_info is None:
+            return True
+        target_pid = getattr(win, "pid", 0) or 0
+        event_pid = win_info.get("pid", 0) or 0
+        if not target_pid or not event_pid:
+            return True
+        return target_pid == event_pid
+
+    def _should_drop_event(self, x: int, y: int) -> bool:
+        """Combined rectangle + PID filter.  Return True to *drop* the event."""
+        if self._target_win is None:
+            return False
+        if not self._is_in_target_window(x, y):
+            return True
+        # Foreground-window PID check — only meaningful on platforms that
+        # actually populate ``win_info["pid"]`` (Windows/Linux).
+        try:
+            win_info = get_active_window_info()
+        except Exception:
+            win_info = None
+        if not self._pid_matches_target(win_info):
+            return True
+        return False
 
     def _emit(self, message: str) -> None:
         try:
@@ -176,6 +317,16 @@ class EventListener:
         b = btn_name
 
         if pressed:
+            # Target-window filter — drop the press entirely if it happened
+            # outside the user's chosen app (taskbar / Recorder toolbar / etc.).
+            if self._should_drop_event(x, y):
+                # Clear any leftover state so the matching release is also
+                # dropped (it will hit the ``b not in self._pressed`` branch).
+                self._pressed.pop(b, None)
+                self._dragging = False
+                self._drag_btn = None
+                return
+
             # double-click? (check BEFORE adding to _pressed)
             prev = self._last_release.get(b)
             if prev:
@@ -190,6 +341,10 @@ class EventListener:
             self._dragging = False
             self._emit(f"{b}Click at ({x}, {y})")
         else:
+            # If the press was filtered out (or never tracked), drop the
+            # matching release too — keeps click/release pairs symmetric.
+            if b not in self._pressed:
+                return
             self._pressed.pop(b, None)
             if self._dragging and self._drag_btn == b:
                 self._emit(f"{b}DragEnd at ({x}, {y})")
@@ -214,10 +369,20 @@ class EventListener:
         for b, (dx, dy, _) in self._pressed.items():
             if not self._dragging:
                 if max(abs(x - dx), abs(y - dy)) > self._drag_px:
+                    # Only start a drag if the *press* landed inside the
+                    # target window.  This preserves the legacy behaviour for
+                    # unfiltered sessions (target_win is None) and prevents
+                    # spurious drag tracks when the user clicked on the
+                    # taskbar before moving the mouse into the app.
+                    if not self._is_in_target_window(dx, dy):
+                        return
                     self._dragging = True
                     self._drag_btn = b
                     self._emit(f"DragStart at ({dx}, {dy})")
             if self._dragging and b == self._drag_btn:
+                # DragMove samples may travel outside the target window
+                # (dragging a slider, scrollbar, etc.) — always emit them
+                # so the resulting track is continuous.
                 now = time.monotonic()
                 if now - self._drag_move_ts > 0.05:
                     self._emit(f"DragMove at ({x}, {y})")
@@ -228,6 +393,8 @@ class EventListener:
 
     def _proc_scroll(self, x: int, y: int, dy: int) -> None:
         if dy == 0:
+            return
+        if self._should_drop_event(x, y):
             return
         direction = "ScrollUp" if dy > 0 else "ScrollDown"
         for _ in range(max(1, abs(dy))):
