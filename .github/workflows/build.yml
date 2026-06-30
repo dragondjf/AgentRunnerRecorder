@@ -16,7 +16,7 @@ jobs:
         include:
           - os: windows-latest
             platform: win64
-            artifact: AgentRunnerRecorder-Setup.exe
+            artifact: AgentRunnerRecorder-win64.zip
           - os: macos-latest
             platform: mac-arm64
             artifact: AgentRunnerRecorder-mac-arm64.zip
@@ -32,51 +32,51 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.10'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pyinstaller
+          pip install pyinstaller cython setuptools
 
-      - name: Build with PyInstaller
-        run: pyinstaller --noconfirm recorder.spec
+      - name: Install Windows dependencies
+        if: matrix.os == 'windows-latest'
+        run: pip install -r requirements-windows.txt
 
-      - name: Install Linux GUI libraries
-        if: matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-24.04-arm'
+      - name: Install Linux GUI dependencies
+        if: startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt-get update
-          sudo apt-get install -y libgtk-3-0 libxkbcommon-x11-0 libxcb-xinerama0 libxcb-cursor0 xvfb
+          sudo apt-get install -y \
+            libgtk-3-0 libxkbcommon-x11-0 \
+            libxcb-xinerama0 libxcb-cursor0 xvfb
 
-      - name: Build with PyInstaller
-        run: pyinstaller --noconfirm recorder.spec
+      # === 构建: make dist (build_ext + 复制文件到 dist/ + build_release.py) ===
+      - name: Cython compile (build_ext)
+        run: python release.py build_ext
 
-      - name: Package Windows
-        if: matrix.os == 'windows-latest'
-        shell: bash
-        run: cp dist/AgentRunnerRecorder.exe ./AgentRunnerRecorder-Setup.exe
-
-      - name: Package macOS
-        if: matrix.os == 'macos-latest'
+      - name: Prepare dist/ (copy compiled modules + static files)
         shell: bash
         run: |
-          cd dist && zip -r -9 ../AgentRunnerRecorder-mac-arm64.zip AgentRunnerRecorder
+          DIST="dist"
+          rm -rf "${DIST}"
+          mkdir -p "${DIST}"
+          cp -rf build/lib.*-3*/* "${DIST}/"
+          cp -rf urecorder/static "${DIST}/urecorder"
+          cp urecorder/application.json "${DIST}/urecorder"
+          if [ -f urecorder/.env ]; then cp urecorder/.env "${DIST}/urecorder"; fi
+          cp -rf images "${DIST}/images"
+          cp recorder_app.py "${DIST}/recorder_app.py"
 
-      - name: Package Linux x64
-        if: matrix.os == 'ubuntu-latest'
+      - name: build_release.py (venv + Aliyun pip + PyInstaller + zip)
         shell: bash
-        run: |
-          cd dist && zip -r -9 ../AgentRunnerRecorder-linux-x64.zip AgentRunnerRecorder
-
-      - name: Package Linux arm64
-        if: matrix.os == 'ubuntu-24.04-arm'
-        shell: bash
-        run: |
-          cd dist && zip -r -9 ../AgentRunnerRecorder-linux-arm64.zip AgentRunnerRecorder
+        env:
+          PREBUILT: '1'
+        run: python build_release.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -90,9 +90,6 @@ jobs:
     if: success()
 
     steps:
-      - name: Checkout for release notes
-        uses: actions/checkout@v4
-
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
@@ -104,19 +101,13 @@ jobs:
       - name: Collect release assets
         run: |
           mkdir -p release-assets
-          for f in \
-            artifacts/win64/AgentRunnerRecorder-Setup.exe \
-            artifacts/mac-arm64/AgentRunnerRecorder-mac-arm64.zip \
-            artifacts/linux-x64/AgentRunnerRecorder-linux-x64.zip \
-            artifacts/linux-arm64/AgentRunnerRecorder-linux-arm64.zip; do
+          for f in artifacts/*/*.zip; do
             if [ -f "$f" ]; then
               cp "$f" release-assets/
               echo "Included: $f"
-            else
-              echo "Skipped (not found): $f"
             fi
           done
-          echo "Assets to upload:"
+          echo "Assets:"
           ls -lh release-assets/
 
       - name: Create Release
