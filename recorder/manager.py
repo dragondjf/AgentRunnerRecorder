@@ -191,7 +191,7 @@ class RecorderManager:
         monitor: int,
     ):
         # Lazy import so the web app still boots even if recorder deps are missing.
-        from syll.recorder.core import RecordingSession
+        from .core import RecordingSession
 
         return RecordingSession(
             project_name=project,

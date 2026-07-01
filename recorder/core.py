@@ -266,7 +266,7 @@ class RecordingSession:
         lines = [
             "# Input Recording Log",
             f"# Started: {now}",
-            "# Recorder: syll-recorder",
+            "# Recorder: AgentRunner Recorder",
             "# Format: JSON per line",
             "# Fields: timestamp, message, window, screenshot, screenshot_abs",
             "",

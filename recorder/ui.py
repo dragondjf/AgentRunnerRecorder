@@ -1,4 +1,4 @@
-"""Syll Recorder terminal UI — rich-based, no Qt dependency."""
+"""AgentRunner Recorder terminal UI — rich-based, no Qt dependency."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ console = Console()
 
 # ── Branding ─────────────────────────────────────────────────────────
 
-_SYLL = "\U0001F47B"
+_LOGO = "\U0001F916"  # 🤖
 _GREEN = "#34d399"
 _RED = "red"
 _DIM = "dim"
@@ -75,7 +75,7 @@ def run_recorder(session, project_name: str) -> None:
     info.add_row("FPS", str(session.fps))
 
     console.print()
-    console.print(Panel(info, title=f"{_SYLL} Syll Recorder", border_style=_GREEN, width=52))
+    console.print(Panel(info, title=f"{_LOGO} AgentRunner Recorder", border_style=_GREEN, width=52))
 
     # ── 2. Wait for Enter ────────────────────────────────────────────
 
@@ -101,7 +101,7 @@ def run_recorder(session, project_name: str) -> None:
         console.print(f"  [{_DIM}]Check Screen Recording & Accessibility in System Settings.[/{_DIM}]")
         return
 
-    _notify(f"{_SYLL} Syll Recorder", f"Recording {project_name}")
+    _notify(f"{_LOGO} AgentRunner Recorder", f"Recording {project_name}")
     console.print(f"  [{_DIM}]Screen {screen.logical_width}\u00d7{screen.logical_height}[/{_DIM}]")
     console.print()
 
@@ -125,7 +125,7 @@ def run_recorder(session, project_name: str) -> None:
 
     # ── 6. Stats ─────────────────────────────────────────────────────
 
-    _notify(f"{_SYLL} Syll Recorder", f"Recording saved \u2014 {project_name}")
+    _notify(f"{_LOGO} AgentRunner Recorder", f"Recording saved \u2014 {project_name}")
 
     st = session.stats()
     stats = Table.grid(padding=(0, 2))
