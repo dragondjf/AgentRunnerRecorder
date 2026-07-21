@@ -173,12 +173,13 @@ class UICollectorBridge:
 
         lines = []
         for elem in candidates:
-            name = elem.name
-            if not name:
+            if not elem.name:
                 continue
-            if name not in self._class_names:
-                self._class_names.append(name)
-            cls_id = self._class_names.index(name)
+            # 唯一类标识：name_type_bbox_id（每个控件实例独立一类，bbox 定位其窗口内精确位置）
+            class_key = f"{elem.name}_{elem.type}_{elem.bbox_left}_{elem.bbox_top}_{elem.bbox_right}_{elem.bbox_bottom}_{elem.id}"
+            if class_key not in self._class_names:
+                self._class_names.append(class_key)
+            cls_id = self._class_names.index(class_key)
 
             # \u7a97\u53e3\u76f8\u5bf9\u5750\u6807 \u2192 \u5c4f\u5e55\u7edd\u5bf9\u5750\u6807 \u2192 \u5f52\u4e00\u5316
             xc = (elem.bbox_left + elem.bbox_right) / 2 + win.win_left

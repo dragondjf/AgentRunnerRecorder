@@ -32,7 +32,10 @@ except ImportError:
 DEFAULT_ICON_SIZE = 64
 BBOX_TOLERANCE = 15  # 坐标容差（像素），处理 UIA bbox 与屏幕坐标小幅偏移
 
-
+# 截图裁剪参数（非 UIA 命中时的 fallback 策略）
+CROP_DEFAULT_RADIUS = 32     # 默认裁剪半径（像素），以点击坐标为中心向四周扩展
+CROP_MIN_SIZE = 16           # 控件最小边长（像素），低于此值等比放大至此
+CROP_MAX_SIZE = 128          # 控件最大边长（像素），超过此值等比缩小至此
 # ══════════════════════════════════════════════════════════════════
 # 数据加载
 # ══════════════════════════════════════════════════════════════════
@@ -257,35 +260,64 @@ def _copy_crop_icon(elem: Dict, output_path: str, crops_dir: str) -> bool:
 
 
 def _crop_from_screenshot(screenshot_path: str, click_x: int, click_y: int,
-                          output_path: str, icon_size: int = DEFAULT_ICON_SIZE) -> bool:
-    """从完整截图中以点击坐标为中心裁剪图标。"""
+                          output_path: str, icon_size: int = DEFAULT_ICON_SIZE) -> tuple:
+    """从完整截图中以点击坐标为中心进行对称裁剪。
+
+    策略：
+      1. 以点击坐标为中心，使用默认半径（CROP_DEFAULT_RADIUS）裁剪正方形区域
+      2. 靠近屏幕边缘时，对称收缩另一侧保证点击始终在裁剪中心
+      3. 动态适配尺寸（CROP_MIN_SIZE ~ CROP_MAX_SIZE 范围）
+
+    注意：不采用 getbbox 内容感知，因为低对比度 GUI（微信等）中 getbbox
+    会误将整个窗口背景检测为"前景"，导致裁剪区域过大。
+    """
     if not _HAS_PIL or not os.path.exists(screenshot_path):
-        return False
+        return (False, 0, 0)
     try:
         img = Image.open(screenshot_path)
         w, h = img.size
-        half = icon_size // 2
+        r = CROP_DEFAULT_RADIUS
 
-        # 计算裁剪区域（保证不超出图片边界）
-        left = max(0, click_x - half)
-        top = max(0, click_y - half)
-        right = min(w, left + icon_size)
-        bottom = min(h, top + icon_size)
-        left = max(0, right - icon_size)
-        top = max(0, bottom - icon_size)
+        # ── 以点击坐标为中心，向四方向扩展半径 r ──
+        left   = click_x - r
+        top    = click_y - r
+        right  = click_x + r
+        bottom = click_y + r
 
-        crop = img.crop((left, top, right, bottom))
-        # 如果需要，填充到 64×64
-        if crop.size != (icon_size, icon_size):
-            canvas = Image.new("RGB", (icon_size, icon_size), (40, 40, 40))
-            canvas.paste(crop, (0, 0))
-            crop = canvas
+        # ── clamp 到图像边界 ──
+        left   = max(0, left)
+        top    = max(0, top)
+        right  = min(w, right)
+        bottom = min(h, bottom)
 
+        # ── 对称收缩：clamp 后不对称时，缩小另一侧保证点击在中心 ──
+        actual_left   = click_x - left
+        actual_right  = right - click_x
+        actual_top    = click_y - top
+        actual_bottom = bottom - click_y
+        radius_h = min(actual_left, actual_right)
+        radius_v = min(actual_top, actual_bottom)
+
+        left   = click_x - radius_h
+        top    = click_y - radius_v
+        right  = click_x + radius_h
+        bottom = click_y + radius_v
+
+        crop = img.crop((int(left), int(top), int(right), int(bottom)))
+
+        # ── 动态尺寸适配（保持原始比例，仅约束上下限） ──
+        crop_w, crop_h = crop.size
+        long_edge = max(crop_w, crop_h)
+        if long_edge < CROP_MIN_SIZE:
+            scale = CROP_MIN_SIZE / long_edge
+            crop = crop.resize((int(crop_w * scale), int(crop_h * scale)), Image.LANCZOS)
+        elif long_edge > CROP_MAX_SIZE:
+            scale = CROP_MAX_SIZE / long_edge
+            crop = crop.resize((int(crop_w * scale), int(crop_h * scale)), Image.LANCZOS)
         crop.save(output_path, "JPEG", quality=85)
-        return True
+        return (True, crop.size[0], crop.size[1])
     except Exception:
-        return False
-
+        return (False, 0, 0)
 
 def _resolve_screenshot_abs(rel_path: str, inputs_dir: str) -> str:
     """将 report 中的相对 screenshot_file 解析为绝对路径。"""
@@ -476,9 +508,10 @@ def extract_click_icons(
 
             ss_rel = step.get("screenshot_file", "")
             ss_abs = _resolve_screenshot_abs(ss_rel, inputs_dir)
-            if _crop_from_screenshot(ss_abs, click_x, click_y, icon_path, icon_size):
+            ok, cw, ch = _crop_from_screenshot(ss_abs, click_x, click_y, icon_path, icon_size)
+            if ok:
                 item["icon_file"] = icon_filename
-                item["source"] = f"{ss_rel} (cropped {icon_size}×{icon_size})"
+                item["source"] = f"{ss_rel} (cropped {cw}×{ch})"
             else:
                 item["icon_file"] = ""
                 item["source"] = "(截图缺失，无法裁剪)"
@@ -488,7 +521,7 @@ def extract_click_icons(
     # ── 6. 生成 mapping.json ──
     mapping = {
         "generated": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "icon_size": f"{icon_size}x{icon_size}",
+        "icon_size": f"{CROP_DEFAULT_RADIUS*2}x{CROP_DEFAULT_RADIUS*2} (actual varies)",
         "total_clicks": len(click_steps),
         "hits": hits,
         "misses": misses,

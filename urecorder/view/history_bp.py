@@ -478,7 +478,7 @@ button {{ font-family: inherit; cursor: pointer; outline: none; }}
 .empty {{ text-align: center; padding: 80px 20px; color: var(--color-text-muted); font-size: 14px; }}
 
 /* ========== Card Mode ========== */
-.recording-item {{ display: flex; background: var(--color-surface); border: 1px solid var(--color-hairline); border-radius: var(--radius-lg); margin-bottom: 10px; transition: border-color 0.2s, box-shadow 0.2s, background 0.3s; overflow: hidden; }}
+.recording-item {{ display: flex; background: var(--color-surface); border: 1px solid var(--color-hairline); border-radius: var(--radius-lg); margin-bottom: 10px; transition: border-color 0.2s, box-shadow 0.2s, background 0.3s; }}
 .recording-item:hover {{ border-color: var(--color-border); box-shadow: var(--shadow-sm); }}
 .item-thumb {{ width: 150px; min-height: 88px; flex-shrink: 0; overflow: hidden; background: var(--color-surface2); display: flex; align-items: center; justify-content: center; position: relative; }}
 .item-thumb img {{ width: 100%; height: 100%; object-fit: cover; }}
