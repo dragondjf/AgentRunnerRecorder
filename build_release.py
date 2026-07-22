@@ -122,6 +122,24 @@ def build_pyinstaller(python: str) -> None:
     run([python, "-m", "PyInstaller", "--noconfirm", str(SPEC)])
 
 
+def _ensure_win7_dll(src_dir: Path) -> None:
+    """将 api-ms-win-core-path-l1-1-0.dll 复制到 _internal 目录。
+
+    Python 3.9+ 内部依赖此 API Set DLL，Windows 7 缺少该文件。
+    """
+    dll_name = "api-ms-win-core-path-l1-1-0.dll"
+    internal_dir = src_dir / "_internal"
+    target = internal_dir / dll_name
+    if target.exists():
+        return
+    source = ROOT / "dlls" / dll_name
+    if source.exists():
+        shutil.copy2(source, target)
+        print(f"  \033[32m✓\033[0m {dll_name} → _internal/ (Win7 compat)")
+    else:
+        print(f"  \033[33m⚠ dlls/{dll_name} 不存在，Win7 可能无法启动\033[0m")
+
+
 def package_output(plat: dict) -> Path:
     print("\n\033[1;34m[3/3] 封装产物...\033[0m")
     src_dir = ROOT / "dist" / "AgentRunnerRecorder"
@@ -134,6 +152,10 @@ def package_output(plat: dict) -> Path:
         if req_file.exists():
             shutil.copy2(req_file, internal_dir / req_file.name)
             print(f"  \033[36m+\033[0m {req_file.name} → _internal/")
+
+    # Win7 兼容 DLL
+    if plat["name"] == "win64":
+        _ensure_win7_dll(src_dir)
 
     artifact_path = ROOT / plat["artifact"]
     import zipfile

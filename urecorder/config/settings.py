@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional, Dict, List
 
 from dotenv import find_dotenv, load_dotenv
-from pydantic import BaseModel, Field
+from dataclasses import dataclass, field
 
 
 def _resolve_skills_dirs(skills_dir: str) -> List[str]:
@@ -60,29 +60,32 @@ def _resolve_skills_dirs(skills_dir: str) -> List[str]:
     return result
 
 
-class LLMConfig(BaseModel):
+@dataclass
+class LLMConfig:
     """大模型配置"""
-    api_base: str = Field(default="https://api.openai.com/v1")
+    api_base: str = "https://api.openai.com/v1"
     api_key: Optional[str] = None
-    model: str = Field(default="gpt-4o-mini")
-    temperature: float = Field(default=0)
+    model: str = "gpt-4o-mini"
+    temperature: float = 0
     max_tokens: Optional[int] = None
     top_p: Optional[float] = None
     frequency_penalty: Optional[float] = None
     presence_penalty: Optional[float] = None
 
 
-class AgentConfig(BaseModel):
+@dataclass
+class AgentConfig:
     """Agent 核心配置"""
-    max_iterations: int = Field(default=1000)
-    skills_dirs: List[str] = Field(default_factory=list)  # 支持多个 skill 目录
-    verbose: bool = Field(default=True)
+    max_iterations: int = 1000
+    skills_dirs: List[str] = field(default_factory=list)  # 支持多个 skill 目录
+    verbose: bool = True
 
 
-class Config(BaseModel):
+@dataclass
+class Config:
     """完整配置"""
-    llm: LLMConfig = Field(default_factory=LLMConfig)
-    agent: AgentConfig = Field(default_factory=AgentConfig)
+    llm: LLMConfig = field(default_factory=LLMConfig)
+    agent: AgentConfig = field(default_factory=AgentConfig)
 
     @classmethod
     def from_env(cls, env_file: Optional[str] = None) -> "Config":
