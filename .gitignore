@@ -35,3 +35,4 @@ AgentRunnerRecorder-Setup.*
 *.spec.bak
 *.manifest
 AgentRunnerRecorder-Setup
+urecorder/@AutomationLog.txt
