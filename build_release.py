@@ -9,7 +9,7 @@
     python build_release.py --clean     # 构建前清理旧的 PyInstaller 产物
 
 入口: dist/recorder_app.py (make dist 的编译产物)
-输出: AgentRunnerRecorder-Setup.zip
+输出: AgentRunnerRecorder-{platform}.zip  (win64/mac-arm64/linux-x64/linux-arm64)
 
 所有依赖安装在 .venv/ 虚拟环境中。
 """
@@ -94,14 +94,17 @@ def _pip(python: str, *args: str) -> None:
 def detect_platform() -> dict:
     system = platform.system()
     machine = platform.machine().lower()
+    # 统一机器名：aarch64 → arm64（CI workflow 使用 arm64）
+    ARCH_MAP = {"aarch64": "arm64", "x86_64": "x64", "amd64": "x64"}
+    machine = ARCH_MAP.get(machine, machine.replace('_', ''))
     if system == "Windows":
-        return {"name": "win64", "artifact": "AgentRunnerRecorder-Setup.zip"}
+        return {"name": "win64", "artifact": f"AgentRunnerRecorder-win64.zip"}
     elif system == "Darwin":
-        return {"name": f"mac-{machine.replace('_', '')}",
-                "artifact": f"AgentRunnerRecorder-mac-{machine.replace('_', '')}.zip"}
+        return {"name": f"mac-{machine}",
+                "artifact": f"AgentRunnerRecorder-mac-{machine}.zip"}
     else:
-        return {"name": f"linux-{machine.replace('_', '')}",
-                "artifact": f"AgentRunnerRecorder-linux-{machine.replace('_', '')}.zip"}
+        return {"name": f"linux-{machine}",
+                "artifact": f"AgentRunnerRecorder-linux-{machine}.zip"}
 
 
 # ══════════════════════════════════════════════════════════════════
