@@ -78,11 +78,17 @@ def generate_ocr_annotation_image(img_path, results):
 
     # 遍历OCR结果绘制矩形
     for item in results['ocrResult']:
+        # 跳过没有坐标信息的结果（如 RapidOCR 回退的纯文本条目）
+        if not isinstance(item, dict) or 'location' not in item:
+            continue
         loc = item['location']
-        left = loc['left'] or 0
-        top = loc['top'] or 0
-        right = loc['right']
-        bottom = loc['bottom']
+        left = loc.get('left') or 0
+        top = loc.get('top') or 0
+        right = loc.get('right')
+        bottom = loc.get('bottom')
+        # 坐标不完整时跳过
+        if right is None or bottom is None:
+            continue
         # 绘制矩形（自动适配图片坐标系统）
         draw.rectangle(
             [(left, top), (right, bottom)],
@@ -104,7 +110,7 @@ def generate_ocr_annotation_image(img_path, results):
     
     return base64_image
 
-def gui_ocr(path, coord=None, debug=True, output='text', engine="wechat", **kwargs):
+def gui_ocr(path, coord=None, debug=True, output='json', engine="wechat", **kwargs):
     if os.path.exists(path):
         _path = path
     else:
@@ -117,33 +123,67 @@ def gui_ocr(path, coord=None, debug=True, output='text', engine="wechat", **kwar
         path = _path
 
     if sys.platform == "win32":
-        from wechat_ocr import ocr
-        taskid, result = ocr(_path, debug)
-        # logger.info(f"提取文字[{path}]成功")
-        if output == 'json':
-            return result
-        elif output == 'list':
-            texts = [item['text'] for item in result['ocrResult']]
-            return texts
-        else:
-            texts = [item['text'] for item in result['ocrResult']]
-            return '\n'.join(texts)
+        try:
+            from wechat_ocr import ocr
+            taskid, result = ocr(_path, debug)
+            # logger.info(f"提取文字[{path}]成功")
+            if output == 'json':
+                return result
+            elif output == 'list':
+                texts = [item['text'] for item in result['ocrResult']]
+                return texts
+            else:
+                texts = [item['text'] for item in result['ocrResult']]
+                return '\n'.join(texts)
+        except Exception as e:
+            logger.info(f"wechat_ocr 不存在，尝试rapidocr_openvino")
+
 
     from rapidocr_openvino import RapidOCR
     class RapidOcr:
         def __init__(self) -> None:
             self.rapid_ocr = RapidOCR()
 
-        def run_ocr(self, path: str) -> str:
+        def run_ocr(self, path: str):
+            """
+            运行 RapidOCR 识别。
+
+            :return: 标准结构 {'ocrResult': [{text, confidence, location}, ...]}
+                     与微信 OCR 输出结构对齐；识别失败时 ocrResult 为空列表。
+            """
             result, elapse = self.rapid_ocr(path)
-            text_result = ""
+            items = []
             if result is not None:
+                # RapidOCR 返回格式: [[box, text, confidence], ...]
+                # box 为 4 个角点坐标 [[x1,y1],[x2,y2],[x3,y3],[x4,y4]]
                 for res in result:
-                    text_result += res[1].replace("\n", "") + " "
-            else:
-                text_result = result
-            return text_result
-    return RapidOcr().run_ocr(_path)
+                    try:
+                        box, text, confidence = res[0], res[1], res[2]
+                        xs = [p[0] for p in box]
+                        ys = [p[1] for p in box]
+                        location = {
+                            'left': int(min(xs)),
+                            'top': int(min(ys)),
+                            'right': int(max(xs)),
+                            'bottom': int(max(ys)),
+                        }
+                        items.append({
+                            'text': str(text).replace('\n', ''),
+                            'confidence': float(confidence),
+                            'location': location,
+                        })
+                    except Exception as inner_e:
+                        logger.info(f"解析RapidOCR单条结果失败: {inner_e}")
+            logger.info(items)
+            return {'ocrResult': items}
+
+    _ocr_json = RapidOcr().run_ocr(_path)
+    if output == 'json':
+        return _ocr_json
+    elif output == 'list':
+        return [item['text'] for item in _ocr_json['ocrResult']]
+    else:
+        return '\n'.join(item['text'] for item in _ocr_json['ocrResult'])
 
 
 def gui_web_ocr(image_url, coord=None, debug=True, output='json', engine="wechat", **kwargs):
@@ -200,20 +240,45 @@ def gui_web_ocr(image_url, coord=None, debug=True, output='json', engine="wechat
         
         # 调用gui_ocr进行识别
         ocr_result = gui_ocr(local_image_path, coord=coord, debug=debug, output=output, engine=engine, **kwargs)
- 
+
+        # 统一OCR结果为标准结构：{ocrResult: [{text, confidence, location}, ...]}
+        # 当回退到 RapidOCR 时，gui_ocr 返回的是纯文本字符串，需要转换为标准结构
+        normalized_ocr = None
+        if isinstance(ocr_result, dict) and 'ocrResult' in ocr_result:
+            normalized_ocr = ocr_result
+        elif isinstance(ocr_result, list):
+            # 兼容返回 list 的情况
+            items = []
+            for t in ocr_result:
+                if isinstance(t, dict):
+                    items.append(t)
+                else:
+                    items.append({'text': str(t)})
+            normalized_ocr = {'ocrResult': items}
+        elif isinstance(ocr_result, str):
+            # RapidOCR 回退：纯文本字符串，转换为单个条目
+            normalized_ocr = {'ocrResult': [{'text': ocr_result}]}
+        else:
+            # 兜底：空结果
+            normalized_ocr = {'ocrResult': []}
+
         # 生成OCR标注图像（如果可能）
         ocr_annotation_base64 = None
-        if output == 'json' and isinstance(ocr_result, dict) and 'ocrResult' in ocr_result:
-            ocr_annotation_base64 = generate_ocr_annotation_image(local_image_path, ocr_result)
+        if normalized_ocr['ocrResult']:
+            try:
+                ocr_annotation_base64 = generate_ocr_annotation_image(local_image_path, normalized_ocr)
+            except Exception as e:
+                logger.info(f"生成OCR标注图像失败: {e}")
+                ocr_annotation_base64 = None
         
         # 清理临时文件
         os.remove(local_image_path)
-        
+        logger.info(normalized_ocr)
         # 返回结果
-        texts = [item['text'] for item in ocr_result['ocrResult']]
+        texts = [item.get('text', '') for item in normalized_ocr['ocrResult']]
         ocr_text = '\n'.join(texts)
         result = {
-            'ocr_result': ocr_result,
+            'ocr_result': normalized_ocr,
             'ocr_annotation_base64': ocr_annotation_base64,
             'ocr_text': ocr_text
         }

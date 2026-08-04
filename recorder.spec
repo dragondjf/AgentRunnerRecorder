@@ -24,6 +24,7 @@ def _find_pypandoc_datas():
         pass
     return []
 
+
 _DATAS_BASE = [
     ('dist/images', 'images'),
     ('dist/urecorder', 'urecorder'),
@@ -34,14 +35,19 @@ _DATAS_BASE = [
     ('recorder', 'recorder'),
 ]
 
+# 注：OCR 库（wechat_ocr / rapidocr_openvino / openvino）的二进制与数据
+# （WeChatOCR/ 的 DLL、models/ 的 onnx 模型、openvino 的 runtime dll 等）
+# 不在此处逐个收集，而是由 build_release.py 在封装阶段用 shutil.copytree
+# 整体拷贝到 dist/AgentRunnerRecorder/_internal/ 下，更简单直观。
 _DATAS = _DATAS_BASE + _find_pypandoc_datas()
+_BINARIES = []
 
 block_cipher = None
 
 a = Analysis(
     [_ENTRY],
     pathex=_PATHEX,
-    binaries=[],
+    binaries=_BINARIES,
     datas=_DATAS,
     hiddenimports=[
         'recorder',
@@ -111,6 +117,35 @@ a = Analysis(
         'recorder.theme',
         'recorder.ui_components',
         'recorder.hotkey',
+        # ── OCR 库：wechat_ocr ──
+        'wechat_ocr',
+        'wechat_ocr.ocr_manager',
+        'wechat_ocr.mmmojo_dll',
+        'wechat_ocr.xplugin_manager',
+        'wechat_ocr.winapi',
+        'wechat_ocr.ocr_protobuf_pb2',
+        'wechat_ocr.utility_protobuf_pb2',
+        'wechat_ocr.default_callback',
+        # ── OCR 库：rapidocr_openvino ──
+        'rapidocr_openvino',
+        'rapidocr_openvino.main',
+        'rapidocr_openvino.cal_rec_boxes',
+        'rapidocr_openvino.ch_ppocr_cls',
+        'rapidocr_openvino.ch_ppocr_cls.text_cls',
+        'rapidocr_openvino.ch_ppocr_cls.utils',
+        'rapidocr_openvino.ch_ppocr_det',
+        'rapidocr_openvino.ch_ppocr_det.text_detect',
+        'rapidocr_openvino.ch_ppocr_det.utils',
+        'rapidocr_openvino.ch_ppocr_rec',
+        'rapidocr_openvino.ch_ppocr_rec.text_recognize',
+        'rapidocr_openvino.ch_ppocr_rec.utils',
+        'rapidocr_openvino.utils',
+        # ── OCR 运行时依赖 ──
+        'openvino',
+        'openvino.runtime',
+        'pyclipper',
+        'google.protobuf',
+        'google.protobuf.json_format',
     ],
     hookspath=[],
     hooksconfig={},

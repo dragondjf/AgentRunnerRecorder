@@ -75,6 +75,8 @@ class ScreenRecorderApp:
         self._update_job = None
         self._countdown = 0
         self._countdown_job = None
+        self._shooting = False   # 截图是否在进行（防重复点击）
+        self._shot_ctrl = None   # 截图工具 API 控制器（懒加载创建）
 
         # Tk variables
         self._fps = tk.IntVar(value=15)
@@ -134,8 +136,8 @@ class ScreenRecorderApp:
 
         self._settings_btn = Btn(right, "settings", command=self._toggle_settings, tooltip="设置")
         self._settings_btn.pack(side=tk.LEFT, padx=(0, BTN_GAP))
-        self._log_btn = Btn(right, "log", command=self._toggle_log, tooltip="日志")
-        self._log_btn.pack(side=tk.LEFT, padx=(0, BTN_GAP))
+        self._shot_btn = Btn(right, "shot", command=self._shot_screenshot, tooltip="截图")
+        self._shot_btn.pack(side=tk.LEFT, padx=(0, BTN_GAP))
         self._folder_btn = Btn(right, "folder", command=self._open_dir, tooltip="打开目录")
         self._folder_btn.pack(side=tk.LEFT, padx=(0, BTN_GAP))
         self._history_btn = Btn(right, "history", command=self._open_history, tooltip="历史")
@@ -906,6 +908,35 @@ class ScreenRecorderApp:
         import webbrowser; import urllib.parse
         webbrowser.open(f"{self._urc_server.base_url}/?project={urllib.parse.quote(project)}")
         self._log(f"已打开 UIRecorderCore 编辑器 - 项目: {project}")
+
+    def _shot_screenshot(self):
+        """截图按钮：程序最小化，最小化动画完成后启动截图工具，完成后还原程序。"""
+        if getattr(self, '_shooting', False):
+            return  # 已有截图在进行
+        # 主程序最小化，让出屏幕给截图工具
+        self.root.iconify()
+        self.root.update()
+        # 延迟到最小化动画完成后再启动截图工具，避免截图界面抢先出现
+        self.root.after(300, self._start_screenshot)
+
+    def _start_screenshot(self):
+        """最小化完成后启动截图工具（API 方式，共享 Tk 事件循环）。"""
+        from recorder.screenshot import ScreenshotController
+        if getattr(self, '_shot_ctrl', None) is None:
+            self._shot_ctrl = ScreenshotController(parent=self.root)
+        self._shooting = True
+        self._shot_ctrl.run(on_done=self._on_screenshot_done)
+
+    def _on_screenshot_done(self, success, image):
+        """截图工具结束后：还原主程序窗口并重排布局。"""
+        self._shooting = False
+        self.root.deiconify()
+        self.root.lift()
+        self._refit()
+        if success:
+            self._log("截图完成，已复制到剪贴板")
+        else:
+            self._log("已取消截图")
 
     def _on_close(self):
         if self._recording:

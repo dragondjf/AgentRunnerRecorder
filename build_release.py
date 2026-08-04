@@ -125,6 +125,47 @@ def build_pyinstaller(python: str) -> None:
     run([python, "-m", "PyInstaller", "--noconfirm", str(SPEC)])
 
 
+def _copy_ocr_runtime(src_dir: Path) -> None:
+    """整体拷贝 OCR 运行时目录到打包产物 _internal/ 下。
+
+    覆盖:
+      - wechat_ocr/WeChatOCR    微信 OCR 的 DLL/exe 运行时（ocr_manager 按相对路径加载）
+      - wechat_ocr/google       微信 OCR 自带的 .pyd
+      - rapidocr_openvino       RapidOCR 包（含 models/*.onnx、config.yaml 等数据）
+      - openvino / openvino_telemetry  OpenVINO runtime 及其 DLL/pyd
+      - pyclipper                裁剪算法二进制（RapidOCR 依赖）
+
+    这些目录在 PyInstaller 打包时不易被静态收集，直接整目录拷贝最稳妥。
+
+    site-packages 定位：用 numpy.__file__ 反推（numpy 是项目必装依赖，
+    `site.getsitepackages()` 在部分 virtualenv 下会误返回 venv 根目录）。
+    """
+    try:
+        import numpy as _np
+        sp = Path(_np.__file__).resolve().parent.parent
+    except Exception:
+        try:
+            import wechat_ocr as _wc
+            sp = Path(_wc.__file__).resolve().parent.parent
+        except Exception:
+            print("  \033[33m⚠ 无法定位 site-packages，跳过 OCR 运行时拷贝\033[0m")
+            return
+
+    internal_dir = src_dir / "_internal"
+    targets = ["wechat_ocr", "rapidocr_openvino", "openvino", "openvino_telemetry", "pyclipper"]
+    for name in targets:
+        src = sp / name
+        dst = internal_dir / name
+        if not src.is_dir():
+            print(f"  \033[33m⚠ OCR 依赖 {name} 未找到，跳过\033[0m")
+            continue
+        if dst.exists():
+            shutil.rmtree(dst)
+        shutil.copytree(src, dst, ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+        n_files = sum(1 for f in dst.rglob("*") if f.is_file())
+        print(f"  \033[32m✓\033[0m {name} ({n_files} files) → _internal/{name}")
+
+
 def _ensure_win7_dll(src_dir: Path) -> None:
     """将 api-ms-win-core-path-l1-1-0.dll 复制到 _internal 目录。
 
@@ -159,6 +200,9 @@ def package_output(plat: dict) -> Path:
     # Win7 兼容 DLL
     if plat["name"] == "win64":
         _ensure_win7_dll(src_dir)
+
+    # OCR 运行时（wechat_ocr / rapidocr_openvino / openvino 等）整目录拷贝
+    _copy_ocr_runtime(src_dir)
 
     artifact_path = ROOT / plat["artifact"]
     import zipfile

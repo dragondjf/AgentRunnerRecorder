@@ -36,3 +36,4 @@ AgentRunnerRecorder-Setup.*
 *.manifest
 AgentRunnerRecorder-Setup
 urecorder/@AutomationLog.txt
+AgentRunnerRecorder-win64.zip
