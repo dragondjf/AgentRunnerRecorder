@@ -3981,6 +3981,9 @@
         let lastUpdateTime = null;
         let retryCount = 0;
 
+        // 当前项目名（从 URL 参数 ?project= 获取，供删除/持久化接口使用）
+        let currentProjectName = getUrlParameter('project') || '';
+
         // 当前显示的幻灯片索引
         let currentSlideIndex = 0;
         let isPreviewMode = false;
@@ -5049,33 +5052,85 @@
         // 执行删除操作
         function performDelete() {
             if (pendingDeleteIndex === null) return;
-            
+
             if (slidesData.length <= 1) {
                 alert("至少需要保留一个页面");
                 deleteModal.style.display = 'none';
                 return;
             }
-            
-            slidesData.splice(pendingDeleteIndex, 1);
-            
+
+            const deletedIndex = pendingDeleteIndex;
+            const deletedSlide = slidesData[deletedIndex];
+
+            slidesData.splice(deletedIndex, 1);
+
             // 如果删除的是当前页面，显示前一个页面
-            if (currentSlideIndex >= pendingDeleteIndex) {
+            if (currentSlideIndex >= deletedIndex) {
                 currentSlideIndex = Math.max(0, currentSlideIndex - 1);
             }
-            
+
             // 自动更新所有内容
             autoUpdateAllSlides();
-            
+
             // 更新总页数
             updateTotalSlides();
-            
+
             // 显示当前幻灯片
             showSlide(currentSlideIndex);
-            showNotification('页面删除成功，内容已自动更新', 'success');
-            
+
+            // 持久化删除到后端（含物理截图文件删除）
+            deleteSlideFromServer(deletedIndex, deletedSlide);
+
             // 重置待删除索引并关闭模态框
             pendingDeleteIndex = null;
             deleteModal.style.display = 'none';
+        }
+
+        /**
+         * 将删除操作持久化到后端
+         * 1. 调用 /api/v1/deletescreenshot 删除 records.json 中该 slide 及其关联的截图 png 文件
+         * 2. 兜底：若后端接口不可用，则通过 saveSlidesData 把剩余 slides 整体写回
+         */
+        async function deleteSlideFromServer(index, slide) {
+            try {
+                const payload = {
+                    index: index,
+                    delete_file: true
+                };
+                if (currentProjectName) {
+                    payload.project = currentProjectName;
+                }
+
+                const resp = await fetch('/api/v1/deletescreenshot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await resp.json();
+                if (result.success) {
+                    showNotification(
+                        `页面删除成功（已移除 ${result.deleted_slides.length} 页，物理文件 ${result.deleted_files.length} 个），内容已自动更新`,
+                        'success'
+                    );
+                    logger ? logger.info('删除截图成功:', result) : console.log('删除截图成功:', result);
+                } else {
+                    // 后端接口失败，回退为整体保存剩余 slides
+                    console.warn('删除接口返回失败，回退为整体保存:', result.error);
+                    const ok = await saveSlidesData(false);
+                    showNotification(
+                        ok ? '页面删除成功（已保存）' : '页面删除成功，但保存失败，刷新后可能恢复',
+                        ok ? 'success' : 'warning'
+                    );
+                }
+            } catch (err) {
+                console.error('调用删除接口异常，回退为整体保存:', err);
+                const ok = await saveSlidesData(false);
+                showNotification(
+                    ok ? '页面删除成功（已保存）' : '页面删除成功，但保存失败，刷新后可能恢复',
+                    ok ? 'success' : 'warning'
+                );
+            }
         }
 
         // 显示指定索引的幻灯片

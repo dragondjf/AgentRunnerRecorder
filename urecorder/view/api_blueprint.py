@@ -1509,3 +1509,207 @@ def delete_project():
             'error': f"删除项目失败: {str(e)}",
             'timestamp': datetime.now().isoformat()
         }), 500
+
+
+@api_blueprint.route('/deletescreenshot', methods=['POST'])
+def delete_screenshot():
+    """删除截图接口 - 支持两种删除粒度：
+    1. 按 slide 索引删除：从 records.json 的 slides 中移除指定条目，并可同时删除其关联的截图 png 文件
+    2. 按截图文件名删除：删除项目 my_screenshots 目录下的某张 png，并移除所有引用它的 slide 条目
+
+    请求体参数（JSON）：
+        project   (str, 可选) 项目名称；缺省时使用服务端当前项目 CURRENT_PROJECT_NAME
+        index     (int, 可选) 要删除的 slide 索引（与 filename 二选一，index 优先）
+        filename  (str, 可选) 要删除的截图文件名，例如 "screenshot_xxx.png"
+        delete_file (bool, 可选, 默认 true) 是否同时删除物理 png 文件
+    """
+    try:
+        from flask import current_app
+        import shutil as _shutil
+        DATA_DIR = current_app.config['DATA_DIR']
+
+        data = request.get_json(silent=True) or {}
+
+        project_name = (data.get('project') or '').strip() or current_app.config.get('CURRENT_PROJECT_NAME') or ''
+
+        if not project_name:
+            return jsonify({
+                'success': False,
+                'error': '未指定项目名称且服务端无当前项目',
+                'timestamp': datetime.now().isoformat()
+            }), 400
+
+        # 校验项目名称安全性
+        if '..' in project_name or project_name.startswith('/') or re.search(r'[<>:"/\\|?*]', project_name):
+            return jsonify({
+                'success': False,
+                'error': '非法的项目名称',
+                'timestamp': datetime.now().isoformat()
+            }), 400
+
+        project_path = os.path.join(DATA_DIR, project_name)
+        if not os.path.exists(project_path):
+            return jsonify({
+                'success': False,
+                'error': '项目不存在',
+                'timestamp': datetime.now().isoformat()
+            }), 404
+
+        delete_file = data.get('delete_file', True)
+        if isinstance(delete_file, str):
+            delete_file = delete_file.lower() in ('1', 'true', 'yes', 'y')
+
+        # 读取 records.json
+        records_file = os.path.join(project_path, 'records.json')
+        if not os.path.exists(records_file):
+            return jsonify({
+                'success': False,
+                'error': 'records.json 不存在',
+                'timestamp': datetime.now().isoformat()
+            }), 404
+
+        with open(records_file, 'r', encoding='utf-8') as f:
+            records = json.load(f)
+
+        if not isinstance(records, dict) or 'slides' not in records:
+            return jsonify({
+                'success': False,
+                'error': 'records.json 格式无效（缺少 slides 字段）',
+                'timestamp': datetime.now().isoformat()
+            }), 400
+
+        slides = records.get('slides', [])
+        deleted_slides = []
+        deleted_files = []
+
+        def _extract_filename(url_value):
+            """从 slide 的 url/markdown 中提取截图文件名（如 my_screenshots/xxx.png 或纯 xxx.png）"""
+            if not url_value or not isinstance(url_value, str):
+                return None
+            # 匹配 markdown 或 url 中最后的 xxx.png
+            m = re.search(r'([^/\\\s]+\.png)', url_value, re.IGNORECASE)
+            return m.group(1) if m else None
+
+        def _remove_png_file(filename):
+            """删除 my_screenshots 下的 png 物理文件，带路径穿越防护"""
+            if not filename:
+                return
+            is_valid, msg = validate_filename(filename)
+            if not is_valid:
+                logger.warning(f"截图文件名校验失败，跳过物理删除: {msg}")
+                return
+            candidates = [
+                os.path.join(project_path, 'my_screenshots', filename),
+                os.path.join(project_path, filename),
+            ]
+            for cand in candidates:
+                try:
+                    cand_abs = os.path.abspath(cand)
+                    base_abs = os.path.abspath(project_path)
+                    if not cand_abs.startswith(base_abs):
+                        continue
+                    if os.path.isfile(cand_abs):
+                        os.remove(cand_abs)
+                        deleted_files.append(os.path.relpath(cand_abs, project_path))
+                        logger.info(f"已删除截图文件: {cand_abs}")
+                except Exception as e:
+                    logger.warning(f"删除截图文件失败 {cand}: {e}")
+
+        # ── 模式 A：按 slide 索引删除 ──
+        if data.get('index') is not None:
+            try:
+                idx = int(data['index'])
+            except (TypeError, ValueError):
+                return jsonify({
+                    'success': False,
+                    'error': 'index 参数必须是整数',
+                    'timestamp': datetime.now().isoformat()
+                }), 400
+
+            if idx < 0 or idx >= len(slides):
+                return jsonify({
+                    'success': False,
+                    'error': f'slide 索引 {idx} 超出范围 (0-{len(slides) - 1})',
+                    'available_slides': len(slides),
+                    'timestamp': datetime.now().isoformat()
+                }), 400
+
+            removed = slides.pop(idx)
+            deleted_slides.append(idx)
+
+            if delete_file:
+                _remove_png_file(_extract_filename(removed.get('url')))
+                _remove_png_file(_extract_filename(removed.get('markdown')))
+
+        # ── 模式 B：按截图文件名删除 ──
+        elif data.get('filename'):
+            filename = data['filename'].strip()
+            is_valid, msg = validate_filename(filename)
+            if not is_valid:
+                return jsonify({
+                    'success': False,
+                    'error': msg,
+                    'timestamp': datetime.now().isoformat()
+                }), 400
+
+            fname_lower = filename.lower()
+            new_slides = []
+            for i, slide in enumerate(slides):
+                slide_file = _extract_filename(slide.get('url')) or _extract_filename(slide.get('markdown'))
+                if slide_file and slide_file.lower() == fname_lower:
+                    deleted_slides.append(i)
+                    continue  # 丢弃该 slide
+                new_slides.append(slide)
+            slides = new_slides
+
+            if delete_file:
+                _remove_png_file(filename)
+
+        else:
+            return jsonify({
+                'success': False,
+                'error': '必须提供 index 或 filename 参数之一',
+                'timestamp': datetime.now().isoformat()
+            }), 400
+
+        if not deleted_slides:
+            return jsonify({
+                'success': True,
+                'message': '没有匹配的截图被删除',
+                'deleted_slides': [],
+                'deleted_files': deleted_files,
+                'remaining_slides': len(slides),
+                'timestamp': datetime.now().isoformat()
+            }), 200
+
+        # 写回 records.json
+        records['slides'] = slides
+        records['lastUpdated'] = datetime.now().isoformat()
+        if 'version' not in records:
+            records['version'] = "1.0"
+
+        os.makedirs(os.path.dirname(records_file), exist_ok=True)
+        with open(records_file, 'w', encoding='utf-8') as f:
+            json.dump(records, f, ensure_ascii=False, indent=2)
+
+        logger.info(f"✅ 删除截图成功: 项目={project_name}, 删除slides={deleted_slides}, 文件={deleted_files}")
+
+        return jsonify({
+            'success': True,
+            'message': f'已删除 {len(deleted_slides)} 张截图',
+            'project': project_name,
+            'deleted_slides': deleted_slides,
+            'deleted_files': deleted_files,
+            'remaining_slides': len(slides),
+            'timestamp': datetime.now().isoformat()
+        })
+
+    except Exception as e:
+        logger.error(f"删除截图失败: {str(e)}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return jsonify({
+            'success': False,
+            'error': f"删除截图失败: {str(e)}",
+            'timestamp': datetime.now().isoformat()
+        }), 500
